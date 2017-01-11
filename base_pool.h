@@ -1,0 +1,397 @@
+/**
+ * Created on: 8/27/16
+ *     Author: xing
+ */
+
+#ifndef UDP_WRAPPER_BASE_POOL_H
+#define UDP_WRAPPER_BASE_POOL_H
+
+#include "base/common.h"
+#include "base/module.h"
+
+
+namespace base{
+
+	typedef std::function<void(void *)> PoolResDeleter;
+
+	/*
+	 * TODO(HX)
+	 *    Instead of implicitly force the pooled Class
+	 *    to implement Init/Reinit/Uninit, we can also ask for
+	 *    lambda to do these things.
+	 */
+
+
+	/**
+	 * Pointer wrapper
+	 * @note Smart pointer in STD is prefered usually,
+	 * 		This class if for situation when STD smart pointer is not available,
+	 * 		e.g. in lambda capture
+	 */
+	template <typename T>
+	class PooledPtr{
+	public:
+		PooledPtr() = default;
+
+		PooledPtr(T *ptr, PoolResDeleter del):
+				ptr{ptr},
+				del{del} {}
+
+		PooledPtr(PooledPtr &&other):
+				PooledPtr(other.ptr, other.del){
+			other.ptr = nullptr;
+			other.del = nullptr;
+		}
+
+		PooledPtr(PooledPtr &other): PooledPtr(std::move(other)) {}
+
+		~PooledPtr(){
+			Recycle();
+		}
+
+		PooledPtr &operator=(const PooledPtr &) = delete;
+
+		PooledPtr &operator=(PooledPtr &&other){
+			Recycle();
+			ptr = other.ptr;
+			del = other.del;
+			other.ptr = nullptr;
+			other.del = nullptr;
+			return *this;
+		}
+
+		PooledPtr &operator=(PooledPtr &other){
+			return operator=(std::move(other));
+		}
+
+		T *get() const noexcept {return ptr;}
+
+	private:
+		inline void Recycle() noexcept {
+			if(ptr && del){
+				del(ptr);
+			}
+		}
+
+		T *ptr{};
+		PoolResDeleter del{};
+	};
+
+
+	/**
+	 * BasePool
+	 * @note Class T should have these methods implemented:
+	 * 		Init, which takes no argument, and returns Ret,
+	 * 		Reinit, which returns Ret,
+	 * 		Uninit, which takes no argument, and returns void.
+	 *
+	 * 		This pool is not thread safe.
+	 * 		Try BaseCPool in multi-thread circumstances
+	 */
+	template<typename T>
+	class BasePool: public Module{
+	public:
+
+		BasePool(size_t size): BasePool(size, "") {}
+
+		BasePool(size_t size, const std::string &name):
+				Module{name}, size{size} {
+			BASE_RISE_ON_TRUE(size <= 0, Ret::E_ARG)
+
+			size_t sz = BASE_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
+			mem = new uint8_t[size * sz];
+			BASE_RISE_ON_FALSE(mem, Ret::E_MEM);
+
+			free_mem = (nodeptr)mem;
+
+			sz /= sizeof(nodeptr);
+			nodeptr tmp = free_mem;
+			while(--size){
+				tmp->next = tmp + sz;
+				tmp = tmp->next;
+			}
+
+			tmp->next = nullptr;
+
+			tmp = free_mem;
+			T *t;
+			Ret ret;
+			while(tmp){
+				t = (T *)(tmp + 1);
+				ret = t->Init();
+				if(Ret::OK != ret){
+					delete[] mem;
+					BASE_RISE_LOCATED(Ret::E_GENERAL, "t->Init()")
+				}
+
+				tmp = tmp->next;
+			}
+		}
+
+		~BasePool() {
+			PutStat();
+			nodeptr tmp = free_mem;
+			T *t;
+			while(tmp){
+				t = (T *)(tmp + 1);
+				t->Uninit();
+
+				tmp = tmp->next;
+			}
+
+			delete[] mem;
+		}
+
+		/**
+		 * get a unique_ptr to a T instance
+		 */
+		inline std::unique_ptr<T, PoolResDeleter>
+		AllocUnique() noexcept {
+			return std::unique_ptr<T, std::function<void(void *)>>{
+					Alloc(),
+					// FIXME(HX) Seems like it's not possible to extract
+					// this lambda back into a member, as which may cause
+					// a compiler error
+					[this](void *b) {
+						auto tmp = ((nodeptr)b) - 1;
+						tmp->next = free_mem;
+						free_mem = tmp;
+					}};
+		}
+
+		/**
+		 * get a shared_ptr to a T instance
+		 */
+		inline std::shared_ptr<T> AllocShared() noexcept {
+			return std::shared_ptr<T>{
+					Alloc(),
+					[this](void *b) {
+						auto tmp = ((nodeptr)b) - 1;
+						tmp->next = free_mem;
+						free_mem = tmp;
+					}};
+		}
+
+		inline PooledPtr<T> AllocPooled() noexcept {
+			return PooledPtr<T>{
+					Alloc(),
+					[this](void *b) {
+						auto tmp = ((nodeptr)b) - 1;
+						tmp->next = free_mem;
+						free_mem = tmp;
+					}};
+		}
+
+	private:
+		BASE_DISALLOW_COPY_AND_ASSIGN(BasePool)
+
+		/**
+		 * Node head for internal memory link
+		 */
+		struct NodeHead{
+			NodeHead() = default;
+
+			NodeHead(void *ptr): next{(NodeHead *)ptr} {}
+
+			NodeHead *next{};
+		};
+
+		typedef NodeHead *nodeptr;
+
+		/**
+		 * extracting for type T
+		 */
+		template<typename... Args>
+		T *Alloc(Args &&... args) noexcept {
+			stat.Total();
+
+			if(!free_mem){
+				return nullptr;
+			}
+
+			auto b = (T *)(free_mem + 1);
+			free_mem = free_mem->next;
+
+			auto ret = b->Reinit(std::forward<Args>(args)...);
+			if(Ret::OK != ret){
+				lErr("Reinit: " << to_string(ret))
+				free_mem = ((nodeptr)b) - 1;
+				return nullptr;
+			}
+
+			stat.Succ();
+			return b;
+		}
+
+	BASE_READER(size_t, size);
+		uint8_t *mem;
+		nodeptr free_mem;
+	};
+
+
+	/**
+	 * BaseCPool
+	 * @note Class T should have these methods implemented:
+	 * 		Init, which takes no argument, and returns Ret,
+	 * 		Reinit, which returns Ret,
+	 * 		Uninit, which takes no argument, and returns void.
+	 *
+	 * 		This pool is thread safe.
+	 */
+	template<typename T>
+	class BaseCPool: public Module{
+	public:
+		BaseCPool(size_t size): BaseCPool(size, "") {}
+
+		BaseCPool(size_t size, const std::string &name):
+				Module{name}, size{size} {
+			BASE_RISE_ON_TRUE(size <= 0, Ret::E_ARG)
+
+			size_t sz = BASE_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
+			mem = new uint8_t[size * sz];
+			BASE_RISE_ON_FALSE(mem, Ret::E_MEM);
+
+			free_mem = (nodeptr)mem;
+
+			sz /= sizeof(nodeptr);
+			nodeptr tmp = free_mem;
+			while(--size){
+				tmp->next = tmp + sz;
+				tmp = tmp->next;
+			}
+
+			tmp->next = nullptr;
+
+			tmp = free_mem;
+			T *t;
+			Ret ret;
+			while(tmp){
+				t = (T *)(tmp + 1);
+				ret = t->Init();
+				if(Ret::OK != ret){
+					delete[] mem;
+					BASE_RISE_LOCATED(Ret::E_GENERAL, "t->Init()")
+				}
+
+				tmp = tmp->next;
+			}
+		}
+
+		~BaseCPool() {
+			PutStat();
+			nodeptr tmp = free_mem;
+			T *t;
+			while(tmp){
+				t = (T *)(tmp + 1);
+				t->Uninit();
+
+				tmp = tmp->next;
+			}
+
+			delete[] mem;
+		}
+
+		/**
+		 * get a unique_ptr to a T instance
+		 */
+		inline std::unique_ptr<T, PoolResDeleter>
+		AllocUnique() noexcept {
+			return std::unique_ptr<T, std::function<void(void *)>>{
+					Alloc(),
+					[this](void *b) {
+						auto tmp = ((nodeptr)b) - 1;
+
+						{
+							std::lock_guard<std::mutex> bar{mut};
+							tmp->next = free_mem;
+							free_mem = tmp;
+						}
+					}};
+		}
+
+		/**
+		 * get a shared_ptr to a T instance
+		 */
+		inline std::shared_ptr<T> AllocShared() noexcept {
+			return std::shared_ptr<T>{
+					Alloc(),
+					[this](void *b) {
+						auto tmp = ((nodeptr)b) - 1;
+
+						{
+							std::lock_guard<std::mutex> bar{mut};
+							tmp->next = free_mem;
+							free_mem = tmp;
+						}
+					}};
+		}
+
+		inline PooledPtr<T> AllocPooled() noexcept {
+			return PooledPtr<T>{
+					Alloc(),
+					[this](void *b) {
+						auto tmp = ((nodeptr)b) - 1;
+
+						{
+							std::lock_guard<std::mutex> bar{mut};
+							tmp->next = free_mem;
+							free_mem = tmp;
+						}
+					}};
+		}
+
+	private:
+		BASE_DISALLOW_COPY_AND_ASSIGN(BaseCPool)
+
+		/**
+		 * Node head for internal memory link
+		 */
+		struct NodeHead{
+			NodeHead() = default;
+
+			NodeHead(void *ptr): next{(NodeHead *)ptr} {}
+
+			NodeHead *next{};
+		};
+
+		typedef NodeHead *nodeptr;
+
+		/**
+		 * extracting for type T
+		 */
+		template<typename... Args>
+		T *Alloc(Args &&... args) noexcept {
+			stat.Total();
+
+			if(!free_mem){
+				return nullptr;
+			}
+
+			{
+				std::lock_guard<std::mutex> bar{mut};
+
+				auto b = (T *)(free_mem + 1);
+				free_mem = free_mem->next;
+
+				auto ret = b->Reinit(std::forward<Args>(args)...);
+				if(Ret::OK != ret){
+					lErr("Reinit: " << to_string(ret))
+					free_mem = ((nodeptr)b) - 1;
+					return nullptr;
+				}
+
+				stat.Succ();
+				return b;
+			}
+		};
+
+	BASE_READER(size_t, size);
+		uint8_t *mem;
+		nodeptr free_mem;
+		std::mutex mut{};
+	};
+
+}
+
+#endif //UDP_WRAPPER_BASE_POOL_H
+
