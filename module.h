@@ -23,7 +23,7 @@ namespace base{
 
 		virtual ~Module() {}
 
-		virtual void Inspect() const noexcept {PutStat();}
+		virtual void Inspect() const noexcept {lInf(ToString())}
 
 		virtual void PutStat() const noexcept {lInf(ToString())}
 
