@@ -13,11 +13,9 @@ namespace base{
 		s.reserve(64);
 
 		s.append(succ_tag);
-		s.append("/");
-		s.append(total_tag);
-		s.append(": ");
 		s.append(std::to_string(succ_count));
-		s.append("/");
+		s.append(", ");
+		s.append(total_tag);
 		s.append(std::to_string(total_count));
 
 #ifdef ENABLE_TIME_STAT

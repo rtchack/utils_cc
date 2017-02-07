@@ -50,8 +50,8 @@ namespace base{
 
 	private:
 
-	BASE_ACCESSOR(std::string, succ_tag){"succ"};
-	BASE_ACCESSOR(std::string, total_tag){"total"};
+	BASE_ACCESSOR(std::string, succ_tag){"succ:"};
+	BASE_ACCESSOR(std::string, total_tag){"total:"};
 
 	BASE_READER(uint64_t, succ_count){0};
 	BASE_READER(uint64_t, total_count){0};
