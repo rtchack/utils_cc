@@ -81,9 +81,9 @@ namespace base{
 	/**
 	 * BasePool
 	 * @note Class T should have these methods implemented:
-	 * 		Init, which takes no argument, and returns Ret,
-	 * 		Reinit, which returns Ret,
-	 * 		Uninit, which takes no argument, and returns void.
+	 * 		Init(void), which takes no argument, and returns Ret,
+	 * 		Ret Reinit(...), which returns Ret,
+	 * 		Uninit(void), which takes no argument, and returns void.
 	 *
 	 * 		This pool is not thread safe.
 	 * 		Try BaseCPool in multi-thread circumstances
@@ -118,12 +118,7 @@ namespace base{
 			Ret ret;
 			while(tmp){
 				t = (T *)(tmp + 1);
-				ret = t->Init();
-				if(Ret::OK != ret){
-					delete[] mem;
-					BASE_RISE_LOCATED(Ret::E_GENERAL, "t->Init()")
-				}
-
+				t->Init();
 				tmp = tmp->next;
 			}
 		}
@@ -232,9 +227,9 @@ namespace base{
 	/**
 	 * BaseCPool
 	 * @note Class T should have these methods implemented:
-	 * 		Init, which takes no argument, and returns Ret,
-	 * 		Reinit, which returns Ret,
-	 * 		Uninit, which takes no argument, and returns void.
+	 * 		Init(void), which takes no argument, and returns Ret,
+	 * 		Ret Reinit(...), which returns Ret,
+	 * 		Uninit(void), which takes no argument, and returns void.
 	 *
 	 * 		This pool is thread safe.
 	 */
@@ -267,12 +262,7 @@ namespace base{
 			Ret ret;
 			while(tmp){
 				t = (T *)(tmp + 1);
-				ret = t->Init();
-				if(Ret::OK != ret){
-					delete[] mem;
-					BASE_RISE_LOCATED(Ret::E_GENERAL, "t->Init()")
-				}
-
+				t->Init();
 				tmp = tmp->next;
 			}
 		}

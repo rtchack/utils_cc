@@ -19,7 +19,7 @@ namespace base{
 
 #define BASE_CURRENT_SEVERITY BASE_SEVERITY_DBG
 
-#define INIT_LOG InitLog(); lInf("Hello.");
+#define INIT_LOG base::InitLog(); lInf("Hello.");
 
 #define LOG_PUT_ATTR(i) << "\n\t"#i " " << i
 #define LOG_PUT_ITER(i, name) << ", "#i "-" << *(name + i)

@@ -70,27 +70,25 @@ inline std::string to_stringAndroid(T value){
 #define BASE_ATTR(tp, nm) \
   private:\
     tp nm
+
 #define BASE_READER(tp, nm) \
   public:\
     inline const tp& Get_ ##nm() const noexcept{return nm;}\
-  BASE_ATTR(tp, nm)
-#define BASE_WRITTER(tp, nm) \
-  public:\
-    inline void Set_ ##nm(const tp &v) noexcept{nm = v;}\
   BASE_ATTR(tp, nm)
 #define BASE_ACCESSOR(tp, nm) \
   public:\
     inline const tp& Get_ ##nm() const noexcept{return nm;}\
     inline void Set_ ##nm(const tp &v) noexcept{nm = v;}\
   BASE_ATTR(tp, nm)
+
 #define BASE_DIRECT_READER(tp, nm) \
   public:\
-    inline tp Get_ ##nm() const noexcept{return nm;}\
+    inline const tp Get_ ##nm() const noexcept{return nm;}\
   BASE_ATTR(tp, nm)
 #define BASE_DIRECT_ACCESSOR(tp, nm) \
   public:\
-    inline tp Get_ ##nm() const noexcept{return nm;}\
-    inline void Set_ ##nm(const tp &v) noexcept{nm = v;}\
+    inline const tp Get_ ##nm() const noexcept{return nm;}\
+    inline void Set_ ##nm(tp v) noexcept{nm = v;}\
   BASE_ATTR(tp, nm)
 
 
