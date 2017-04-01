@@ -115,7 +115,6 @@ namespace base{
 
 			tmp = free_mem;
 			T *t;
-			Ret ret;
 			while(tmp){
 				t = (T *)(tmp + 1);
 				t->Init();
@@ -140,10 +139,11 @@ namespace base{
 		/**
 		 * get a unique_ptr to a T instance
 		 */
+		template<typename... Args>
 		inline std::unique_ptr<T, PoolResDeleter>
-		AllocUnique() noexcept {
+		AllocUnique(Args &&...args) noexcept {
 			return std::unique_ptr<T, std::function<void(void *)>>{
-					Alloc(),
+					Alloc(std::forward<Args>(args)...),
 					// FIXME(HX) Seems like it's not possible to extract
 					// this lambda back into a member, as which may cause
 					// a compiler error
@@ -157,9 +157,10 @@ namespace base{
 		/**
 		 * get a shared_ptr to a T instance
 		 */
-		inline std::shared_ptr<T> AllocShared() noexcept {
+		template<typename... Args>
+		inline std::shared_ptr<T> AllocShared(Args &&...args) noexcept {
 			return std::shared_ptr<T>{
-					Alloc(),
+					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
 						auto tmp = ((nodeptr)b) - 1;
 						tmp->next = free_mem;
@@ -167,9 +168,10 @@ namespace base{
 					}};
 		}
 
-		inline PooledPtr<T> AllocPooled() noexcept {
+		template<typename... Args>
+		inline PooledPtr<T> AllocPooled(Args &&...args) noexcept {
 			return PooledPtr<T>{
-					Alloc(),
+					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
 						auto tmp = ((nodeptr)b) - 1;
 						tmp->next = free_mem;
@@ -259,7 +261,6 @@ namespace base{
 
 			tmp = free_mem;
 			T *t;
-			Ret ret;
 			while(tmp){
 				t = (T *)(tmp + 1);
 				t->Init();
@@ -284,10 +285,11 @@ namespace base{
 		/**
 		 * get a unique_ptr to a T instance
 		 */
+		template<typename... Args>
 		inline std::unique_ptr<T, PoolResDeleter>
-		AllocUnique() noexcept {
+		AllocUnique(Args &&...args) noexcept {
 			return std::unique_ptr<T, std::function<void(void *)>>{
-					Alloc(),
+					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
 						auto tmp = ((nodeptr)b) - 1;
 
@@ -302,9 +304,10 @@ namespace base{
 		/**
 		 * get a shared_ptr to a T instance
 		 */
-		inline std::shared_ptr<T> AllocShared() noexcept {
+		template<typename... Args>
+		inline std::shared_ptr<T> AllocShared(Args &&...args) noexcept {
 			return std::shared_ptr<T>{
-					Alloc(),
+					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
 						auto tmp = ((nodeptr)b) - 1;
 
@@ -316,9 +319,10 @@ namespace base{
 					}};
 		}
 
-		inline PooledPtr<T> AllocPooled() noexcept {
+		template<typename... Args>
+		inline PooledPtr<T> AllocPooled(Args &&...args) noexcept {
 			return PooledPtr<T>{
-					Alloc(),
+					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
 						auto tmp = ((nodeptr)b) - 1;
 
