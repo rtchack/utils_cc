@@ -11,6 +11,7 @@
 #include "base/common.h"
 #include "base/macro_utils.h"
 #include "base/log.h"
+#include "base/module.h"
 
 namespace base{
 
