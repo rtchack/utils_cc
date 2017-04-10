@@ -28,22 +28,11 @@ namespace base{
 		typedef std::function<bool()> Task;
 		typedef std::list<Task> MsgQueue;
 
-		/**
-		 * Use Delegate to handle message directly
-		 * Or handle message by define asynchronous methods
-		 */
-		class Delegate: public Module{
-		public:
-			Delegate(Looper &looper):
-					Module{"Delegate|" + looper.Get_name()} {}
-
-		private:
-			BASE_DISALLOW_IMPLICIT_CONSTRUCTORS(Delegate)
-		};
 
 		Looper(): Looper{""} {}
 
-		Looper(const std::string &name): Module{name}, msg_queue{} {}
+		Looper(const std::string &name):
+				Module{name}, msg_queue{}, worker{Get_name()} {}
 
 		virtual ~Looper() {
 			Deactivate();
@@ -104,7 +93,7 @@ namespace base{
 		void Entry() noexcept;
 
 		MsgQueue msg_queue{};
-		ThreadWrapper worker{};
+		ThreadWrapper worker;
 		std::mutex run_mut{};
 		std::mutex op_mut{};
 		volatile bool running{false};

@@ -17,7 +17,6 @@ namespace base{
 	}
 
 	void Looper::Deactivate() noexcept {
-    Post([]{return true;}, true);
 		{
 			std::lock_guard<std::mutex> bar{run_mut};
 			if(!running){
@@ -26,14 +25,18 @@ namespace base{
 			}
 
 			PreDeactivate();
+
+			Post([]{return true;}, true);
+
       worker.Reset();
-      running = false;
 		}
 
 		PostDeactivate();
 	}
 
 	void Looper::Activate() noexcept {
+		PreActivate();
+
 		{
 			std::lock_guard<std::mutex> bar{run_mut};
 			if(running){
@@ -41,9 +44,8 @@ namespace base{
 				return;
 			}
 
-			PreActivate();
+			running = true;
 			worker.Attach(std::thread{&Looper::Entry, this});
-      running = true;
 		}
 
 		PostActivate();
@@ -64,7 +66,10 @@ namespace base{
 
 			if(tsk()){
 				cInf("message of quiting");
-        running = false;
+				{
+					std::lock_guard<std::mutex> bar{run_mut};
+					running = false;
+				}
 				return;
 			}
 		}

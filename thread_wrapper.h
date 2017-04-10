@@ -10,38 +10,46 @@
 
 #include "base/common.h"
 #include "base/macro_utils.h"
+#include "base/log.h"
 
 namespace base{
 
-	class ThreadWrapper final{
+	class ThreadWrapper final: public Module{
 	public:
 		ThreadWrapper() = default;
 
-		ThreadWrapper(std::thread &&thread):
-				thread{std::forward<std::thread &&>(thread)} {};
+		ThreadWrapper(const std::string &name): Module(name) {}
 
-		ThreadWrapper(ThreadWrapper &&oth) noexcept {
-			thread = std::move(oth.thread);};
+		ThreadWrapper(std::thread &&thread):
+				ThreadWrapper{"", std::forward<std::thread &&> (thread)} {}
+
+		ThreadWrapper(const std::string &name, std::thread &&thread):
+				Module(name), routine{std::forward<std::thread &&>(thread)} {
+			cInf(routine.get_id() << " attached")
+		};
 
 		~ThreadWrapper() {Reset();};
 
 		inline void Attach(std::thread &&th) noexcept {
 			Reset();
-			thread = std::forward<std::thread &&>(th);
+			routine = std::forward<std::thread &&>(th);
+			cInf(routine.get_id() << " attached")
 		}
 
 		inline void operator=(std::thread &&th) noexcept {
 			Attach(std::forward<std::thread &&>(th));}
 
 		inline void Reset() noexcept {
-			if(thread.joinable())
-				thread.join();
+			if(routine.joinable()){
+				cInf(routine.get_id() << " detached")
+				routine.join();
+			}
 		}
 
 	private:
 		BASE_DISALLOW_COPY_AND_ASSIGN(ThreadWrapper)
 
-		std::thread thread{};
+		std::thread routine{};
 	};
 
 }
