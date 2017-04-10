@@ -6,8 +6,7 @@
 
 namespace base{
 
-	void Looper::Post(const Task &tsk, bool flush)
-  noexcept {
+	void Looper::Post(const Task &tsk, bool flush) noexcept {
 		{
 			std::lock_guard<std::mutex> bar{op_mut};
 			if(flush) msg_queue.clear();
@@ -17,6 +16,8 @@ namespace base{
 	}
 
 	void Looper::Deactivate() noexcept {
+		Post([]{return true;}, true);
+
 		{
 			std::lock_guard<std::mutex> bar{run_mut};
 			if(!running){
@@ -26,9 +27,8 @@ namespace base{
 
 			PreDeactivate();
 
-			Post([]{return true;}, true);
-
       worker.Reset();
+			running = false;
 		}
 
 		PostDeactivate();
@@ -44,8 +44,13 @@ namespace base{
 				return;
 			}
 
-			running = true;
 			worker.Attach(std::thread{&Looper::Entry, this});
+			running = true;
+		}
+
+		{
+			std::lock_guard<std::mutex> bar{op_mut};
+			msg_queue.clear();
 		}
 
 		PostActivate();
@@ -66,10 +71,6 @@ namespace base{
 
 			if(tsk()){
 				cInf("message of quiting");
-				{
-					std::lock_guard<std::mutex> bar{run_mut};
-					running = false;
-				}
 				return;
 			}
 		}

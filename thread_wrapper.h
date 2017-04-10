@@ -42,8 +42,8 @@ namespace base{
 
 		inline void Reset() noexcept {
 			if(routine.joinable()){
-				cInf(routine.get_id() << " detached")
 				routine.join();
+				cInf(routine.get_id() << " detached")
 			}
 		}
 
