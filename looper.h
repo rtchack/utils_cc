@@ -25,7 +25,7 @@ namespace base{
 		/**
 		 * @return ture to quit the loop, false to continue
 		 */
-		typedef std::function<bool()> Task;
+		typedef std::function<void()> Task;
 		typedef std::list<Task> MsgQueue;
 
 
@@ -92,11 +92,13 @@ namespace base{
 
 		void Entry() noexcept;
 
+
 		MsgQueue msg_queue{};
 		ThreadWrapper worker;
 		std::mutex run_mut{};
 		std::mutex op_mut{};
 		volatile bool running{false};
+		volatile bool looping{false};
 		std::condition_variable cv{};
 	};
 

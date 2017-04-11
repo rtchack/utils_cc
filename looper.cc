@@ -16,8 +16,6 @@ namespace base{
 	}
 
 	void Looper::Deactivate() noexcept {
-		Post([]{return true;}, true);
-
 		{
 			std::lock_guard<std::mutex> bar{run_mut};
 			if(!running){
@@ -27,7 +25,9 @@ namespace base{
 
 			PreDeactivate();
 
-      worker.Reset();
+			looping = false;
+			Post([]{;}, true);
+			worker.Reset();
 			running = false;
 		}
 
@@ -44,13 +44,14 @@ namespace base{
 				return;
 			}
 
+			{
+				std::lock_guard<std::mutex> bar{op_mut};
+				msg_queue.clear();
+			}
+
+			looping = true;
 			worker.Attach(std::thread{&Looper::Entry, this});
 			running = true;
-		}
-
-		{
-			std::lock_guard<std::mutex> bar{op_mut};
-			msg_queue.clear();
 		}
 
 		PostActivate();
@@ -58,7 +59,7 @@ namespace base{
 
 	void Looper::Entry() noexcept {
 		Task tsk;
-		loop{
+		while(looping){
 			{
 				std::unique_lock<std::mutex> lk{op_mut};
 				cv.wait(lk, [this]{return !msg_queue.empty();});
@@ -68,12 +69,10 @@ namespace base{
 			}
 
 			stat.Succ();
-
-			if(tsk()){
-				cInf("message of quiting");
-				return;
-			}
+			tsk();
 		}
+
+		cInf("Quiting")
 	}
 
 }
