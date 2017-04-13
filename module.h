@@ -12,10 +12,11 @@
 #include "base/common.h"
 #include "base/statistic.h"
 #include "base/log.h"
+#include "base/string_utils.h"
 
 namespace base{
 
-	class Module{
+	class Module: public StringAble{
 	public:
 		Module() = default;
 
@@ -23,12 +24,12 @@ namespace base{
 
 		virtual ~Module() {}
 
-		virtual void Inspect() const noexcept {lInf(ToString())}
+		virtual void Inspect() const noexcept {cInf(ToString())}
 
-		virtual void PutStat() const noexcept {lInf(ToString())}
+		virtual void PutStat() const noexcept {cInf(ToString())}
 
-		virtual std::string ToString() const noexcept {
-			return name + " " + stat.ToString();
+		virtual std::string ToString() const noexcept override {
+			return std::string("\n\t") + name + " " + stat.ToString();
 		}
 
 	protected:

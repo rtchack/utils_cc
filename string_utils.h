@@ -13,6 +13,16 @@
 #include "base/macro_utils.h"
 
 namespace base{
+
+	class StringAble{
+	public:
+		virtual std::string ToString() const = 0;
+	};
+
+	inline std::string to_string(const StringAble &sa){
+		return sa.ToString();
+	}
+
 	namespace str_util{
 
 		void UperCase(char *str) noexcept;

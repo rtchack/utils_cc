@@ -7,6 +7,10 @@
 namespace base{
 
 	void Looper::Post(const Task &tsk, bool flush) noexcept {
+		unless(running){
+			cWar("Not running")
+			return;
+		}
 		{
 			std::lock_guard<std::mutex> bar{op_mut};
 			if(flush) msg_queue.clear();

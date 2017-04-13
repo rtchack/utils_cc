@@ -29,7 +29,7 @@ namespace base{
 	 * 		e.g. in lambda capture
 	 */
 	template <typename T>
-	class PooledPtr{
+	class PooledPtr: public StringAble{
 	public:
 		PooledPtr() = default;
 
@@ -37,19 +37,31 @@ namespace base{
 				ptr{ptr},
 				del{del} {}
 
+		PooledPtr(const PooledPtr &other): PooledPtr(other.ptr, other.del){
+			auto &ot = const_cast<PooledPtr &>(other);
+			ot.ptr = nullptr;
+			ot.del = nullptr;
+		}
+
+
 		PooledPtr(PooledPtr &&other):
 				PooledPtr(other.ptr, other.del){
 			other.ptr = nullptr;
 			other.del = nullptr;
 		}
 
-		PooledPtr(PooledPtr &other): PooledPtr(std::move(other)) {}
-
 		~PooledPtr(){
 			Recycle();
 		}
 
-		PooledPtr &operator=(const PooledPtr &) = delete;
+		PooledPtr &operator=(const PooledPtr &other){
+			auto &ot = const_cast<PooledPtr &>(other);
+			Recycle();
+			ptr = ot.ptr;
+			del = ot.del;
+			ot.ptr = nullptr;
+			ot.del = nullptr;
+		}
 
 		PooledPtr &operator=(PooledPtr &&other){
 			Recycle();
@@ -60,16 +72,19 @@ namespace base{
 			return *this;
 		}
 
-		PooledPtr &operator=(PooledPtr &other){
-			return operator=(std::move(other));
-		}
-
 		T *get() const noexcept {return ptr;}
+
+		std::string ToString() const override {
+			std::stringstream s;
+			s << "ptr:" << ptr;
+			return s.str();
+		}
 
 	private:
 		inline void Recycle() noexcept {
 			if(ptr && del){
 				del(ptr);
+				ptr = nullptr;
 			}
 		}
 
