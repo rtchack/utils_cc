@@ -10,10 +10,6 @@
 #include <thread>
 
 
-#ifndef loop
-#define loop while(1)
-#endif
-
 #ifndef unless
 #define unless(ex) if(!(ex))
 #endif
