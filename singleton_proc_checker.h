@@ -21,7 +21,7 @@ public:
 
 	SingletonProcChecker(const std::string &name):
 			fd{socket(AF_UNIX, SOCK_STREAM, 0)} {
-		BASE_RISE_ON_FALSE(fd, Ret::E_FILE_OP)
+		BASE_RISE_UNLESS(fd, Ret::E_FILE_OP)
 
 		auto full_path = std::string{"/tmp/"} + name;
 

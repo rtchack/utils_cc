@@ -86,12 +86,12 @@ namespace base{
 	throw base::Excep(base_excep_located_s.str());
 
 	// if v is true, throw ret
-#define BASE_RISE_ON_TRUE(v, ret) \
+#define BASE_RISE_IF(v, ret) \
 	if(v) {BASE_RISE_LOCATED(ret, #v " should not be ture")}
 
 	// if v is false, throw ret
-#define BASE_RISE_ON_FALSE(v, ret) \
-	BASE_RISE_ON_TRUE(!(v), ret)
+#define BASE_RISE_UNLESS(v, ret) \
+	BASE_RISE_IF(!(v), ret)
 
 
 	/**

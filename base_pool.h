@@ -111,11 +111,11 @@ namespace base{
 
 		BasePool(size_t size, const std::string &name):
 				Module{name}, size{size} {
-			BASE_RISE_ON_TRUE(size <= 0, Ret::E_ARG)
+			BASE_RISE_IF(size <= 0, Ret::E_ARG)
 
 			size_t sz = BASE_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
 			mem = new uint8_t[size * sz];
-			BASE_RISE_ON_FALSE(mem, Ret::E_MEM);
+			BASE_RISE_UNLESS(mem, Ret::E_MEM);
 
 			free_mem = (nodeptr)mem;
 
@@ -257,11 +257,11 @@ namespace base{
 
 		BaseCPool(size_t size, const std::string &name):
 				Module{name}, size{size} {
-			BASE_RISE_ON_TRUE(size <= 0, Ret::E_ARG)
+			BASE_RISE_IF(size <= 0, Ret::E_ARG)
 
 			size_t sz = BASE_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
 			mem = new uint8_t[size * sz];
-			BASE_RISE_ON_FALSE(mem, Ret::E_MEM);
+			BASE_RISE_UNLESS(mem, Ret::E_MEM);
 
 			free_mem = (nodeptr)mem;
 
