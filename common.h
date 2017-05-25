@@ -79,19 +79,23 @@ namespace base{
 	};
 
 
-#define BASE_RISE_LOCATED(ret, msg) \
+#define BASE_RISE_LOCATED(msg) \
 	std::stringstream base_excep_located_s;\
 	base_excep_located_s << "" << __FILE__ << ", " << __LINE__\
-	<< " ~ " << base::to_string(base::ret) << ": " << msg;\
+	<< ": " << msg;\
 	throw base::Excep(base_excep_located_s.str());
 
-	// if v is true, throw ret
-#define BASE_RISE_IF(v, ret) \
-	if(v) {BASE_RISE_LOCATED(ret, #v " should not be ture")}
+#define BASE_RISE_IF(v) \
+	if(v) {BASE_RISE_LOCATED(#v " should not be ture")}
 
-	// if v is false, throw ret
-#define BASE_RISE_UNLESS(v, ret) \
-	BASE_RISE_IF(!(v), ret)
+#define BASE_RISE_UNLESS(v) \
+	BASE_RISE_IF(!(v))
+
+#define BASE_RISE_VERBOSE_IF(v, msg) \
+	if(v) {BASE_RISE_LOCATED(#v " should not be ture. ")}
+
+#define BASE_RISE_UNLESS(v) \
+	BASE_RISE_IF(!(v))
 
 
 	/**

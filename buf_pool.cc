@@ -30,11 +30,11 @@ namespace base{
 
 	BufferPool::BufferPool(size_t buf_count, size_t buf_size, const std::string &name):
 			Module{name}, buf_count{buf_count}, buf_size{buf_size}{
-		BASE_RISE_IF((buf_count <= 0 || buf_size < sizeof(nodeptr)), Ret::E_ARG)
+		BASE_RISE_IF(buf_count <= 0 || buf_size < sizeof(nodeptr))
 
 		size_t sz = BASE_ROUND(buf_size + sizeof(Buffer), sizeof(nodeptr));
 		mem = new uint8_t[buf_count * sz];
-		BASE_RISE_UNLESS(mem, Ret::E_MEM);
+		BASE_RISE_UNLESS(mem)
 
 		free_mem = (nodeptr)mem;
 
@@ -66,11 +66,11 @@ namespace base{
 
 	CBufferPool::CBufferPool(size_t buf_count, size_t buf_size, const std::string &name):
 			Module{name}, buf_count{buf_count}, buf_size{buf_size}{
-		BASE_RISE_IF((buf_count <= 0 || buf_size < sizeof(nodeptr)), Ret::E_ARG)
+		BASE_RISE_IF(buf_count <= 0 || buf_size < sizeof(nodeptr))
 
 		size_t sz = BASE_ROUND(buf_size + sizeof(Buffer), sizeof(nodeptr));
 		mem = new uint8_t[buf_count * sz];
-		BASE_RISE_UNLESS(mem, Ret::E_MEM);
+		BASE_RISE_UNLESS(mem)
 
 		free_mem = (nodeptr)mem;
 
