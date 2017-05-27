@@ -61,9 +61,10 @@ namespace base{
 	public:
 		Excep() = delete;
 
-		Excep(Ret ret): msg{to_string(ret)} {}
+		Excep(const std::string &message):
+				msg{std::to_string(getpid()) + ": " + message} {}
 
-		Excep(const std::string &message): msg{message} {}
+		Excep(Ret ret): msg{to_string(ret)} {}
 
 		Excep(Ret ret, const std::string &message): Excep(ret) {
 				msg += ": ";

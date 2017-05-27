@@ -92,9 +92,10 @@ namespace base{
 			}
 
 			if(pid < 0){
-				BASE_RISE("Invalid pid " << pid)
+				BASE_RISE("Invalid pid")
 			}else if(!pid){
 				RunInDescendant();
+				return;
 			}
 
 			cInf("Wait for " << pid)
