@@ -12,9 +12,7 @@
 #include <fcntl.h>
 
 #include "base/macro_utils.h"
-#include "base/file_wrapper.h"
 #include "base/log.h"
-#include "base/helper.h"
 #include "base/module.h"
 #include "base/thread_wrapper.h"
 
@@ -70,9 +68,10 @@ namespace base{
 						BASE_RISE_UNLESS(offset > 0)
 					}
 
-					const auto stat = ReadAt(stat_file, offset);
-					switch(stat){
+					const auto c = ReadAt(stat_file, offset);
+					switch(c){
 						case 'Z':{
+							stat.Succ();
 							close(stat_file);
 							stat_file = -1;
 							wait();
@@ -80,7 +79,8 @@ namespace base{
 							break;
 						}
 						default:{
-							cDbg("Stat of " << pid << ": " << (char)stat)
+							stat.Total();
+							cDbg("Stat of " << pid << ": " << (char)c)
 							break;
 						}
 					}
