@@ -16,6 +16,18 @@ namespace base{
 
 	class FileWrapper final{
 	public:
+		FileWrapper(FileWrapper &&other): fl{other.fl}{
+			other.fl = NULL;
+		}
+
+		void operator=(FileWrapper &&other){
+			if(fl){
+				fclose(fl);
+			}
+			fl = other.fl;
+			other.fl = NULL;
+		}
+
 		FileWrapper(const char *name, const char *mode):
 				fl(fopen(name, mode)) {
 			if(!fl)
@@ -24,7 +36,8 @@ namespace base{
 
 		~FileWrapper() noexcept {fclose(fl);};
 
-		inline size_t Read(void *__restrict ptr, size_t size, size_t n) noexcept {
+		inline size_t Read(void *__restrict ptr,
+		                   size_t size, size_t n) noexcept {
 			return fread(ptr, size, n, fl);
 		}
 
@@ -53,13 +66,20 @@ namespace base{
 			return fflush(fl);
 		}
 
-		inline int GetC() noexcept {return fgetc(fl);};
+		inline int GetC() noexcept {
+			return fgetc(fl);
+		}
 
 		inline long int Size() noexcept {
 			Seek(0, SEEK_END);
 			long int len{Tell()};
 			Seek(0, SEEK_SET);
 			return len;
+		}
+
+		inline int ReadAt(int offset) noexcept {
+			Seek(offset, SEEK_SET);
+			return GetC();
 		}
 
 		inline int Printf(const char *__restrict fmt, ...) noexcept {
@@ -79,7 +99,7 @@ namespace base{
 			while(EOF != (c = GetC())){
 				f(c);
 			}
-		};
+		}
 
 	private:
 		BASE_DISALLOW_COPY_AND_ASSIGN(FileWrapper);

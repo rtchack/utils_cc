@@ -92,10 +92,10 @@ namespace base{
 	BASE_RISE_IF(!(v))
 
 #define BASE_RISE_VERBOSE_IF(v, msg) \
-	if(v) {BASE_RISE_LOCATED(#v " should not be ture. ")}
+	if(v) {BASE_RISE_LOCATED(#v " should not be ture: " << msg)}
 
-#define BASE_RISE_UNLESS(v) \
-	BASE_RISE_IF(!(v))
+#define BASE_RISE_VERBOSE_UNLESS(v, msg) \
+	BASE_RISE_VERBOSE_IF(!(v), msg)
 
 
 	/**
