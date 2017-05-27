@@ -92,7 +92,7 @@ namespace base{
 			}
 
 			if(pid < 0){
-				BASE_RISE_LOCATED("Invalid pid " << pid)
+				BASE_RISE("Invalid pid " << pid)
 			}else if(!pid){
 				RunInDescendant();
 			}
