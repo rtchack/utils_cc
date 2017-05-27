@@ -59,7 +59,7 @@ namespace base{
 						break;
 					}
 
-					BASE_SLEEP(seconds(2))
+					BASE_SLEEP(seconds(4))
 
 					if(stat_file < 0){
 						stat_file = StatFile(pid);
