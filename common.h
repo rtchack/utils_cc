@@ -9,6 +9,7 @@
 #include <string>
 #include <stdexcept>
 #include <sstream>
+#include <unistd.h>
 
 #include "base/macro_utils.h"
 
