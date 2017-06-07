@@ -11,6 +11,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 
 #include "base/macro_utils.h"
 #include "base/module.h"
@@ -70,22 +71,22 @@ namespace base{
 		/**
 		 * before loop gets started
 		 */
-		virtual void PreActivate() noexcept {cDbg("")}
+		virtual void PreActivate() {cDbg("")}
 
 		/**
 		 * after loop gets started
 		 */
-		virtual void PostActivate() noexcept {cDbg("")}
+		virtual void PostActivate() {cDbg("")}
 
 		/**
 		 * before the quiting of loop
 		 */
-		virtual void PreDeactivate() noexcept {cDbg("")}
+		virtual void PreDeactivate() {cDbg("")}
 
 		/**
 		 * after loop gets stopped
 		 */
-		virtual void PostDeactivate() noexcept {cDbg("")}
+		virtual void PostDeactivate() {cDbg("")}
 
 	private:
 		BASE_DISALLOW_COPY_AND_ASSIGN(Looper)

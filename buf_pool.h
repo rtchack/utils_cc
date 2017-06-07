@@ -7,6 +7,7 @@
 #define GTEST_WITH_CLION_BUF_POOL_H
 
 #include <cstring>
+#include <mutex>
 
 #include "base/module.h"
 

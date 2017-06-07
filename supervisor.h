@@ -53,6 +53,8 @@ namespace base{
 			int stat_file{-1};
 			int offset{-1};
 
+			std::cout << "pid " << pid << std::endl;
+
 			if(pid > 0){
 				while(running){
 					unless(pid > 0){
@@ -75,7 +77,9 @@ namespace base{
 							close(stat_file);
 							stat_file = -1;
 							wait();
-							pid = fork();
+							if(running){
+								pid = fork();
+							}
 							break;
 						}
 						default:{
@@ -94,6 +98,7 @@ namespace base{
 			if(pid < 0){
 				BASE_RISE("Invalid pid")
 			}else if(!pid){
+				cInf(getpid() << " Go into RunInDescendant")
 				RunInDescendant();
 				return;
 			}
