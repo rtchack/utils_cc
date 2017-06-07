@@ -29,10 +29,10 @@ namespace base{
 			cInf(routine.get_id() << " attached")
 		};
 
-		~ThreadWrapper() {Reset();};
+		~ThreadWrapper() {Detach();};
 
 		inline void Attach(std::thread &&th) noexcept {
-			Reset();
+			Detach();
 			routine = std::forward<std::thread &&>(th);
 			cInf(routine.get_id() << " attached")
 		}
@@ -40,7 +40,7 @@ namespace base{
 		inline void operator=(std::thread &&th) noexcept {
 			Attach(std::forward<std::thread &&>(th));}
 
-		inline void Reset() noexcept {
+		inline void Detach() noexcept {
 			if(routine.joinable()){
 				routine.join();
 				cInf(routine.get_id() << " detached")

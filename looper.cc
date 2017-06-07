@@ -31,7 +31,7 @@ namespace base{
 
 			looping = false;
 			Post([]{;}, true);
-			worker.Reset();
+			worker.Detach();
 			running = false;
 		}
 

@@ -21,8 +21,11 @@ namespace base{
 
 	class Supervisor: public Module{
 	public:
-		Supervisor():
-				Module(std::string("Superv#") + std::to_string(getpid())) {}
+
+		Supervisor(const std::string &name):
+				Module(name + std::to_string(getpid())) {}
+
+		Supervisor(): Supervisor("Superv") {}
 
 		void Start() {
 			std::lock_guard<std::mutex> lock{mut};
@@ -41,7 +44,7 @@ namespace base{
 				return;
 			}
 			running = false;
-			worker.Reset();
+			worker.Detach();
 		}
 
 		virtual void RunInDescendant() = 0;
