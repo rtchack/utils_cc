@@ -7,6 +7,7 @@
 #define BASE_DEV_SUPERVISOR_H
 
 #include <atomic>
+#include <mutex>
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
