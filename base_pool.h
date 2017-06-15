@@ -54,7 +54,7 @@ namespace base{
 			Recycle();
 		}
 
-		PooledPtr &operator=(const PooledPtr &other){
+		void operator=(const PooledPtr &other){
 			auto &ot = const_cast<PooledPtr &>(other);
 			Recycle();
 			ptr = ot.ptr;
@@ -111,11 +111,11 @@ namespace base{
 
 		BasePool(size_t size, const std::string &name):
 				Module{name}, size{size} {
-			BASE_RISE_IF(size <= 0)
+			BASE_RAISE_IF(size <= 0)
 
 			size_t sz = BASE_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
 			mem = new uint8_t[size * sz];
-			BASE_RISE_UNLESS(mem)
+			BASE_RAISE_UNLESS(mem)
 
 			free_mem = (nodeptr)mem;
 
@@ -257,11 +257,11 @@ namespace base{
 
 		BaseCPool(size_t size, const std::string &name):
 				Module{name}, size{size} {
-			BASE_RISE_IF(size <= 0)
+			BASE_RAISE_IF(size <= 0)
 
 			size_t sz = BASE_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
 			mem = new uint8_t[size * sz];
-			BASE_RISE_UNLESS(mem)
+			BASE_RAISE_UNLESS(mem)
 
 			free_mem = (nodeptr)mem;
 

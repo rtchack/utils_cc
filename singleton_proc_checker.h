@@ -21,7 +21,7 @@ public:
 
 	SingletonProcChecker(const std::string &name):
 			fd{socket(AF_UNIX, SOCK_STREAM, 0)} {
-		BASE_RISE_UNLESS(fd)
+		BASE_RAISE_UNLESS(fd)
 
 		const auto full_path = std::string{"/tmp/"} + name;
 
@@ -31,20 +31,20 @@ public:
 		auto len = sizeof(addr);
 
 		unless(connect(fd, (sockaddr *)&addr, len)){
-			BASE_RISE(full_path << " already running")
+			BASE_RAISE(full_path << " already running")
 		}
 
 		if(unlink(addr.sun_path)){
 			unless(errno == ENOENT){
-				BASE_RISE(full_path << " unlink: " << std::strerror(errno))
+				BASE_RAISE(full_path << " unlink: " << std::strerror(errno))
 			}
 		}
 		if(bind(fd, (sockaddr *)&addr, len)){
-			BASE_RISE(full_path << " bind: " << std::strerror(errno))
+			BASE_RAISE(full_path << " bind: " << std::strerror(errno))
 		}
 
 		if(listen(fd, 4)){
-			BASE_RISE(full_path << " listen: " << std::strerror(errno))
+			BASE_RAISE(full_path << " listen: " << std::strerror(errno))
 		}
 	}
 

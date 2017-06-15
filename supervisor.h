@@ -63,9 +63,9 @@ namespace base{
 
 					if(stat_file < 0){
 						stat_file = StatFile(pid);
-						BASE_RISE_VERBOSE_IF(stat_file < 0, strerror(errno))
+						BASE_RAISE_VERBOSE_IF(stat_file < 0, strerror(errno))
 						offset = StatFileOffset(stat_file);
-						BASE_RISE_UNLESS(offset > 0)
+						BASE_RAISE_UNLESS(offset > 0)
 					}
 
 					const auto c = ReadAt(stat_file, offset);
@@ -92,7 +92,7 @@ namespace base{
 			}
 
 			if(pid < 0){
-				BASE_RISE("Invalid pid")
+				BASE_RAISE("Invalid pid")
 			}else if(!pid){
 				RunInDescendant();
 				return;
@@ -104,23 +104,23 @@ namespace base{
 		}
 
 		static int ReadAt(int file, int offset) {
-			BASE_RISE_VERBOSE_IF(lseek(file, offset, SEEK_SET) < 0,
+			BASE_RAISE_VERBOSE_IF(lseek(file, offset, SEEK_SET) < 0,
 			                     strerror(errno))
 			char c;
-			BASE_RISE_VERBOSE_IF(read(file, &c, 1) < 0, strerror(errno))
+			BASE_RAISE_VERBOSE_IF(read(file, &c, 1) < 0, strerror(errno))
 			return c;
 		}
 
 		static int StatFileOffset(int stat_file) {
-			BASE_RISE_VERBOSE_IF(lseek(stat_file, 0, SEEK_SET) < 0,
+			BASE_RAISE_VERBOSE_IF(lseek(stat_file, 0, SEEK_SET) < 0,
 			                     strerror(errno))
 			std::string tmp{};
 			char c;
 			int pos{};
 			for(uint32_t space_count{0}; space_count < 2; ++pos){
-				BASE_RISE_VERBOSE_IF(read(stat_file, &c, 1) < 0,
+				BASE_RAISE_VERBOSE_IF(read(stat_file, &c, 1) < 0,
 				                     strerror(errno))
-				BASE_RISE_IF(c == EOF)
+				BASE_RAISE_IF(c == EOF)
 
 				tmp += c;
 				if(c == ' '){
@@ -128,9 +128,9 @@ namespace base{
 				}
 			}
 
-			BASE_RISE_VERBOSE_IF(read(stat_file, &c, 1) < 0,
+			BASE_RAISE_VERBOSE_IF(read(stat_file, &c, 1) < 0,
 			                     strerror(errno))
-			BASE_RISE_IF(c == EOF)
+			BASE_RAISE_IF(c == EOF)
 			tmp += c;
 			lDbg(tmp)
 			return c == EOF ? -1 : pos;
