@@ -21,8 +21,11 @@ namespace base{
 
 	class Supervisor: public Module{
 	public:
-		Supervisor():
-				Module(std::string("Superv#") + std::to_string(getpid())) {}
+
+		Supervisor(const std::string &name):
+				Module(name + std::to_string(getpid())) {}
+
+		Supervisor(): Supervisor("Superv") {}
 
 		void Start() {
 			std::lock_guard<std::mutex> lock{mut};
@@ -41,7 +44,7 @@ namespace base{
 				return;
 			}
 			running = false;
-			worker.Reset();
+			worker.Detach();
 		}
 
 		virtual void RunInDescendant() = 0;
@@ -52,6 +55,8 @@ namespace base{
 			auto pid = fork();
 			int stat_file{-1};
 			int offset{-1};
+
+			std::cout << "pid " << pid << std::endl;
 
 			if(pid > 0){
 				while(running){
@@ -75,7 +80,9 @@ namespace base{
 							close(stat_file);
 							stat_file = -1;
 							wait();
-							pid = fork();
+							if(running){
+								pid = fork();
+							}
 							break;
 						}
 						default:{
@@ -94,6 +101,7 @@ namespace base{
 			if(pid < 0){
 				BASE_RAISE("Invalid pid")
 			}else if(!pid){
+				cInf(getpid() << " Go into RunInDescendant")
 				RunInDescendant();
 				return;
 			}

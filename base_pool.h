@@ -6,6 +6,9 @@
 #ifndef UDP_WRAPPER_BASE_POOL_H
 #define UDP_WRAPPER_BASE_POOL_H
 
+#include <atomic>
+#include <mutex>
+
 #include "base/common.h"
 #include "base/module.h"
 

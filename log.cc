@@ -5,11 +5,14 @@
 
 #include "base/log.h"
 
+#ifdef BASE_USE_LOG4CPLUS
 #include <log4cplus/fileappender.h>
 #include <log4cplus/consoleappender.h>
+#endif
 
 namespace base{
 
+#ifdef BASE_USE_LOG4CPLUS
 	using namespace log4cplus;
 
 	void InitLog() {
@@ -28,6 +31,7 @@ namespace base{
 		r_logger.addAppender(fap);
 		r_logger.addAppender(cap);
 	}
+#endif
 
 	void CstyleLog(LogSeverity severity, const char *fmt, ...){
 		char msg[BASE_MAX_LOG_MSG_LENGTH];
@@ -38,16 +42,16 @@ namespace base{
 
 		switch(severity){
 			case LogSeverity::DBG:
-				LOG4CPLUS_DEBUG(BASE_CURRENT_LOGGER, msg);
+				lDbg(msg);
 				return;
 			case LogSeverity::INF:
-				LOG4CPLUS_INFO(BASE_CURRENT_LOGGER, msg);
+				lInf(msg);
 				return;
 			case LogSeverity::WAR:
-				LOG4CPLUS_WARN(BASE_CURRENT_LOGGER, msg);
+				lWar(msg);
 				return;
 			case LogSeverity::ERR:
-				LOG4CPLUS_ERROR(BASE_CURRENT_LOGGER, msg);
+				lErr(msg);
 				return;
 		}
 	}
