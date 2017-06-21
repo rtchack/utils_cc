@@ -7,6 +7,7 @@
 #define BASE_DEV_ALGORITHM_H
 
 #include <array>
+#include <future>
 #include "base/log.h"
 #include "base/helper.h"
 #include "base/macro_utils.h"
@@ -29,8 +30,20 @@ namespace base{
 		unless(left == last){
 			std::swap(v[left], v[last]);
 		}
-		QuickSort(v, left, last - 1);
-		QuickSort(v, last + 1, right);
+
+		if(last - left > 1024){
+			std::async(std::launch::async,
+			           [v, left, last]{QuickSort(v, left, last - 1);});
+		}else{
+			QuickSort(v, left, last - 1);
+		}
+
+		if(right - last > 1024){
+			std::async(std::launch::async,
+			           [v, last, right]{QuickSort(v, last + 1, right);});
+		}else{
+			QuickSort(v, last + 1, right);
+		}
 	}
 
 	template<typename T, size_t N>
