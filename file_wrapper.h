@@ -20,6 +20,22 @@ namespace base{
 			other.fl = NULL;
 		}
 
+		FileWrapper(const char *name, const char *mode):
+				fl(fopen(name, mode)) {
+			if(!fl)
+				throw Excep(Ret::E_FILE_OP, name);
+		}
+
+		FileWrapper(const std::string &name, const char *mode):
+				FileWrapper(name.c_str(), mode) {}
+
+		FileWrapper(const std::string &name, const std::string &mode):
+				FileWrapper(name.c_str(), mode.c_str()) {}
+
+		~FileWrapper() noexcept {
+			fclose(fl);
+		};
+
 		void operator=(FileWrapper &&other){
 			if(fl){
 				fclose(fl);
@@ -28,13 +44,18 @@ namespace base{
 			other.fl = NULL;
 		}
 
-		FileWrapper(const char *name, const char *mode):
-				fl(fopen(name, mode)) {
-			if(!fl)
-				throw Excep(Ret::E_FILE_OP, name);
-		};
-
-		~FileWrapper() noexcept {fclose(fl);};
+		inline std::string Read(){
+			const auto size = (size_t)Size();
+			auto mem = new char[size + 1];
+			mem[size] = '\0';
+			unless(size == Read(mem, size)){
+				delete[] mem;
+				return std::string{};
+			}
+			std::string str{mem};
+			delete[] mem;
+			return str;
+		}
 
 		inline size_t Read(void *__restrict ptr,
 		                   size_t size, size_t n) noexcept {
@@ -42,7 +63,11 @@ namespace base{
 		}
 
 		inline size_t Read(void *__restrict ptr, size_t size) noexcept {
-			return fread(ptr, size, 1, fl);
+			return fread(ptr, 1, size, fl);
+		}
+
+		inline size_t Write(const std::string &str) noexcept {
+			return Write(str.c_str(), str.size());
 		}
 
 		inline size_t Write(const void *__restrict ptr,
@@ -51,7 +76,7 @@ namespace base{
 		}
 
 		inline size_t Write(const void *__restrict ptr, size_t size) noexcept {
-			return fwrite(ptr, size, 1, fl);
+			return fwrite(ptr, 1, size, fl);
 		}
 
 		inline int Seek(long int off, int whence) noexcept {
