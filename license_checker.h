@@ -32,11 +32,13 @@ namespace base{
 
 		using json = ::nlohmann::json;
 
-		LicenseChecker(const std::string &rsa_pub_key_pem,
+		LicenseChecker(const std::vector<uint8_t> info_to_sign,
+		               const std::string &rsa_pub_key_pem,
 		               const std::string &cert_path,
 		               const std::string &server_uri,
 		               const std::string &action = "/instant/create",
 		               const std::string &digest = "EMSA3(SHA-256)"):
+				info_to_sign{info_to_sign},
 				pub_key{Botan::X509::load_key(std::vector<uint8_t>{
 						rsa_pub_key_pem.begin(), rsa_pub_key_pem.end()})},
 				cert_path{cert_path},
@@ -63,17 +65,9 @@ namespace base{
 	private:
 		BASE_DISALLOW_COPY_AND_ASSIGN(LicenseChecker)
 
-		static const std::vector<uint8_t> SystemInfo(){
-			// TODO implement
-			std::vector<uint8_t> data;
-			auto info = "Fake system information";
-			data.insert(data.end(), info, info + strlen(info));
-			return data;
-		}
-
-		static const std::string Data2Send(){
-			const auto sys_inf = SystemInfo();
-			const auto hashed_inf = Botan::base64_encode(sys_inf.data(), sys_inf.size());
+		const std::string Data2Send(){
+			const auto hashed_inf = Botan::base64_encode(
+					info_to_sign.data(), info_to_sign.size());
 
 			std::string email;
 			std::string password;
@@ -130,11 +124,12 @@ namespace base{
 			const auto cert = ReadCert();
 			auto signature = Botan::base64_decode(cert);
 			Botan::PK_Verifier verifier{*pub_key, digest};
-			verifier.update(SystemInfo());
+			verifier.update(info_to_sign);
 			return verifier.check_signature(signature);
 		}
 
 
+		const std::vector<uint8_t> info_to_sign;
 		std::unique_ptr<Botan::Public_Key> pub_key;
 		const std::string cert_path;
 		const std::string server_uri;
