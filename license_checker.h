@@ -18,6 +18,8 @@
 #include "base/common.h"
 #include "base/file_wrapper.h"
 #include "base/log.h"
+#include "base/helper.h"
+#include "base/console.h"
 
 
 namespace base{
@@ -72,11 +74,23 @@ namespace base{
 		static const std::string Data2Send(){
 			const auto sys_inf = SystemInfo();
 			const auto hashed_inf = Botan::base64_encode(sys_inf.data(), sys_inf.size());
-			const json j{{"email", "4@user.com"},
-			             {"password", "password"},
+
+			std::string email;
+			std::string password;
+			std::cout << "Your email for license: ";
+			getline(std::cin, email);
+			std::cout << "Password: ";
+			{
+				NoConsoleEcho no_echo{};
+				getline(std::cin, password);
+			}
+
+			const json j{{"email", email},
+			             {"password", password},
 			             {"data", hashed_inf},
 			             {"remark", "From License_Client_Mocker"}};
 			const json j_final{{"inf", j.dump()}};
+
 			std::stringstream str;
 			str << j_final;
 			return str.str();
