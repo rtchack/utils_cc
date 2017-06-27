@@ -6,8 +6,8 @@
 #ifndef COMMON_INC_FILE_WRAPPER_H_
 #define COMMON_INC_FILE_WRAPPER_H_
 
-#include <cstdio>
-#include <cstdarg>
+#include <stdio.h>
+#include <stdarg.h>
 
 #include "base/common.h"
 #include "base/macro_utils.h"
@@ -17,13 +17,17 @@ namespace base{
 	class FileWrapper final{
 	public:
 		FileWrapper(FileWrapper &&other): fl{other.fl}{
+			BASE_RAISE_UNLESS(fl)
 			other.fl = NULL;
+		}
+
+		FileWrapper(FILE *file): fl{file} {
+			BASE_RAISE_UNLESS(fl)
 		}
 
 		FileWrapper(const char *name, const char *mode):
 				fl(fopen(name, mode)) {
-			if(!fl)
-				throw Excep(Ret::E_FILE_OP, name);
+			BASE_RAISE_VERBOSE_UNLESS(fl, name << ":" << mode)
 		}
 
 		FileWrapper(const std::string &name, const char *mode):
