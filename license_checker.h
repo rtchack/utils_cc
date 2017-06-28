@@ -48,7 +48,7 @@ namespace base{
 			{
 				auto fl = fopen(cert_path.c_str(), "rb");
 				unless(fl){
-					lWar("Could not open " << cert_path << ", try to apply from license center")
+					lInf("Could not open " << cert_path << ", try to apply from license center")
 					BASE_RAISE_VERBOSE_UNLESS(ApplyCert(), "Server " << server_uri << action)
 					fl = fopen(cert_path.c_str(), "rb");
 					BASE_RAISE_VERBOSE_UNLESS(fl, "Reopen " << cert_path)

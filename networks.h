@@ -15,7 +15,7 @@
 
 namespace base{
 
-	const std::string SysHWAddr() {
+	const std::string HardwareAddr() {
 		ifaddrs *ifaddr{};
 		BASE_RAISE_VERBOSE_IF(getifaddrs(&ifaddr) == -1, strerror(errno))
 
@@ -28,7 +28,7 @@ namespace base{
 					continue;
 				}
 
-#define SYSHWADDR_PRINT_MOVE(fmt, ...) { \
+#define HARDWAREADDR_PRINT_MOVE(fmt, ...) { \
         const auto ret = snprintf(addr_str + pos, remain, fmt, ##__VA_ARGS__); \
         if(ret < 0){ \
           lErr(strerror(errno)); \
@@ -42,11 +42,11 @@ namespace base{
         } \
       }
 
-				SYSHWADDR_PRINT_MOVE("%s~>", ifa->ifa_name)
+				HARDWAREADDR_PRINT_MOVE("%s~>", ifa->ifa_name)
 
 				const auto s = (sockaddr_ll *)ifa->ifa_addr;
 				for(int i = 0; i < s->sll_halen; i++){
-					SYSHWADDR_PRINT_MOVE("%02x%c", (s->sll_addr[i]), (i + 1 != s->sll_halen) ? ':' : '\t')
+					HARDWAREADDR_PRINT_MOVE("%02x%c", (s->sll_addr[i]), (i + 1 != s->sll_halen) ? ':' : '\t')
 				}
 			}
 		}
