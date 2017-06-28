@@ -66,7 +66,7 @@ namespace base{
 #endif
 
 #define printInf(fmt, ...) CstyleLog(LogSeverity::INF,\
-	 "[%s %d] " fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__);
+	 "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
 #else
 #define lInf(msg) ;
 #define printInf(fmt, ...) ;

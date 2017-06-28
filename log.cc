@@ -42,16 +42,32 @@ namespace base{
 
 		switch(severity){
 			case LogSeverity::DBG:
-				lDbg(msg);
+#ifdef BASE_USE_LOG4CPLUS
+				LOG4CPLUS_DEBUG(BASE_CURRENT_LOGGER, msg);
+#else
+				BASE_STD_LOGGER("DBG " << msg);
+#endif
 				return;
 			case LogSeverity::INF:
-				lInf(msg);
+#ifdef BASE_USE_LOG4CPLUS
+				LOG4CPLUS_INFO(BASE_CURRENT_LOGGER, msg);
+#else
+				BASE_STD_LOGGER("INF " << msg);
+#endif
 				return;
 			case LogSeverity::WAR:
-				lWar(msg);
+#ifdef BASE_USE_LOG4CPLUS
+				LOG4CPLUS_WARN(BASE_CURRENT_LOGGER, msg);
+#else
+				BASE_STD_LOGGER("WAR " << msg);
+#endif
 				return;
 			case LogSeverity::ERR:
-				lErr(msg);
+#ifdef BASE_USE_LOG4CPLUS
+				LOG4CPLUS_ERROR(BASE_CURRENT_LOGGER, msg);
+#else
+				BASE_STD_LOGGER("ERR " << msg);
+#endif
 				return;
 		}
 	}
