@@ -96,8 +96,8 @@ namespace base{
 			RestClient::HeaderFields header_fields{};
 			const static auto mime = "application/json";
 			header_fields["Accept"] = mime;
-			header_fields["Content_Type"] = mime;
 			conn.SetHeaders(header_fields);
+			conn.AppendHeader("Content-Type", mime);
 			const auto data = Data2Send();
 			const auto res = conn.post(action, data);
 
