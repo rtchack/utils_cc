@@ -53,7 +53,8 @@ namespace base{
 
 		final_act:
 		freeifaddrs(ifaddr);
-		return std::string{addr_str};
+		std::string s{addr_str};
+		return s;
 	}
 
 }
