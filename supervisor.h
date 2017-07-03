@@ -20,18 +20,20 @@
 
 namespace base{
 
+	/**
+	 * Will also init loggers
+	 */
 	class Supervisor: public Module{
 	public:
 
-		Supervisor(const std::string &name):
-				Module(name + std::to_string(getpid())) {}
+		Supervisor(const std::string &name): Module(name) {}
 
 		Supervisor(): Supervisor("Superv") {}
 
 		void Start() {
 			std::lock_guard<std::mutex> lock{mut};
 			if(running){
-				cInf("Already running")
+				std::cout <<"Already running" << std::endl;
 				return;
 			}
 			running = true;
@@ -41,7 +43,7 @@ namespace base{
 		void Stop() {
 			std::lock_guard<std::mutex> lock{mut};
 			unless(running){
-				cInf("Not running")
+				std::cout << "Not running" << std::endl;
 				return;
 			}
 			running = false;
@@ -57,9 +59,8 @@ namespace base{
 			int stat_file{-1};
 			int offset{-1};
 
-			std::cout << "pid " << pid << std::endl;
-
 			if(pid > 0){
+				BASE_INIT_LOG_WITH(Get_name())
 				while(running){
 					unless(pid > 0){
 						break;
@@ -82,6 +83,7 @@ namespace base{
 							stat_file = -1;
 							wait();
 							if(running){
+								BASE_SHUTDOWN_LOG
 								pid = fork();
 							}
 							break;
@@ -100,8 +102,10 @@ namespace base{
 			}
 
 			if(pid < 0){
+				BASE_INIT_LOG_WITH(Get_name() + std::string{".invalid"})
 				BASE_RAISE("Invalid pid")
 			}else if(!pid){
+				BASE_INIT_LOG_WITH(Get_name() + std::string{".child"})
 				cInf(getpid() << " Go into RunInDescendant")
 				RunInDescendant();
 				return;

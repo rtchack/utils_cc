@@ -47,7 +47,7 @@ namespace base{
 				BASE_RAISE(full_path << " listen: " << std::strerror(errno))
 			}
 
-			lInf("Listening on " << full_path)
+			std::cout << "Listening on " << full_path << std::endl;
 		}
 
 		~SingletonProcChecker() {

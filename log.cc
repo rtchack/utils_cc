@@ -15,22 +15,27 @@ namespace base{
 #ifdef BASE_USE_LOG4CPLUS
 	using namespace log4cplus;
 
-	void InitLog() {
-		SharedAppenderPtr fap{new FileAppender("default.log")};
-		fap->setName("filelog");
+	const static std::string LOG_LAYOUT{"%d{%m%d %H:%M:%S} %p - %m\n"};
 
+	void InitLog() {
 		SharedAppenderPtr cap{new ConsoleAppender()};
 		cap->setName("consolelog");
-
-		std::unique_ptr<Layout> flay{new PatternLayout("%d{%m%d %H:%M:%S} %p - %m\n")};
-		fap->setLayout(std::move(flay));
-		std::unique_ptr<Layout> clay{new PatternLayout("%d{%m%d %H:%M:%S} %p - %m\n")};
+		std::unique_ptr<Layout> clay{new PatternLayout(LOG_LAYOUT)};
 		cap->setLayout(std::move(clay));
-
 		Logger r_logger = Logger::getRoot();
-		r_logger.addAppender(fap);
 		r_logger.addAppender(cap);
 	}
+
+	void InitLog(const std::string log_file){
+		InitLog();
+		SharedAppenderPtr fap{new FileAppender(log_file + std::string{".log"})};
+		fap->setName("filelog");
+		std::unique_ptr<Layout> flay{new PatternLayout(LOG_LAYOUT)};
+		fap->setLayout(std::move(flay));
+		Logger r_logger = Logger::getRoot();
+		r_logger.addAppender(fap);
+	}
+
 #endif
 
 	void CstyleLog(LogSeverity severity, const char *fmt, ...){
@@ -43,28 +48,28 @@ namespace base{
 		switch(severity){
 			case LogSeverity::DBG:
 #ifdef BASE_USE_LOG4CPLUS
-				LOG4CPLUS_DEBUG(BASE_CURRENT_LOGGER, msg);
+				LOG4CPLUS_DEBUG(Logger::getRoot(), msg);
 #else
 				BASE_STD_LOGGER("DBG " << msg);
 #endif
 				return;
 			case LogSeverity::INF:
 #ifdef BASE_USE_LOG4CPLUS
-				LOG4CPLUS_INFO(BASE_CURRENT_LOGGER, msg);
+				LOG4CPLUS_INFO(Logger::getRoot(), msg);
 #else
 				BASE_STD_LOGGER("INF " << msg);
 #endif
 				return;
 			case LogSeverity::WAR:
 #ifdef BASE_USE_LOG4CPLUS
-				LOG4CPLUS_WARN(BASE_CURRENT_LOGGER, msg);
+				LOG4CPLUS_WARN(Logger::getRoot(), msg);
 #else
 				BASE_STD_LOGGER("WAR " << msg);
 #endif
 				return;
 			case LogSeverity::ERR:
 #ifdef BASE_USE_LOG4CPLUS
-				LOG4CPLUS_ERROR(BASE_CURRENT_LOGGER, msg);
+				LOG4CPLUS_ERROR(Logger::getRoot(), msg);
 #else
 				BASE_STD_LOGGER("ERR " << msg);
 #endif

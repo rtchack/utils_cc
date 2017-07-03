@@ -17,7 +17,6 @@
 
 #include "base/common.h"
 #include "base/file_wrapper.h"
-#include "base/log.h"
 #include "base/helper.h"
 #include "base/console.h"
 
@@ -48,7 +47,10 @@ namespace base{
 			{
 				auto fl = fopen(cert_path.c_str(), "rb");
 				unless(fl){
-					lInf("Could not open " << cert_path << ", try to apply from license center")
+					std::cout << "Could not open "
+					          << cert_path
+					          << ", try to apply from license center"
+					          << std::endl;
 					BASE_RAISE_VERBOSE_UNLESS(ApplyCert(), "Server " << server_uri << action)
 					fl = fopen(cert_path.c_str(), "rb");
 					BASE_RAISE_VERBOSE_UNLESS(fl, "Reopen " << cert_path)
@@ -102,9 +104,10 @@ namespace base{
 			const auto res = conn.post(action, data);
 
 			unless(res.code >= 200 && res.code < 300){
-				lErr(res.code << ":\n"
-				              << (res.body.size() > 128 ?
-				                  res.body.substr(0, 64) + "\n..." : res.body))
+				std::cout << "Error " << res.code << ":\n"
+				          << (res.body.size() > 128 ?
+				              res.body.substr(0, 64) + "\n..." : res.body)
+				          << std::endl;
 				return false;
 			}
 
