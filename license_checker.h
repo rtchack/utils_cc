@@ -68,7 +68,7 @@ namespace base{
 		BASE_DISALLOW_COPY_AND_ASSIGN(LicenseChecker)
 
 		const std::string Data2Send(){
-			const auto hashed_inf = Botan::base64_encode(
+			hashed_info = Botan::base64_encode(
 					info_to_sign.data(), info_to_sign.size());
 
 			std::string email;
@@ -80,10 +80,11 @@ namespace base{
 				NoConsoleEcho no_echo{};
 				getline(std::cin, password);
 			}
+			std::cout << "Visiting server..." << std::endl;
 
 			const json j{{"email", email},
 			             {"password", password},
-			             {"data", hashed_inf},
+			             {"data", hashed_info},
 			             {"remark", "From License_Client_Mocker"}};
 			const json j_final{{"inf", j.dump()}};
 
@@ -104,10 +105,20 @@ namespace base{
 			const auto res = conn.post(action, data);
 
 			unless(res.code >= 200 && res.code < 300){
-				std::cout << "Error " << res.code << ":\n"
+				std::cout << "Error " << res.code << ".\n"
 				          << (res.body.size() > 128 ?
 				              res.body.substr(0, 64) + "\n..." : res.body)
 				          << std::endl;
+				const std::string tmp_file_name{"sys.inf"};
+				{
+					FileWrapper tmp_file{tmp_file_name, "wb"};
+					tmp_file.Write(hashed_info);
+				}
+				std::cout << "Unable to visit " << server_uri
+				          << "? Contact us with following string:\n"
+				          << hashed_info << std::endl
+				          << "Or send file '" << tmp_file_name << "' to us directly."
+				          << std::endl << std::endl;
 				return false;
 			}
 
@@ -138,6 +149,7 @@ namespace base{
 		const std::string server_uri;
 		const std::string action;
 		const std::string digest;
+		std::string hashed_info{};
 	};
 
 }
