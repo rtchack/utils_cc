@@ -28,7 +28,8 @@ namespace base{
 
 	void InitLog(const std::string log_file){
 		InitLog();
-		SharedAppenderPtr fap{new FileAppender(log_file + std::string{".log"})};
+		SharedAppenderPtr fap{new FileAppender(
+				std::string{"/var/log/"} + log_file + std::string{".log"})};
 		fap->setName("filelog");
 		std::unique_ptr<Layout> flay{new PatternLayout(LOG_LAYOUT)};
 		fap->setLayout(std::move(flay));
