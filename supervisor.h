@@ -67,6 +67,9 @@ namespace base{
 
 					wait(NULL);
 					if(running){
+						BASE_SLEEP(seconds(4))
+					}
+					if(running){
 						BASE_SHUTDOWN_LOG
 						pid = fork();
 					}
