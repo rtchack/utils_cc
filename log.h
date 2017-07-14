@@ -43,14 +43,14 @@
 
 #ifdef BASE_USE_LOG4CPLUS
 #define lDbg(msg) LOG4CPLUS_DEBUG(log4cplus::Logger::getRoot(),\
-	"[" << __FUNCTION__ << " " << __LINE__ << "] " << msg);
+	"[" << __FILE__ << " " << __LINE__ << "] " << msg);
 #else
 #define lDbg(msg) BASE_STD_LOGGER( \
-	"DBG [" << __FUNCTION__ << " " << __LINE__ << "] " << msg);
+	"DBG [" << __FILE__ << " " << __LINE__ << "] " << msg);
 #endif
 
 #define printDbg(fmt, ...) CstyleLog(base::LogSeverity::DBG,\
-	"[%s %d] " fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__);
+	"[%s %d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__);
 #else
 #define lDbg(msg) ;
 #define printDbg(fmt, ...) ;
@@ -79,14 +79,14 @@
 
 #ifdef BASE_USE_LOG4CPLUS
 #define lWar(msg) LOG4CPLUS_WARN(log4cplus::Logger::getRoot(),\
-	 "[" << __FILE__ << " " << __LINE__ << "] " << msg);
+	 "[" << __FUNCTION__ << "] " << msg);
 #else
 #define lWar(msg) BASE_STD_LOGGER( \
-	 "WAR [" << __FILE__ << " " << __LINE__ << "] " << msg);
+	 "WAR [" << __FUNCTION__ << "] " << msg);
 #endif
 
 #define printWar(fmt, ...) CstyleLog(base::LogSeverity::WAR,\
-	"[%s %d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__);
+	"[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
 #else
 #define lWar(msg) ;
 #define printWar(fmt, ...) ;
@@ -95,14 +95,14 @@
 	// Erroneous logger
 #ifdef BASE_USE_LOG4CPLUS
 #define lErr(msg) LOG4CPLUS_ERROR(log4cplus::Logger::getRoot(),\
-	 "[" << __FILE__ << " " << __LINE__ << "] " << msg);
+	 "[" << __FUNCTION__ << "] " << msg);
 #else
 #define lErr(msg) BASE_STD_LOGGER( \
-	 "ERR [" << __FILE__ << " " << __LINE__ << "] " << msg);
+	 "ERR [" << __FUNCTION__ << "] " << msg);
 #endif
 
 #define printErr(fmt, ...) CstyleLog(base::LogSeverity::ERR,\
-	"[%s %d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__);
+	"[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
 
 #define lFatal(msg) {lErr(msg) exit(1);}
 #define printFatal(fmt, ...) {printErr(fmt, ##__VA_ARGS__) exit(1);}
