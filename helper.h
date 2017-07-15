@@ -42,8 +42,14 @@ namespace base{
 	// This template function declaration is used in defining arraysize.
 	// Note that the function doesn't need an implementation, as we only
 	// use its type.
-	template <typename T, size_t N> char (&ArraySizeHelper(T (&array)[N]))[N];
+	template <typename T, size_t N>
+	char (&ArraySizeHelper(T (&array)[N]))[N];
 	#define arraysize(array) (sizeof(base::ArraySizeHelper(array)))
+
+	template <typename T, size_t N>
+	T* last(T (&array)[N]){
+		return array + N;
+	}
 
 }
 
