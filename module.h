@@ -24,11 +24,11 @@ namespace base{
 
 		virtual ~Module() {}
 
-		virtual void Inspect() const noexcept {cInf(ToString())}
+		virtual void Inspect() const {cInf(ToString())}
 
-		virtual void PutStat() const noexcept {cInf(ToString())}
+		virtual void PutStat() const {cInf(ToString())}
 
-		virtual std::string ToString() const noexcept override {
+		virtual std::string ToString() const override {
 			return std::string("\n\t") + name + " " + stat.ToString();
 		}
 
