@@ -24,12 +24,12 @@ namespace base{
 	/**
 	 * Will also init loggers
 	 */
-	class Supervisor: public Module{
+	class Supervisor{
 	public:
 
-		Supervisor(const std::string &name): Module(name) {}
+		Supervisor(const std::string &log_file): log_file{log_file} {}
 
-		Supervisor(): Supervisor("Superv") {}
+		Supervisor(): Supervisor("") {}
 
 		void Start() {
 			std::lock_guard<std::mutex> lock{mut};
@@ -59,7 +59,6 @@ namespace base{
 			auto pid = fork();
 
 			if(pid > 0){
-				BASE_INIT_LOG_WITH(Get_name())
 				while(running){
 					unless(pid > 0){
 						break;
@@ -77,18 +76,22 @@ namespace base{
 			}
 
 			if(pid < 0){
-				BASE_INIT_LOG_WITH(Get_name() + std::string{".invalid"})
 				BASE_RAISE("Invalid pid")
 			}else if(!pid){
-				BASE_INIT_LOG_WITH(Get_name() + std::string{".child"})
-				cInf(getpid() << " Go into RunInDescendant")
+				if(log_file.size() > 0){
+					BASE_INIT_LOG_WITH(log_file)
+				}else{
+					BASE_INIT_LOG
+				}
+				std::cout << getpid() << " Go into RunInDescendant" << std::endl;
 				RunInDescendant();
 				return;
 			}
 
-			cInf("Out of running")
+			std::cout << "Out of running" << std::endl;
 		}
 
+		std::string log_file{};
 		ThreadWrapper worker{};
 		std::mutex mut{};
 		bool running{false};

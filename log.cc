@@ -19,7 +19,7 @@ namespace base{
 
 	void InitLog() {
 		SharedAppenderPtr cap{new ConsoleAppender()};
-		cap->setName("consolelog");
+		cap->setName("std");
 		std::unique_ptr<Layout> clay{new PatternLayout(LOG_LAYOUT)};
 		cap->setLayout(std::move(clay));
 		auto r_logger = Logger::getRoot();
@@ -29,9 +29,9 @@ namespace base{
 	void InitLog(const std::string log_file){
 		InitLog();
 		SharedAppenderPtr fap{new FileAppender(
-				std::string{"/var/log/"} + log_file + std::string{".log"},
+				log_file,
 				std::ios_base::app | std::ios_base::out)};
-		fap->setName("filelog");
+		fap->setName(log_file);
 		std::unique_ptr<Layout> flay{new PatternLayout(LOG_LAYOUT)};
 		fap->setLayout(std::move(flay));
 		auto r_logger = Logger::getRoot();

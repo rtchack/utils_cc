@@ -14,7 +14,7 @@
 #define BASE_SEVERITY_WAR 1
 #define BASE_SEVERITY_ERR 0
 
-#define BASE_CURRENT_SEVERITY BASE_SEVERITY_INF
+#define BASE_CURRENT_SEVERITY BASE_SEVERITY_DBG
 
 #define BASE_USE_LOG4CPLUS 1
 
@@ -41,19 +41,22 @@
 	// Debugging logger
 #if BASE_CURRENT_SEVERITY >= BASE_SEVERITY_DBG
 
+#define BASE_DBG_ONLY(act) {act;}
+
 #ifdef BASE_USE_LOG4CPLUS
 #define lDbg(msg) LOG4CPLUS_DEBUG(log4cplus::Logger::getRoot(),\
-	"[" << __FILE__ << " " << __LINE__ << "] " << msg);
+	"[" << __FUNCTION__ << " " << __LINE__ << "] " << msg);
 #else
 #define lDbg(msg) BASE_STD_LOGGER( \
-	"DBG [" << __FILE__ << " " << __LINE__ << "] " << msg);
+	"DBG [" << __FUNCTION__ << " " << __LINE__ << "] " << msg);
 #endif
 
 #define printDbg(fmt, ...) CstyleLog(base::LogSeverity::DBG,\
-	"[%s %d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__);
+	"[%s %d] " fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
 #define lDbg(msg) ;
 #define printDbg(fmt, ...) ;
+#define BASE_DBG_ONLY(act) ;
 #endif
 
 	// Informative logger
