@@ -35,6 +35,9 @@ namespace base{
 	}
 
 	void EnableCoreDump() noexcept{
+#ifdef NDEBUG
+		return;
+#else
 		rlimit lim;
 
 		if(!getrlimit(RLIMIT_CORE, &lim)){
@@ -42,6 +45,7 @@ namespace base{
 			lim.rlim_max = RLIM_INFINITY;
 			setrlimit(RLIMIT_CORE, &lim);
 		}
+#endif
 	}
 
 }

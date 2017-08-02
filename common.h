@@ -83,7 +83,7 @@ namespace base{
 
 #define BASE_RAISE(msg) \
 	std::stringstream base_excep_located_s;\
-	base_excep_located_s << "" << __FILE__ << ", " << __LINE__\
+	base_excep_located_s << "" << __FUNCTION__ \
 	<< ": " << msg;\
 	throw base::Excep(base_excep_located_s.str());
 
