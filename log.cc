@@ -28,9 +28,9 @@ namespace base{
 
 	void InitLog(const std::string log_file){
 		InitLog();
-		SharedAppenderPtr fap{new FileAppender(
-				log_file,
-				std::ios_base::app | std::ios_base::out)};
+		SharedAppenderPtr fap{new RollingFileAppender(log_file,
+		                                              1 << 24,
+		                                              8)};
 		fap->setName(log_file);
 		std::unique_ptr<Layout> flay{new PatternLayout(LOG_LAYOUT)};
 		fap->setLayout(std::move(flay));
