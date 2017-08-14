@@ -26,7 +26,7 @@ namespace base{
 
 		ThreadWrapper(const std::string &name, std::thread &&thread):
 				Module(name), routine{std::forward<std::thread &&>(thread)} {
-			cInf(routine.get_id() << " attached")
+			std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
 		};
 
 		~ThreadWrapper() {Detach();};
@@ -34,7 +34,7 @@ namespace base{
 		inline void Attach(std::thread &&th) noexcept {
 			Detach();
 			routine = std::forward<std::thread &&>(th);
-			cInf(routine.get_id() << " attached")
+			std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
 		}
 
 		inline void operator=(std::thread &&th) noexcept {
@@ -43,7 +43,7 @@ namespace base{
 		inline void Detach() noexcept {
 			if(routine.joinable()){
 				routine.join();
-				cInf(routine.get_id() << " detached")
+				std::cout << "Thread " << routine.get_id() << " detached" << std::endl;
 			}
 		}
 
