@@ -31,12 +31,16 @@ namespace base{
 
 		using json = ::nlohmann::json;
 
-		LicenseChecker(const std::vector<uint8_t> info_to_sign,
+		LicenseChecker(const std::string &email,
+		               const std::string &password,
+		               const std::vector<uint8_t> &info_to_sign,
 		               const std::string &rsa_pub_key_pem,
 		               const std::string &cert_path,
 		               const std::string &server_uri,
 		               const std::string &action = "/instant/create",
 		               const std::string &digest = "EMSA3(SHA-256)"):
+				email{email},
+				password{password},
 				info_to_sign{info_to_sign},
 				pub_key{Botan::X509::load_key(std::vector<uint8_t>{
 						rsa_pub_key_pem.begin(), rsa_pub_key_pem.end()})},
@@ -63,29 +67,38 @@ namespace base{
 			RestClient::disable();
 		}
 
+		LicenseChecker(const std::vector<uint8_t> &info_to_sign,
+		               const std::string &rsa_pub_key_pem,
+		               const std::string &cert_path,
+		               const std::string &server_uri,
+		               const std::string &action = "/instant/create",
+		               const std::string &digest = "EMSA3(SHA-256)"):
+				LicenseChecker{"", "", info_to_sign, rsa_pub_key_pem, cert_path, server_uri, action, digest} {}
+
 
 	private:
 		BASE_DISALLOW_COPY_AND_ASSIGN(LicenseChecker)
 
-		const std::string Data2Send(){
+		const std::string Data2Send() {
 			hashed_info = Botan::base64_encode(
 					info_to_sign.data(), info_to_sign.size());
 
-			std::string email;
-			std::string password;
-			std::cout << "Your email for license: ";
-			getline(std::cin, email);
-			std::cout << "Password: ";
-			{
-				NoConsoleEcho no_echo{};
-				getline(std::cin, password);
+			unless(email.size() && password.size()){
+				std::cout << "Your email for license: ";
+				getline(std::cin, email);
+				std::cout << "Password: ";
+				{
+					NoConsoleEcho no_echo{};
+					getline(std::cin, password);
+				}
 			}
+
 			std::cout << "Visiting server..." << std::endl;
 
-			const json j{{"email", email},
+			const json j{{"email",    email},
 			             {"password", password},
-			             {"data", hashed_info},
-			             {"remark", "From License_Client_Mocker"}};
+			             {"data",     hashed_info},
+			             {"remark",   "From License_Client_Mocker"}};
 			const json j_final{{"inf", j.dump()}};
 
 			std::stringstream str;
@@ -143,6 +156,8 @@ namespace base{
 		}
 
 
+		std::string email;
+		std::string password;
 		const std::vector<uint8_t> info_to_sign;
 		std::unique_ptr<Botan::Public_Key> pub_key;
 		const std::string cert_path;
