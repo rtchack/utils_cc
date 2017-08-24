@@ -44,7 +44,7 @@ namespace base{
 	// use its type.
 	template <typename T, size_t N>
 	char (&ArraySizeHelper(T (&array)[N]))[N];
-	#define arraysize(array) (sizeof(base::ArraySizeHelper(array)))
+	#define arraysize(array) (sizeof(ArraySizeHelper(array)))
 
 	template <typename T, size_t N>
 	T* last(T (&array)[N]){

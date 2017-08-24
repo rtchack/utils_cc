@@ -22,7 +22,7 @@ namespace base{
 	void Looper::Deactivate() noexcept {
 		{
 			std::lock_guard<std::mutex> bar{run_mut};
-			if(!running){
+			unless(running){
 				cInf("is not active");
 				return;
 			}
@@ -72,7 +72,7 @@ namespace base{
 				msg_queue.pop_front();
 			}
 
-			stat.Succ();
+			++stat.processed;
 			tsk();
 		}
 

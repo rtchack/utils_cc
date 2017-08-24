@@ -8,7 +8,7 @@
 namespace base{
 
 	Ret Buffer::Write(const uint8_t *src, size_t length) noexcept {
-		if(!src) return Ret::E_ARG_NULL;
+		unless(src) return Ret::E_ARG_NULL;
 		if(length > size) return Ret::E_ARG;
 
 		memcpy(data, src, length);
@@ -18,8 +18,8 @@ namespace base{
 	}
 
 	Ret Buffer::Read(uint8_t *dst, size_t &length) const noexcept{
-		if(!dst) return Ret::E_ARG_NULL;
-		if(!len) return Ret::NO;
+		unless(dst) return Ret::E_ARG_NULL;
+		unless(len) return Ret::NO;
 
 		length = (length > len) ? len : length;
 
@@ -49,13 +49,13 @@ namespace base{
 	}
 
 	Buffer *BufferPool::Alloc() noexcept{
-		stat.Total();
+		++stat.total;
 
-		if(!free_mem){
+		unless(free_mem){
 			return nullptr;
 		}
 
-		stat.Succ();
+		++stat.succ;
 
 		auto b = (Buffer *)free_mem;
 		free_mem = free_mem->next;
@@ -85,9 +85,9 @@ namespace base{
 	}
 
 	Buffer *CBufferPool::Alloc() noexcept{
-		stat.Total();
+		++stat.total;
 
-		if(!free_mem){
+		unless(free_mem){
 			return nullptr;
 		}
 
@@ -96,7 +96,7 @@ namespace base{
 			auto b = (Buffer *)free_mem;
 			free_mem = free_mem->next;
 			b->Init(buf_size, 0);
-			stat.Succ();
+			++stat.succ;
 			return b;
 		}
 	};

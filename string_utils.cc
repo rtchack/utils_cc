@@ -35,13 +35,14 @@ namespace base{
 			return s;
 		}
 
-		std::string CharsToHexStr(
-				const std::vector<int8_t> &chars, std::string delimiter) noexcept {
+		std::string CharsToHexStr(const std::vector<int8_t> &chars,
+		                          const std::string &delimiter) noexcept {
 			return CharsToHexStr(chars, delimiter, 1);
 		}
 
 		std::string CharsToHexStr(const std::vector<int8_t> &chars,
-		                          std::string delimiter, uint16_t pace) noexcept {
+		                          const std::string &delimiter,
+		                          uint16_t pace) noexcept {
 			std::string s;
 			s.reserve((chars.size() + 1) << 2);
 
@@ -67,13 +68,14 @@ namespace base{
 			return s;
 		}
 
-		std::string UcharsToHexStr(
-				const std::vector<uint8_t> &chars, std::string delimiter) noexcept {
+		std::string UcharsToHexStr(const std::vector<uint8_t> &chars,
+		                           const std::string &delimiter) noexcept {
 			return UcharsToHexStr(chars, delimiter, 1);
 		}
 
 		std::string UcharsToHexStr(const std::vector<uint8_t> &chars,
-		                           std::string delimiter, uint16_t pace) noexcept {
+		                           const std::string &delimiter,
+		                           uint16_t pace) noexcept {
 			std::string s;
 			s.reserve((chars.size() + 1) << 2);
 

@@ -54,12 +54,15 @@ namespace base{
 	 */
 	class BufferPool: public Module{
 	public:
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(BufferPool)
+
 		BufferPool(size_t buf_count, size_t buf_size):
 				BufferPool(buf_count, buf_size, "") {}
 
 		BufferPool(size_t buf_count, size_t buf_size, const std::string &name);
 
-		~BufferPool() {
+		~BufferPool() override {
 			PutStat();
 			delete[] mem;
 		}
@@ -72,13 +75,22 @@ namespace base{
 			return shared_buf{Alloc(), del};
 		}
 
+		std::string ToString() const noexcept override {
+			BASE_STR_S(32)
+			s += Get_name();
+			s += ": total ";
+			s += std::to_string(stat.total);
+			s += ", succ ";
+			s += std::to_string(stat.succ);
+			return s;
+		}
+
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(BufferPool)
 
 		struct NodeHead{
 			NodeHead() = default;
 
-			NodeHead(void *ptr): next{(NodeHead *)ptr} {}
+			explicit NodeHead(void *ptr): next{(NodeHead *)ptr} {}
 
 			NodeHead *next{};
 		};
@@ -94,8 +106,14 @@ namespace base{
 				}
 		};
 
-	BASE_READER(size_t, buf_count);
-	BASE_READER(size_t, buf_size);
+
+		struct{
+			uint64_t total{};
+			uint64_t succ{};
+		} stat{};
+
+		BASE_READER(size_t, buf_count);
+		BASE_READER(size_t, buf_size);
 		uint8_t *mem;
 		nodeptr free_mem;
 	};
@@ -109,12 +127,15 @@ namespace base{
 	 */
 	class CBufferPool: public Module{
 	public:
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(CBufferPool)
+
 		CBufferPool(size_t buf_count, size_t buf_size):
 				CBufferPool(buf_count, buf_size, "") {}
 
 		CBufferPool(size_t buf_count, size_t buf_size, const std::string &name);
 
-		~CBufferPool() {
+		~CBufferPool() override {
 			PutStat();
 			delete[] mem;
 		}
@@ -127,13 +148,22 @@ namespace base{
 			return shared_buf{Alloc(), del};
 		}
 
+		std::string ToString() const noexcept override {
+			BASE_STR_S(32)
+			s += Get_name();
+			s += ": total ";
+			s += std::to_string(stat.total);
+			s += ", succ ";
+			s += std::to_string(stat.succ);
+			return s;
+		}
+
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(CBufferPool)
 
 		struct NodeHead{
 			NodeHead() = default;
 
-			NodeHead(void *ptr): next{(NodeHead *)ptr} {}
+			explicit NodeHead(void *ptr): next{(NodeHead *)ptr} {}
 
 			NodeHead *next{};
 		};
@@ -153,8 +183,14 @@ namespace base{
 				}
 		};
 
-	BASE_READER(size_t, buf_count);
-	BASE_READER(size_t, buf_size);
+
+		struct{
+			uint64_t total{};
+			uint64_t succ{};
+		} stat{};
+
+		BASE_READER(size_t, buf_count);
+		BASE_READER(size_t, buf_size);
 		uint8_t *mem;
 		nodeptr free_mem;
 		std::mutex mut{};

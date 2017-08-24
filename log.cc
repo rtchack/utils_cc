@@ -4,6 +4,7 @@
  */
 
 #include "base/log.h"
+#include "base/macro_utils.h"
 
 #ifdef BASE_USE_LOG4CPLUS
 #include <log4cplus/fileappender.h>
@@ -26,7 +27,7 @@ namespace base{
 		r_logger.addAppender(cap);
 	}
 
-	void InitLog(const std::string log_file){
+	void InitLog(const std::string &log_file){
 		InitLog();
 		SharedAppenderPtr fap{new RollingFileAppender(log_file,
 		                                              1 << 24,
@@ -81,11 +82,11 @@ namespace base{
 
 	void PrintBinary(const char *tag, const void *buf, size_t buf_len){
 		char msg[1024];
-		unsigned char *tmp_buf = (unsigned char *)buf;
+		auto *tmp_buf = (const unsigned char *)buf;
 		size_t index = 0;
 		size_t i = 0;
 
-		if(!tmp_buf) return;
+		unless(tmp_buf) return;
 
 #define LOG_BINARY_PUTN(fmt, ...) \
 	index += snprintf(msg+index, 1000-index, fmt, ##__VA_ARGS__);\
@@ -98,12 +99,12 @@ namespace base{
 
 		while(i<buf_len){
 			LOG_BINARY_PUTN("%02x", tmp_buf[i])
-			if(!(++i % 8)){
+			unless((++i % 8)){
 				LOG_BINARY_PUTN("  ")
 			}else{
 				LOG_BINARY_PUTN(" ")
 			}
-			if(!(i % 16)){
+			unless((i % 16)){
 				LOG_BINARY_PUTN("\n")
 			}
 		}

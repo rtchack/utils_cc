@@ -17,7 +17,7 @@
 
 #include "base/common.h"
 #include "base/file_wrapper.h"
-#include "base/helper.h"
+#include "base/helpers.h"
 #include "base/console.h"
 
 
@@ -28,6 +28,8 @@ namespace base{
 	 */
 	class LicenseChecker final{
 	public:
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(LicenseChecker)
 
 		using json = ::nlohmann::json;
 
@@ -77,7 +79,6 @@ namespace base{
 
 
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(LicenseChecker)
 
 		const std::string Data2Send() {
 			hashed_info = Botan::base64_encode(

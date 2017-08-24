@@ -16,12 +16,15 @@ namespace base{
 
 	class FileWrapper final{
 	public:
-		FileWrapper(FileWrapper &&other): fl{other.fl}{
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(FileWrapper);
+
+		FileWrapper(FileWrapper &&other) noexcept: fl{other.fl}{
 			BASE_RAISE_UNLESS(fl)
 			other.fl = NULL;
 		}
 
-		FileWrapper(FILE *file): fl{file} {
+		explicit FileWrapper(FILE *file): fl{file} {
 			BASE_RAISE_UNLESS(fl)
 		}
 
@@ -40,12 +43,13 @@ namespace base{
 			fclose(fl);
 		};
 
-		void operator=(FileWrapper &&other){
+		FileWrapper& operator=(FileWrapper &&other) noexcept{
 			if(fl){
 				fclose(fl);
 			}
 			fl = other.fl;
 			other.fl = NULL;
+			return *this;
 		}
 
 		inline std::string Read(){
@@ -122,7 +126,7 @@ namespace base{
 		/**
 		 * evaluate each char until f returns false
 		 */
-		inline void EachChar(std::function<void(int)> f) noexcept {
+		inline void EachChar(const std::function<void(int)> &f) noexcept {
 			Seek(0, SEEK_SET);
 			int c;
 			while(EOF != (c = GetC())){
@@ -131,7 +135,6 @@ namespace base{
 		}
 
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(FileWrapper);
 
 		FILE *fl;
 	};

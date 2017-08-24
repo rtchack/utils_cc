@@ -17,19 +17,25 @@ namespace base{
 
 	class ThreadWrapper final: public Module{
 	public:
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(ThreadWrapper)
+
 		ThreadWrapper() = default;
 
-		ThreadWrapper(const std::string &name): Module(name) {}
+		explicit ThreadWrapper(const std::string &name):
+				Module(name) {}
 
-		ThreadWrapper(std::thread &&thread):
+		explicit ThreadWrapper(std::thread &&thread):
 				ThreadWrapper{"", std::forward<std::thread &&> (thread)} {}
 
 		ThreadWrapper(const std::string &name, std::thread &&thread):
 				Module(name), routine{std::forward<std::thread &&>(thread)} {
 			std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
-		};
+		}
 
-		~ThreadWrapper() {Detach();};
+		~ThreadWrapper() override {
+			Detach();
+		}
 
 		inline void Attach(std::thread &&th) noexcept {
 			Detach();
@@ -37,8 +43,10 @@ namespace base{
 			std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
 		}
 
-		inline void operator=(std::thread &&th) noexcept {
-			Attach(std::forward<std::thread &&>(th));}
+		inline ThreadWrapper& operator=(std::thread &&th) noexcept {
+			Attach(std::forward<std::thread &&>(th));
+			return *this;
+		}
 
 		inline void Detach() noexcept {
 			if(routine.joinable()){
@@ -48,7 +56,6 @@ namespace base{
 		}
 
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(ThreadWrapper)
 
 		std::thread routine{};
 	};

@@ -40,7 +40,7 @@ namespace base{
 #else
 		rlimit lim;
 
-		if(!getrlimit(RLIMIT_CORE, &lim)){
+		unless(getrlimit(RLIMIT_CORE, &lim)){
 			lim.rlim_cur = RLIM_INFINITY;
 			lim.rlim_max = RLIM_INFINITY;
 			setrlimit(RLIMIT_CORE, &lim);

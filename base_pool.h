@@ -36,7 +36,7 @@ namespace base{
 	public:
 		PooledPtr() = default;
 
-		PooledPtr(T *ptr, PoolResDeleter del):
+		PooledPtr(T *ptr, const PoolResDeleter &del):
 				ptr{ptr},
 				del{del} {}
 
@@ -47,7 +47,7 @@ namespace base{
 		}
 
 
-		PooledPtr(PooledPtr &&other):
+		PooledPtr(PooledPtr &&other) noexcept :
 				PooledPtr(other.ptr, other.del){
 			other.ptr = nullptr;
 			other.del = nullptr;
@@ -57,16 +57,17 @@ namespace base{
 			Recycle();
 		}
 
-		void operator=(const PooledPtr &other){
+		PooledPtr &operator=(const PooledPtr &other){
 			auto &ot = const_cast<PooledPtr &>(other);
 			Recycle();
 			ptr = ot.ptr;
 			del = ot.del;
 			ot.ptr = nullptr;
 			ot.del = nullptr;
+			return *this;
 		}
 
-		PooledPtr &operator=(PooledPtr &&other){
+		PooledPtr &operator=(PooledPtr &&other) noexcept {
 			Recycle();
 			ptr = other.ptr;
 			del = other.del;
@@ -77,7 +78,7 @@ namespace base{
 
 		T *get() const noexcept {return ptr;}
 
-		std::string ToString() const override {
+		std::string ToString() const noexcept override {
 			std::stringstream s;
 			s << "ptr:" << ptr;
 			return s.str();
@@ -110,7 +111,9 @@ namespace base{
 	class BasePool: public Module{
 	public:
 
-		BasePool(size_t size): BasePool(size, "") {}
+		BASE_DISALLOW_COPY_AND_ASSIGN(BasePool)
+
+		explicit BasePool(size_t size): BasePool(size, "") {}
 
 		BasePool(size_t size, const std::string &name):
 				Module{name}, size{size} {
@@ -140,7 +143,7 @@ namespace base{
 			}
 		}
 
-		~BasePool() {
+		~BasePool() override{
 			PutStat();
 			nodeptr tmp = free_mem;
 			T *t;
@@ -197,8 +200,17 @@ namespace base{
 					}};
 		}
 
+		std::string ToString() const noexcept override {
+			BASE_STR_S(32)
+			s += Get_name();
+			s += ": total ";
+			s += std::to_string(stat.total);
+			s += ", succ ";
+			s += std::to_string(stat.succ);
+			return s;
+		}
+
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(BasePool)
 
 		/**
 		 * Node head for internal memory link
@@ -206,7 +218,7 @@ namespace base{
 		struct NodeHead{
 			NodeHead() = default;
 
-			NodeHead(void *ptr): next{(NodeHead *)ptr} {}
+			explicit NodeHead(void *ptr): next{(NodeHead *)ptr} {}
 
 			NodeHead *next{};
 		};
@@ -218,9 +230,9 @@ namespace base{
 		 */
 		template<typename... Args>
 		T *Alloc(Args &&... args) noexcept {
-			stat.Total();
+			++stat.total;
 
-			if(!free_mem){
+			unless(free_mem){
 				return nullptr;
 			}
 
@@ -234,11 +246,17 @@ namespace base{
 				return nullptr;
 			}
 
-			stat.Succ();
+			++stat.succ;
 			return b;
 		}
 
-	BASE_READER(size_t, size);
+
+		struct{
+			uint64_t total;
+			uint64_t succ;
+		} stat;
+
+		BASE_READER(size_t, size);
 		uint8_t *mem;
 		nodeptr free_mem;
 	};
@@ -256,7 +274,10 @@ namespace base{
 	template<typename T>
 	class BaseCPool: public Module{
 	public:
-		BaseCPool(size_t size): BaseCPool(size, "") {}
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(BaseCPool)
+
+		explicit BaseCPool(size_t size): BaseCPool(size, "") {}
 
 		BaseCPool(size_t size, const std::string &name):
 				Module{name}, size{size} {
@@ -286,7 +307,7 @@ namespace base{
 			}
 		}
 
-		~BaseCPool() {
+		~BaseCPool() override {
 			PutStat();
 			nodeptr tmp = free_mem;
 			T *t;
@@ -352,8 +373,17 @@ namespace base{
 					}};
 		}
 
+		std::string ToString() const noexcept override {
+			BASE_STR_S(32)
+			s += Get_name();
+			s += ": total ";
+			s += std::to_string(stat.total);
+			s += ", succ ";
+			s += std::to_string(stat.succ);
+			return s;
+		}
+
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(BaseCPool)
 
 		/**
 		 * Node head for internal memory link
@@ -361,7 +391,7 @@ namespace base{
 		struct NodeHead{
 			NodeHead() = default;
 
-			NodeHead(void *ptr): next{(NodeHead *)ptr} {}
+			explicit NodeHead(void *ptr): next{(NodeHead *)ptr} {}
 
 			NodeHead *next{};
 		};
@@ -373,9 +403,9 @@ namespace base{
 		 */
 		template<typename... Args>
 		T *Alloc(Args &&... args) noexcept {
-			stat.Total();
+			++stat.total;
 
-			if(!free_mem){
+			unless(free_mem){
 				return nullptr;
 			}
 
@@ -392,12 +422,18 @@ namespace base{
 					return nullptr;
 				}
 
-				stat.Succ();
+				++stat.succ;
 				return b;
 			}
 		};
 
-	BASE_READER(size_t, size);
+
+		struct{
+			uint64_t total{};
+			uint64_t succ{};
+		} stat{};
+
+		BASE_READER(size_t, size);
 		uint8_t *mem;
 		nodeptr free_mem;
 		std::mutex mut{};

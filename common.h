@@ -72,6 +72,8 @@ namespace base{
 				msg += message;
 		};
 
+		Excep(const Excep &other) noexcept : msg{other.msg} {}
+
 		const char *what() const _GLIBCXX_USE_NOEXCEPT override {
 			return msg.c_str();
 		};

@@ -23,6 +23,9 @@ namespace base{
 
 	class Looper: public Module{
 	public:
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(Looper)
+
 		/**
 		 * @return ture to quit the loop, false to continue
 		 */
@@ -32,10 +35,10 @@ namespace base{
 
 		Looper(): Looper{""} {}
 
-		Looper(const std::string &name):
-				Module{name}, msg_queue{}, worker{Get_name()} {}
+		explicit Looper(const std::string &name):
+				Module{name}, worker{Get_name()} {}
 
-		virtual ~Looper() {
+		~Looper() override {
 			Deactivate();
 			PutStat();
 		}
@@ -88,11 +91,22 @@ namespace base{
 		 */
 		virtual void PostDeactivate() {cDbg("")}
 
+		std::string ToString() const noexcept override {
+			BASE_STR_S(16)
+			s += Get_name();
+			s += ": processed ";
+			s += std::to_string(stat.processed);
+			return s;
+		}
+
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(Looper)
 
 		void Entry() noexcept;
 
+
+		struct{
+			uint64_t processed{};
+		} stat{};
 
 		MsgQueue msg_queue{};
 		ThreadWrapper worker;

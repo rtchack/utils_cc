@@ -17,9 +17,12 @@ namespace base{
 
 	class SingletonProcChecker{
 	public:
+
+		BASE_DISALLOW_COPY_AND_ASSIGN(SingletonProcChecker)
+
 		SingletonProcChecker() = delete;
 
-		SingletonProcChecker(const std::string &name):
+		explicit SingletonProcChecker(const std::string &name):
 				fd{socket(AF_UNIX, SOCK_STREAM, 0)} {
 			BASE_RAISE_UNLESS(fd)
 
@@ -55,7 +58,6 @@ namespace base{
 		}
 
 	private:
-		BASE_DISALLOW_COPY_AND_ASSIGN(SingletonProcChecker)
 
 	BASE_DIRECT_READER(int, fd);
 	};

@@ -14,7 +14,11 @@
 #define BASE_SEVERITY_WAR 1
 #define BASE_SEVERITY_ERR 0
 
+#if NDEBUG
 #define BASE_CURRENT_SEVERITY BASE_SEVERITY_INF
+#else
+#define BASE_CURRENT_SEVERITY BASE_SEVERITY_DBG
+#endif
 
 #define BASE_USE_LOG4CPLUS 1
 
@@ -123,7 +127,7 @@ namespace base{
 #ifdef BASE_USE_LOG4CPLUS
 	void InitLog();
 
-	void InitLog(const std::string log_file);
+	void InitLog(const std::string &log_file);
 #endif
 
 	enum class LogSeverity {DBG, INF, WAR, ERR};

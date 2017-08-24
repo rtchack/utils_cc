@@ -27,7 +27,8 @@ namespace base{
 	class Supervisor{
 	public:
 
-		Supervisor(const std::string &log_file): log_file{log_file} {}
+		explicit Supervisor(const std::string &log_file):
+				log_file{log_file} {}
 
 		Supervisor(): Supervisor("") {}
 
