@@ -42,7 +42,7 @@ namespace base{
 		std::string UcharsToHexStr(const std::vector<uint8_t> &uchars) noexcept;
 
 		std::string UcharsToHexStr(const std::vector<uint8_t> &uchars,
-		                           std::string delimiter) noexcept;
+		                           const std::string &delimiter) noexcept;
 
 		std::string UcharsToHexStr(const std::vector<uint8_t> &uchars,
 		                           const std::string &delimiter,
