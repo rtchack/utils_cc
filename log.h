@@ -16,11 +16,10 @@
 
 #if NDEBUG
 #define BASE_CURRENT_SEVERITY BASE_SEVERITY_INF
+#define BASE_USE_LOG4CPLUS 1
 #else
 #define BASE_CURRENT_SEVERITY BASE_SEVERITY_DBG
 #endif
-
-#define BASE_USE_LOG4CPLUS 1
 
 #ifdef BASE_USE_LOG4CPLUS
 #include <log4cplus/logger.h>
