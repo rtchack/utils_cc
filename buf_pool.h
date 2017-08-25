@@ -95,6 +95,9 @@ namespace base{
 
 		buf_callback del{
 				[this](Buffer *b) {
+					unless(b){
+						return;
+					}
 					((nodeptr)b)->next = free_mem;
 					free_mem = (nodeptr)b;
 				}
@@ -169,7 +172,9 @@ namespace base{
 
 		buf_callback del{
 				[this](Buffer *b) {
-
+					unless(b){
+						return;
+					}
 					{
 						std::lock_guard<std::mutex> bar{mut};
 						((nodeptr)b)->next = free_mem;

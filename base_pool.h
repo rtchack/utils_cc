@@ -40,12 +40,12 @@ namespace base{
 				ptr{ptr},
 				del{del} {}
 
-		PooledPtr(const PooledPtr &other): PooledPtr(other.ptr, other.del){
+		PooledPtr(const PooledPtr &other):
+				PooledPtr(other.ptr, other.del){
 			auto &ot = const_cast<PooledPtr &>(other);
 			ot.ptr = nullptr;
 			ot.del = nullptr;
 		}
-
 
 		PooledPtr(PooledPtr &&other) noexcept :
 				PooledPtr(other.ptr, other.del){
@@ -169,6 +169,9 @@ namespace base{
 					// this lambda back into a member, as which may cause
 					// a compiler error
 					[this](void *b) {
+						unless(b){
+							return;
+						}
 						auto tmp = ((nodeptr)b) - 1;
 						tmp->next = free_mem;
 						free_mem = tmp;
@@ -183,6 +186,9 @@ namespace base{
 			return std::shared_ptr<T>{
 					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
+						unless(b){
+							return;
+						}
 						auto tmp = ((nodeptr)b) - 1;
 						tmp->next = free_mem;
 						free_mem = tmp;
@@ -194,6 +200,9 @@ namespace base{
 			return PooledPtr<T>{
 					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
+						unless(b){
+							return;
+						}
 						auto tmp = ((nodeptr)b) - 1;
 						tmp->next = free_mem;
 						free_mem = tmp;
@@ -331,8 +340,10 @@ namespace base{
 			return std::unique_ptr<T, std::function<void(void *)>>{
 					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
+						unless(b){
+							return;
+						}
 						auto tmp = ((nodeptr)b) - 1;
-
 						{
 							std::lock_guard<std::mutex> bar{mut};
 							tmp->next = free_mem;
@@ -349,8 +360,10 @@ namespace base{
 			return std::shared_ptr<T>{
 					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
+						unless(b){
+							return;
+						}
 						auto tmp = ((nodeptr)b) - 1;
-
 						{
 							std::lock_guard<std::mutex> bar{mut};
 							tmp->next = free_mem;
@@ -364,8 +377,10 @@ namespace base{
 			return PooledPtr<T>{
 					Alloc(std::forward<Args>(args)...),
 					[this](void *b) {
+						unless(b){
+							return;
+						}
 						auto tmp = ((nodeptr)b) - 1;
-
 						{
 							std::lock_guard<std::mutex> bar{mut};
 							tmp->next = free_mem;

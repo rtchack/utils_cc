@@ -112,8 +112,8 @@ namespace base{
 
 		MsgQueue msg_queue{};
 		ThreadWrapper worker;
-		std::mutex run_mut{};
-		std::mutex op_mut{};
+		mutable std::mutex run_mut{};
+		mutable std::mutex op_mut{};
 		volatile bool running{false};
 		volatile bool looping{false};
 		std::condition_variable cv{};
