@@ -113,6 +113,10 @@ namespace base{
 
 		BASE_DISALLOW_COPY_AND_ASSIGN(BasePool)
 
+		typedef std::unique_ptr<T, PoolResDeleter> unique_ptr;
+		typedef std::shared_ptr<T> shared_ptr;
+		typedef PooledPtr<T> pooled_ptr;
+
 		explicit BasePool(size_t size): BasePool(size, "") {}
 
 		BasePool(size_t size, const std::string &name):
@@ -286,6 +290,10 @@ namespace base{
 	public:
 
 		BASE_DISALLOW_COPY_AND_ASSIGN(BaseCPool)
+
+		typedef std::unique_ptr<T, PoolResDeleter> unique_ptr;
+		typedef std::shared_ptr<T> shared_ptr;
+		typedef PooledPtr<T> pooled_ptr;
 
 		explicit BaseCPool(size_t size): BaseCPool(size, "") {}
 
