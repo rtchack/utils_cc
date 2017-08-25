@@ -92,11 +92,7 @@ namespace base{
 		virtual void PostDeactivate() {cDbg("")}
 
 		std::string ToString() const noexcept override {
-			BASE_STR_S(16)
-			s += Get_name();
-			s += ": processed ";
-			s += std::to_string(stat.processed);
-			return s;
+			return Get_name() + stat.ToString();
 		}
 
 	private:
@@ -104,7 +100,13 @@ namespace base{
 		void Entry() noexcept;
 
 
-		struct{
+		struct Stat{
+			inline std::string ToString() const noexcept {
+				BASE_STR_S(16)
+				BASE_STR_ATTR(processed)
+				return s;
+			}
+
 			uint64_t processed{};
 		} stat{};
 

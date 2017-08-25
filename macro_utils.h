@@ -36,10 +36,10 @@ inline std::string to_stringAndroid(T value){
   std::string s;\
   s.reserve(size);
 #define BASE_STR_ATTR_STR(a)\
-  s.append("\n\t");\
+  s.append(", " #a " ");\
   s.append(a);
 #define BASE_STR_ATTR(a)\
-  s.append("\n\t" #a " ");\
+  s.append(", " #a " ");\
   s.append(TO_STRING(a));
 #define BASE_STR_ITEA_STR(i, nm)\
   s.append(", " #i "-");\

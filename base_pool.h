@@ -201,13 +201,7 @@ namespace base{
 		}
 
 		std::string ToString() const noexcept override {
-			BASE_STR_S(32)
-			s += Get_name();
-			s += ": total ";
-			s += std::to_string(stat.total);
-			s += ", succ ";
-			s += std::to_string(stat.succ);
-			return s;
+			return Get_name() + stat.ToString();
 		}
 
 	private:
@@ -251,7 +245,14 @@ namespace base{
 		}
 
 
-		struct{
+		struct Stat{
+			inline std::string ToString() const noexcept {
+				BASE_STR_S(32)
+				BASE_STR_ATTR(total)
+				BASE_STR_ATTR(succ)
+				return s;
+			}
+
 			uint64_t total;
 			uint64_t succ;
 		} stat;
@@ -374,13 +375,7 @@ namespace base{
 		}
 
 		std::string ToString() const noexcept override {
-			BASE_STR_S(32)
-			s += Get_name();
-			s += ": total ";
-			s += std::to_string(stat.total);
-			s += ", succ ";
-			s += std::to_string(stat.succ);
-			return s;
+			return Get_name() + stat.ToString();
 		}
 
 	private:
@@ -428,7 +423,14 @@ namespace base{
 		};
 
 
-		struct{
+		struct Stat{
+			inline std::string ToString() const noexcept {
+				BASE_STR_S(32)
+				BASE_STR_ATTR(total)
+				BASE_STR_ATTR(succ)
+				return s;
+			}
+
 			uint64_t total{};
 			uint64_t succ{};
 		} stat{};
