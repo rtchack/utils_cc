@@ -41,11 +41,23 @@ namespace base{
 
 #endif
 
+#define LOG_TRUNCATED_NOTIFY_MSG " [truncated!]"
+	constexpr size_t TRUNCAT_NOTIFY_MSG_LEN{16};
+	constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH{
+			BASE_MAX_LOG_MSG_LENGTH - TRUNCAT_NOTIFY_MSG_LEN};
+	constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1{
+			REAL_BASE_MAX_LOG_MSG_LENGTH - 1};
+
 	void CstyleLog(LogSeverity severity, const char *fmt, ...){
 		char msg[BASE_MAX_LOG_MSG_LENGTH];
 		va_list args;
 		va_start(args, fmt);
-		vsnprintf(msg, BASE_MAX_LOG_MSG_LENGTH, fmt, args);
+		if(REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 <= vsnprintf(
+				msg, REAL_BASE_MAX_LOG_MSG_LENGTH, fmt, args)){
+			snprintf(msg + REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 - 1,
+			         TRUNCAT_NOTIFY_MSG_LEN,
+			         LOG_TRUNCATED_NOTIFY_MSG);
+		}
 		va_end(args);
 
 		switch(severity){
