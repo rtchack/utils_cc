@@ -89,7 +89,7 @@ namespace base{
 	<< ": " << msg;\
 	throw base::Excep(base_excep_located_s.str());
 
-#define BASE_RAISE_LOCATED BASE_RAISE("")
+#define BASE_RAISE_LOCATED BASE_RAISE("at " << __LINE__)
 
 #define BASE_RAISE_IF(v) \
 	if(v) {BASE_RAISE(#v " should not be ture")}
