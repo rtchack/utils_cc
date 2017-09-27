@@ -6,6 +6,9 @@
 #include "base/log.h"
 #include "base/macro_utils.h"
 
+#include <stdarg.h>
+
+
 #ifdef BASE_USE_LOG4CPLUS
 #include <log4cplus/fileappender.h>
 #include <log4cplus/consoleappender.h>
