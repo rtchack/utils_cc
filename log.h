@@ -129,8 +129,14 @@ namespace base{
 	void InitLog(const std::string &log_file);
 #endif
 
-	enum class LogSeverity {DBG, INF, WAR, ERR};
+#ifdef NDEBUG
 	constexpr size_t BASE_MAX_LOG_MSG_LENGTH{512};
+#else
+	constexpr size_t BASE_MAX_LOG_MSG_LENGTH{1024};
+#endif
+
+	enum class LogSeverity {DBG, INF, WAR, ERR};
+
 	void CstyleLog(LogSeverity severity, const char *fmt, ...);
 
 	void PrintBinary(const char *tag, const void *buf, size_t buf_len);

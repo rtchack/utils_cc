@@ -45,6 +45,7 @@ namespace base{
 #endif
 
 #define LOG_TRUNCATED_NOTIFY_MSG " [truncated!]"
+
 	constexpr size_t TRUNCAT_NOTIFY_MSG_LEN{16};
 	constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH{
 			BASE_MAX_LOG_MSG_LENGTH - TRUNCAT_NOTIFY_MSG_LEN};
@@ -96,7 +97,8 @@ namespace base{
 	}
 
 	void PrintBinary(const char *tag, const void *buf, size_t buf_len){
-		char msg[1024];
+
+		char msg[BASE_MAX_LOG_MSG_LENGTH];
 		auto *tmp_buf = (const unsigned char *)buf;
 		size_t index = 0;
 		size_t i = 0;
@@ -104,8 +106,8 @@ namespace base{
 		unless(tmp_buf) return;
 
 #define LOG_BINARY_PUTN(fmt, ...) \
-	index += snprintf(msg+index, 1000-index, fmt, ##__VA_ARGS__);\
-	if(1000 <= index){\
+	index += snprintf(msg+index, (REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 - index), fmt, ##__VA_ARGS__);\
+	if(REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 <= index){\
 		snprintf(msg+index, 24, "...");\
 		goto print_point;\
 	}
