@@ -32,6 +32,10 @@ namespace base{
 
 		Supervisor(): Supervisor("") {}
 
+		~Supervisor(){
+			Stop();
+		}
+
 		void Start() {
 			std::lock_guard<std::mutex> lock{mut};
 			if(running){
