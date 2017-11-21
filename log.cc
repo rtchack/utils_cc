@@ -56,7 +56,7 @@ namespace base{
 		char msg[BASE_MAX_LOG_MSG_LENGTH];
 		va_list args;
 		va_start(args, fmt);
-		if(REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 <= vsnprintf(
+		if(REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 <= (size_t)vsnprintf(
 				msg, REAL_BASE_MAX_LOG_MSG_LENGTH, fmt, args)){
 			snprintf(msg + REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 - 1,
 			         TRUNCAT_NOTIFY_MSG_LEN,
