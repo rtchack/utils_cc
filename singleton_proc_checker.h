@@ -3,65 +3,68 @@
  *     Author: xing
  */
 
-#ifndef RTP_PROTECTOR_SINGLETON_PROC_CHECKER_H
-#define RTP_PROTECTOR_SINGLETON_PROC_CHECKER_H
+#pragma once
 
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <cstring>
 #include <unistd.h>
 
-#include "base/common.h"
+#include "common.h"
 
-namespace base{
+namespace utils {
 
-	class SingletonProcChecker{
-	public:
+class SingletonProcChecker {
+ public:
 
-		BASE_DISALLOW_COPY_AND_ASSIGN(SingletonProcChecker)
+  UTILS_DISALLOW_COPY_AND_ASSIGN(SingletonProcChecker)
 
-		SingletonProcChecker() = delete;
+  SingletonProcChecker() = delete;
 
-		explicit SingletonProcChecker(const std::string &name):
-				fd{socket(AF_UNIX, SOCK_STREAM, 0)} {
-			BASE_RAISE_UNLESS(fd)
+  explicit
+  SingletonProcChecker(
+      const std::string
+      &name) :
+      fd
+          {socket(AF_UNIX, SOCK_STREAM, 0)} {
+    UTILS_RAISE_UNLESS(fd)
 
-			const auto full_path = std::string{"/tmp/"} + name;
+    const auto full_path = std::string{"/tmp/"}
+                           + name;
 
-			sockaddr_un addr{};
-			addr.sun_family = AF_UNIX;
-			strncpy(addr.sun_path, full_path.c_str(), sizeof(addr.sun_path));
-			auto len = sizeof(addr);
+    sockaddr_un addr{};
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, full_path.c_str(), sizeof(addr.sun_path));
+    auto len = sizeof(addr);
 
-			unless(connect(fd, (sockaddr *)&addr, len)){
-				BASE_RAISE(full_path << " already running")
-			}
+    unless(connect(fd, (sockaddr *) &addr, len)) {
+      UTILS_RAISE(full_path << " already running")
+    }
 
-			if(unlink(addr.sun_path)){
-				unless(errno == ENOENT){
-					BASE_RAISE(full_path << " unlink: " << std::strerror(errno))
-				}
-			}
-			if(bind(fd, (sockaddr *)&addr, len)){
-				BASE_RAISE(full_path << " bind: " << std::strerror(errno))
-			}
+    if (unlink(addr.sun_path)) {
+      unless(errno == ENOENT) {
+        UTILS_RAISE(full_path << " unlink: " << std::strerror(errno))
+      }
+    }
+    if (bind(fd, (sockaddr *) &addr, len)) {
+      UTILS_RAISE(full_path << " bind: " << std::strerror(errno))
+    }
 
-			if(listen(fd, 4)){
-				BASE_RAISE(full_path << " listen: " << std::strerror(errno))
-			}
+    if (listen(fd, 4)) {
+      UTILS_RAISE(full_path << " listen: " << std::strerror(errno))
+    }
 
-			std::cout << "Listening on " << full_path << std::endl;
-		}
+    std::cout << "Listening on " << full_path << std::endl;
+  }
 
-		~SingletonProcChecker() {
-			close(fd);
-		}
+  ~SingletonProcChecker() {
+    close(fd);
+  }
 
-	private:
+ private:
 
-	BASE_DIRECT_READER(int, fd);
-	};
+ UTILS_DIRECT_READER(int, fd);
+};
 
 }
 
-#endif //RTP_PROTECTOR_SINGLETON_PROC_CHECKER_H

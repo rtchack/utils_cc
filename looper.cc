@@ -2,81 +2,81 @@
  * Created by xing on 4/12/16.
  */
 
-#include "base/looper.h"
+#include "looper.h"
 
-namespace base{
+namespace utils {
 
-	void Looper::Post(const Task &tsk, bool flush) noexcept {
-		unless(running){
-			cWar("Not running")
-			return;
-		}
-		{
-			std::lock_guard<std::mutex> bar{op_mut};
-			if(flush) msg_queue.clear();
-			msg_queue.push_back(tsk);
-		}
-		cv.notify_one();
-	}
+void Looper::Post(const Task &tsk, bool flush) noexcept {
+  unless(running) {
+    cWar("Not running")
+    return;
+  }
+  {
+    std::lock_guard<std::mutex> bar{op_mut};
+    if (flush) msg_queue.clear();
+    msg_queue.push_back(tsk);
+  }
+  cv.notify_one();
+}
 
-	void Looper::Deactivate() noexcept {
-		{
-			std::lock_guard<std::mutex> bar{run_mut};
-			unless(running){
-				cInf("is not active");
-				return;
-			}
+void Looper::Deactivate() noexcept {
+  {
+    std::lock_guard<std::mutex> bar{run_mut};
+    unless(running) {
+      cInf("is not active");
+      return;
+    }
 
-			PreDeactivate();
+    PreDeactivate();
 
-			looping = false;
-			Post([]{;}, true);
-			worker.Detach();
-			running = false;
-		}
+    looping = false;
+    Post([] { ; }, true);
+    worker.Detach();
+    running = false;
+  }
 
-		PostDeactivate();
-	}
+  PostDeactivate();
+}
 
-	void Looper::Activate() noexcept {
-		PreActivate();
+void Looper::Activate() noexcept {
+  PreActivate();
 
-		{
-			std::lock_guard<std::mutex> bar{run_mut};
-			if(running){
-				cInf("is already active");
-				return;
-			}
+  {
+    std::lock_guard<std::mutex> bar{run_mut};
+    if (running) {
+      cInf("is already active");
+      return;
+    }
 
-			{
-				std::lock_guard<std::mutex> bar{op_mut};
-				msg_queue.clear();
-			}
+    {
+      std::lock_guard<std::mutex> bar{op_mut};
+      msg_queue.clear();
+    }
 
-			looping = true;
-			worker.Attach(std::thread{&Looper::Entry, this});
-			running = true;
-		}
+    looping = true;
+    worker.Attach(std::thread{&Looper::Entry, this});
+    running = true;
+  }
 
-		PostActivate();
-	}
+  PostActivate();
+}
 
-	void Looper::Entry() noexcept {
-		Task tsk;
-		while(looping){
-			{
-				std::unique_lock<std::mutex> lk{op_mut};
-				cv.wait(lk, [this]{return !msg_queue.empty();});
-				//if(msg_queue.empty()) continue;
-				tsk = msg_queue.front();
-				msg_queue.pop_front();
-			}
+void Looper::Entry() noexcept {
+  Task tsk;
+  while (looping) {
+    {
+      std::unique_lock<std::mutex> lk{op_mut};
+      cv.wait(lk, [this] { return !msg_queue.empty(); });
+      //if(msg_queue.empty()) continue;
+      tsk = msg_queue.front();
+      msg_queue.pop_front();
+    }
 
-			++stat.processed;
-			tsk();
-		}
+    ++stat.processed;
+    tsk();
+  }
 
-		cInf("Quiting")
-	}
+  cInf("Quiting")
+}
 
 }

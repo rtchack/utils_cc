@@ -3,44 +3,42 @@
  *     Author: xing
  */
 
-#ifndef BASE_DEV_CONSOLE_H
-#define BASE_DEV_CONSOLE_H
+#pragma once
 
 #include <termios.h>
 #include <unistd.h>
 
 
-namespace base{
+namespace utils {
 
-	/**
-	 * Enable or disable the echo of console
-	 */
-	void SetConsoleEcho(bool enable = true){
-		termios tm{};
-		tcgetattr(STDIN_FILENO, &tm);
-		if (enable){
-			tm.c_lflag |= ECHO;
-		}else{
-			tm.c_lflag &= ~ECHO;
-		}
-		tcsetattr(STDIN_FILENO, TCSANOW, &tm);
-	}
+/**
+ * Enable or disable the echo of console
+ */
+void SetConsoleEcho(bool enable = true) {
+  termios tm{};
+  tcgetattr(STDIN_FILENO, &tm);
+  if (enable) {
+    tm.c_lflag |= ECHO;
+  } else {
+    tm.c_lflag &= ~ECHO;
+  }
+  tcsetattr(STDIN_FILENO, TCSANOW, &tm);
+}
 
-	/**
-	 * Disable console echo
-	 */
-	class NoConsoleEcho final{
-	public:
-		NoConsoleEcho(){
-			SetConsoleEcho(false);
-		}
+/**
+ * Disable console echo
+ */
+class NoConsoleEcho final {
+ public:
+  NoConsoleEcho() {
+    SetConsoleEcho(false);
+  }
 
-		~NoConsoleEcho(){
-			SetConsoleEcho();
-			puts("");
-		}
-	};
+  ~NoConsoleEcho() {
+    SetConsoleEcho();
+    puts("");
+  }
+};
 
 }
 
-#endif //BASE_DEV_CONSOLE_H
