@@ -76,7 +76,7 @@ void PrintBinary(const char *tag, const void *buf, size_t buf_len) {
   }
 
   print_point:
-  CstyleLog(LogSeverity::INF, "%s\n}\n", msg);
+  CstyleLog(LogSeverity::INF, "%s}", msg);
 }
 
 }
