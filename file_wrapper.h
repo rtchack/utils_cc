@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <functional>
 
 #include "common.h"
 #include "macro_utils.h"
@@ -18,7 +19,7 @@ class FileWrapper final {
 
   UTILS_DISALLOW_COPY_AND_ASSIGN(FileWrapper);
 
-  FileWrapper(FileWrapper &&other) noexcept: fl{other.fl} {
+  FileWrapper(FileWrapper &&other): fl{other.fl} {
     UTILS_RAISE_UNLESS(fl)
     other.fl = NULL;
   }
@@ -135,7 +136,7 @@ class FileWrapper final {
 
  private:
 
-  FILE *fl;
+  UTILS_DIRECT_READER(FILE *, fl);
 };
 
 }

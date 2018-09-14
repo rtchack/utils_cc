@@ -6,6 +6,7 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 
 #define UTILS_SEVERITY_DBG 3
@@ -20,17 +21,17 @@
 #endif
 
 
-#define UTILS_STD_LOGGER(msg) std::cout << msg << std::endl;
-#define UTILS_INIT_LOG UTILS_STD_LOGGER("Hello.")
+#define UTILS_LOGGER(msg) std::cout << msg << std::endl;
+#define UTILS_INIT_LOG UTILS_LOGGER("Hello.")
 #define UTILS_INIT_LOG_WITH(file_name) \
-  UTILS_STD_LOGGER("Use STD_COUT instead of " << file_name)
+  UTILS_LOGGER("Use STD_COUT instead of " << file_name)
 #define UTILS_SHUTDOWN_LOG
 
 
 // Debugging logger
 #if UTILS_CURRENT_SEVERITY >= UTILS_SEVERITY_DBG
 #define UTILS_DBG_ONLY(act) {act;}
-#define lDbg(msg) UTILS_STD_LOGGER( \
+#define lDbg(msg) UTILS_LOGGER( \
   "DBG [" << __FUNCTION__ << " " << __LINE__ << "] " << msg);
 #define printDbg(fmt, ...) CstyleLog(base::LogSeverity::DBG,\
   "[%s %d] " fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__);
@@ -43,7 +44,7 @@
 // Informative logger
 #if UTILS_CURRENT_SEVERITY >= UTILS_SEVERITY_INF
 
-#define lInf(msg) UTILS_STD_LOGGER( \
+#define lInf(msg) UTILS_LOGGER( \
    "INF [" << __FUNCTION__ << "] " << msg);
 
 #define printInf(fmt, ...) CstyleLog(base::LogSeverity::INF,\
@@ -56,7 +57,7 @@
 // Warning logger
 #if UTILS_CURRENT_SEVERITY >= UTILS_SEVERITY_WAR
 
-#define lWar(msg) UTILS_STD_LOGGER( \
+#define lWar(msg) UTILS_LOGGER( \
    "WAR [" << __FUNCTION__ << "] " << msg);
 
 #define printWar(fmt, ...) CstyleLog(base::LogSeverity::WAR,\
@@ -67,7 +68,7 @@
 #endif
 
 // Erroneous logger
-#define lErr(msg) UTILS_STD_LOGGER( \
+#define lErr(msg) UTILS_LOGGER( \
    "ERR [" << __FUNCTION__ << "] " << msg);
 
 #define printErr(fmt, ...) CstyleLog(base::LogSeverity::ERR,\
@@ -97,5 +98,31 @@ void CstyleLog(LogSeverity severity, const char *fmt, ...);
 void PrintBinary(const char *tag, const void *buf, size_t buf_len);
 
 #define lBinary(buf, buf_len) PrintBinary(__FUNCTION__, buf, buf_len);
+
+class LazyLogger {
+ public:
+  LazyLogger(){
+    s << "[" << "] { ";
+  }
+
+  LazyLogger(const char *init_msg) {
+    s << "[" << init_msg << "] { ";
+  }
+
+  inline std::ostream &operator<<(const std::string &msg) {
+    return s << msg;
+  }
+
+  ~LazyLogger() {
+    s << " }";
+    UTILS_LOGGER(s.str());
+  }
+
+ private:
+  std::stringstream s{};
+};
+
+#define UTILS_LAZY_LOG_VAR(logger, var) \
+  logger << #var << " ~ " << var << ", ";
 
 }

@@ -31,16 +31,16 @@ void CstyleLog(LogSeverity severity, const char *fmt, ...) {
 
   switch (severity) {
     case LogSeverity::DBG:
-      UTILS_STD_LOGGER("DBG " << msg);
+      UTILS_LOGGER("DBG " << msg);
       return;
     case LogSeverity::INF:
-      UTILS_STD_LOGGER("INF " << msg);
+      UTILS_LOGGER("INF " << msg);
       return;
     case LogSeverity::WAR:
-      UTILS_STD_LOGGER("WAR " << msg);
+      UTILS_LOGGER("WAR " << msg);
       return;
     case LogSeverity::ERR:
-      UTILS_STD_LOGGER("ERR " << msg);
+      UTILS_LOGGER("ERR " << msg);
       return;
   }
 }
