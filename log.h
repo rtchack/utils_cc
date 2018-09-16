@@ -22,7 +22,7 @@
 
 
 #define UTILS_LOGGER(msg) std::cout << msg << std::endl;
-#define UTILS_INIT_LOG UTILS_LOGGER("Hello.")
+#define UTILS_INIT_LOG // UTILS_LOGGER("Hello.")
 #define UTILS_INIT_LOG_WITH(file_name) \
   UTILS_LOGGER("Use STD_COUT instead of " << file_name)
 #define UTILS_SHUTDOWN_LOG
