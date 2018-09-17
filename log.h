@@ -97,7 +97,7 @@ void CstyleLog(LogSeverity severity, const char *fmt, ...);
 
 void PrintBinary(const char *tag, const void *buf, size_t buf_len);
 
-#define lBinary(buf, buf_len) PrintBinary(__FUNCTION__, buf, buf_len);
+#define lBinary(buf, buf_len) utils::PrintBinary(__FUNCTION__, buf, buf_len);
 
 class LazyLogger {
  public:
