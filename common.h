@@ -94,7 +94,7 @@ class Excep : public std::exception {
 	throw utils::Excep(utilscpp_excep_located_s.str());
 
 #else
-#define UTILS_RAISE(msg) lErr(msg)
+#define UTILS_RAISE(msg) lFatal(msg)
 #endif
 
 #define UTILS_RAISE_LOCATED UTILS_RAISE("at " << __LINE__)
