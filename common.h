@@ -105,11 +105,11 @@ class Excep : public std::exception {
 #define UTILS_RAISE_UNLESS(v) \
   UTILS_RAISE_IF(!(v))
 
-#define UTILS_RAISE_VERBOSE_IF(v, msg) \
+#define UTILS_RAISE_VERB_IF(v, msg) \
   if(v) {UTILS_RAISE(#v " should not be ture: " << msg)}
 
-#define UTILS_RAISE_VERBOSE_UNLESS(v, msg) \
-  UTILS_RAISE_VERBOSE_IF(!(v), msg)
+#define UTILS_RAISE_VERB_UNLESS(v, msg) \
+  UTILS_RAISE_VERB_IF(!(v), msg)
 
 
 /**

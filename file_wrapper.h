@@ -30,7 +30,7 @@ class FileWrapper final {
 
   FileWrapper(const char *name, const char *mode) :
       fl(fopen(name, mode)) {
-    UTILS_RAISE_VERBOSE_UNLESS(fl, name << ":" << mode)
+    UTILS_RAISE_VERB_UNLESS(fl, name << ":" << mode)
   }
 
   FileWrapper(const std::string &name, const char *mode) :
