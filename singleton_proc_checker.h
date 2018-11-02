@@ -14,15 +14,15 @@
 
 namespace utils {
 
-class SingletonProcChecker {
+class SingletonGuard {
  public:
 
-  UTILS_DISALLOW_COPY_AND_ASSIGN(SingletonProcChecker)
+  UTILS_DISALLOW_COPY_AND_ASSIGN(SingletonGuard)
 
-  SingletonProcChecker() = delete;
+  SingletonGuard() = delete;
 
   explicit
-  SingletonProcChecker(
+  SingletonGuard(
       const std::string
       &name) :
       fd
@@ -57,7 +57,7 @@ class SingletonProcChecker {
     std::cout << "Listening on " << full_path << std::endl;
   }
 
-  ~SingletonProcChecker() {
+  ~SingletonGuard() {
     close(fd);
   }
 

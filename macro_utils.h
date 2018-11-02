@@ -48,10 +48,12 @@ inline std::string to_stringAndroid(T value){
   s.append(TO_STRING(*(nm + i)));
 
 #define UTILS_DISALLOW_ASSIGN(TypeName) \
-  void operator=(const TypeName&) = delete;
+  void operator=(const TypeName&) = delete; \
+  void operator=(TypeName&) = delete;
 
 #define UTILS_DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = delete;          \
+  TypeName(TypeName&) = delete;          \
   UTILS_DISALLOW_ASSIGN(TypeName);
 
 #define UTILS_DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
