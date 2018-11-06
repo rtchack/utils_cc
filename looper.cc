@@ -6,7 +6,8 @@
 
 namespace utils {
 
-void Looper::Post(const Task &tsk, bool flush) noexcept {
+
+void Looper::Post(Task &&tsk, bool flush) noexcept {
   unless(running) {
     cWar("Not running")
     return;

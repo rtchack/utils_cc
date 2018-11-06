@@ -46,14 +46,14 @@ class Looper : public Module {
   /**
    * Post a method
    */
-  void Post(const Task &tsk) noexcept {
-    Post(tsk, false);
+  void Post(Task &&tsk) noexcept {
+    Post(std::move(tsk), false);
   }
 
   /**
    * Post a method
    */
-  void Post(const Task &task, bool flush) noexcept;
+  void Post(Task &&task, bool flush) noexcept;
 
   // TODO: implement
   //void Post(const Task &task, SSTimer::Duration &delay) noexcept;
