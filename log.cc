@@ -6,6 +6,8 @@
 #include "log.h"
 #include "macro_utils.h"
 
+#include <stdarg.h>
+
 
 namespace utils {
 
