@@ -5,7 +5,7 @@
 
 #include "common.h"
 
-#ifdef POSIX
+#ifdef UNIX
 #include <sys/resource.h>
 #endif
 
@@ -37,7 +37,7 @@ std::string to_string(Ret v) noexcept {
 }
 
 void EnableCoreDump() noexcept {
-#ifdef POSIX
+#ifdef UNIX
   rlimit lim;
 
   unless(getrlimit(RLIMIT_CORE, &lim)) {

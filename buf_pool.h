@@ -38,7 +38,7 @@ class Buffer {
 
   static constexpr size_t prefix_len{sizeof(size) + sizeof(len)};
 
-#ifdef POSIX
+#ifdef UNIX
   uint8_t pad[UTILS_ROUND(prefix_len, sizeof(void *)) - prefix_len];
 #endif
   uint8_t data[sizeof(void *)];

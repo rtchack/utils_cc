@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <sstream>
 
-#ifdef POSIX
+#ifdef UNIX
 #include <unistd.h>
 #endif
 
