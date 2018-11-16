@@ -8,7 +8,10 @@
 #include <string>
 #include <stdexcept>
 #include <sstream>
+
+#ifdef POSIX
 #include <unistd.h>
+#endif
 
 #include "macro_utils.h"
 

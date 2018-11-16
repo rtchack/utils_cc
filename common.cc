@@ -35,6 +35,7 @@ std::string to_string(Ret v) noexcept {
 }
 
 void EnableCoreDump() noexcept {
+#ifdef POSIX
   rlimit lim;
 
   unless(getrlimit(RLIMIT_CORE, &lim)) {
@@ -42,6 +43,7 @@ void EnableCoreDump() noexcept {
     lim.rlim_max = RLIM_INFINITY;
     setrlimit(RLIMIT_CORE, &lim);
   }
+#endif
 }
 
 }
