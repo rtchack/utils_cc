@@ -5,7 +5,9 @@
 
 #include "common.h"
 
+#ifdef POSIX
 #include <sys/resource.h>
+#endif
 
 namespace utils {
 
