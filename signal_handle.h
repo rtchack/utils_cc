@@ -4,8 +4,7 @@
  * Copyright (c) 2018
  */
 
-#ifndef TESTS_AND_BENCH_MARKS_SIGNAL_HANDLE_H
-#define TESTS_AND_BENCH_MARKS_SIGNAL_HANDLE_H
+#pragma once
 
 #include <csignal>
 #include <atomic>
@@ -14,6 +13,8 @@
 
 #include "utilscpp/macro_utils.h"
 
+
+namespace utils {
 
 static std::atomic_bool g_running{true};
 
@@ -35,4 +36,4 @@ void WaitForSignal() {
   });
 }
 
-#endif  // TESTS_AND_BENCH_MARKS_SIGNAL_HANDLE_H
+}
