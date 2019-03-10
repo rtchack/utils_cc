@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <ostream>
 
 #include "macro_utils.h"
 
@@ -16,6 +17,11 @@ namespace utils {
 class StringAble {
  public:
   virtual std::string ToString() const = 0;
+
+  friend std::ostream &operator<< (std::ostream &os, const StringAble &s)
+  {
+    return os << s.ToString ();
+  }
 };
 
 inline std::string to_string(const StringAble &sa) {
