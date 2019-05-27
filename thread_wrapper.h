@@ -54,6 +54,10 @@ class ThreadWrapper final : public Module {
     }
   }
 
+  inline std::thread::id GetId() {
+    return routine.get_id ();
+  }
+
  private:
 
   std::thread routine{};
