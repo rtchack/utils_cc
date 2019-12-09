@@ -36,7 +36,7 @@ class Buffer {
  UTILS_READER(size_t, size);
  UTILS_READER(size_t, len);
 
-  static constexpr size_t prefix_len{sizeof(size) + sizeof(len)};
+  static constexpr size_t prefix_len{sizeof(size_t) + sizeof(size_t)};
 
 #ifdef UNIX
   uint8_t pad[UTILS_ROUND(prefix_len, sizeof(void *)) - prefix_len];
