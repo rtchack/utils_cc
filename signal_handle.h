@@ -13,16 +13,19 @@
 
 #include "utilscpp/macro_utils.h"
 
-
-namespace utils {
-
+namespace utils
+{
 static std::atomic_bool g_running{true};
 
-static void StopRunning(int sig) {
+static void
+StopRunning(int sig)
+{
   g_running = false;
 }
 
-void UntilSignal(std::function<void()> f) {
+void
+UntilSignal(std::function<void()> f)
+{
   signal(SIGINT, StopRunning);
   std::cout << "Press Ctrl + C to stop\n" << std::endl;
   while (g_running) {
@@ -30,10 +33,10 @@ void UntilSignal(std::function<void()> f) {
   }
 }
 
-void WaitForSignal() {
-  UntilSignal([] {
-    UTILS_SLEEP(milliseconds(1 << 9))
-  });
+void
+WaitForSignal()
+{
+  UntilSignal([] { UTILS_SLEEP(milliseconds(1 << 9)) });
 }
 
-}
+}  // namespace utils

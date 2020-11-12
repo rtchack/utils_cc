@@ -19,11 +19,11 @@
 #include "thread_wrapper.h"
 #include "timer.h"
 
-namespace utils {
-
-class Looper : public Module {
+namespace utils
+{
+class Looper : public Module
+{
  public:
-
   UTILS_DISALLOW_COPY_AND_ASSIGN(Looper)
 
   /**
@@ -32,13 +32,12 @@ class Looper : public Module {
   typedef std::function<void()> Task;
   typedef std::list<Task> MsgQueue;
 
-
   Looper() : Looper{""} {}
 
-  explicit Looper(const std::string &name) :
-      Module{name}, worker{Get_name()} {}
+  explicit Looper(const std::string &name) : Module{name}, worker{Get_name()} {}
 
-  ~Looper() override {
+  ~Looper() override
+  {
     Deactivate();
     PutStat();
   }
@@ -46,62 +45,86 @@ class Looper : public Module {
   /**
    * Post a method
    */
-  void Post(Task &&tsk) noexcept {
+  void
+  Post(Task &&tsk) noexcept
+  {
     Post(std::move(tsk), false);
   }
 
   /**
    * Post a method
    */
-  void Post(Task &&task, bool flush) noexcept;
+  void
+  Post(Task &&task, bool flush) noexcept;
 
   // TODO: implement
-  //void Post(const Task &task, SSTimer::Duration &delay) noexcept;
+  // void Post(const Task &task, SSTimer::Duration &delay) noexcept;
 
   /**
    * start loop
    */
-  void Activate() noexcept;
+  void
+  Activate() noexcept;
 
   /**
    * stop loop
    */
-  void Deactivate() noexcept;
+  void
+  Deactivate() noexcept;
 
-  bool IsActive() const noexcept { return running; }
+  bool
+  IsActive() const noexcept
+  {
+    return running;
+  }
 
  protected:
   /**
    * before loop gets started
    */
-  virtual void PreActivate() { cDbg("") }
+  virtual void
+  PreActivate()
+  {
+    cDbg("")
+  }
 
   /**
    * after loop gets started
    */
-  virtual void PostActivate() { cDbg("") }
+  virtual void
+  PostActivate()
+  {
+    cDbg("")
+  }
 
   /**
    * before the quiting of loop
    */
-  virtual void PreDeactivate() { cDbg("") }
+  virtual void
+  PreDeactivate()
+  {
+    cDbg("")
+  }
 
   /**
    * after loop gets stopped
    */
-  virtual void PostDeactivate() { cDbg("") }
+  virtual void
+  PostDeactivate(){cDbg("")}
 
-  std::string ToString() const noexcept override {
+  std::string ToString() const noexcept override
+  {
     return Get_name() + stat.ToString();
   }
 
  private:
-
-  void Entry() noexcept;
-
+  void
+  Entry() noexcept;
 
   struct Stat {
-    inline std::string ToString() const noexcept {
+    inline std::string
+    ToString() const noexcept
+    {
       UTILS_STR_S(16)
       UTILS_STR_ATTR(processed)
       return s;
@@ -119,5 +142,4 @@ class Looper : public Module {
   std::condition_variable cv{};
 };
 
-}
-
+}  // namespace utils

@@ -1,5 +1,9 @@
-.*
-build/
 cmake-build-debug/
+build/
 
+.*
+
+!.clang-format
 !.gitignore
+!.gitattributes
+!.gitmodules

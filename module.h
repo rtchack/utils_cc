@@ -12,9 +12,10 @@
 #include "log.h"
 #include "string_utils.h"
 
-namespace utils {
-
-class Module : public StringAble {
+namespace utils
+{
+class Module : public StringAble
+{
  public:
   Module() = default;
 
@@ -22,17 +23,26 @@ class Module : public StringAble {
 
   virtual ~Module() = default;
 
-  virtual void Inspect() const { cInf(ToString()) }
+  virtual void
+  Inspect() const
+  {
+    cInf(ToString())
+  }
 
-  virtual void PutStat() const { cInf(ToString()) }
+  virtual void
+  PutStat() const
+  {
+    cInf(ToString())
+  }
 
-  virtual std::string ToString() const {
+  virtual std::string
+  ToString() const
+  {
     return name + ": ToString has not been implemented.";
   }
 
  private:
- UTILS_ACCESSOR(std::string, name){""};
+  UTILS_ACCESSOR(std::string, name){""};
 };
 
-}
-
+}  // namespace utils

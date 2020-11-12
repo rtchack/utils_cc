@@ -17,25 +17,23 @@
 #include "module.h"
 #include "thread_wrapper.h"
 
-
-namespace utils {
-
+namespace utils
+{
 /**
  * Will also init loggers
  */
-class Supervisor {
+class Supervisor
+{
  public:
-
-  explicit Supervisor(const std::string &log_file) :
-      log_file{log_file} {}
+  explicit Supervisor(const std::string &log_file) : log_file{log_file} {}
 
   Supervisor() : Supervisor("") {}
 
-  ~Supervisor() {
-    Stop();
-  }
+  ~Supervisor() { Stop(); }
 
-  void Start() {
+  void
+  Start()
+  {
     std::lock_guard<std::mutex> lock{mut};
     if (running) {
       std::cout << "Already running" << std::endl;
@@ -45,9 +43,12 @@ class Supervisor {
     worker.Attach(std::thread(&Supervisor::Entry, this));
   }
 
-  void Stop() {
+  void
+  Stop()
+  {
     std::lock_guard<std::mutex> lock{mut};
-    unless(running) {
+    unless(running)
+    {
       std::cout << "Not running" << std::endl;
       return;
     }
@@ -55,18 +56,18 @@ class Supervisor {
     worker.Detach();
   }
 
-  virtual void RunInDescendant() = 0;
+  virtual void
+  RunInDescendant() = 0;
 
  private:
-
-  void Entry() {
+  void
+  Entry()
+  {
     auto pid = fork();
 
     if (pid > 0) {
       while (running) {
-        unless(pid > 0) {
-          break;
-        }
+        unless(pid > 0) { break; }
 
         wait(NULL);
         if (running) {
@@ -101,5 +102,4 @@ class Supervisor {
   bool running{false};
 };
 
-}
-
+}  // namespace utils

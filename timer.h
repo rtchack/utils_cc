@@ -10,9 +10,10 @@
 #include "common.h"
 #include "macro_utils.h"
 
-namespace utils {
-
-class Timer final {
+namespace utils
+{
+class Timer final
+{
  public:
   typedef std::chrono::steady_clock::time_point Point;
   typedef std::chrono::steady_clock::duration Duration;
@@ -20,9 +21,15 @@ class Timer final {
 
   Timer() : start{std::chrono::steady_clock::now()} {}
 
-  inline void Reset() noexcept { start = std::chrono::steady_clock::now(); }
+  inline void
+  Reset() noexcept
+  {
+    start = std::chrono::steady_clock::now();
+  }
 
-  inline Duration Lap() const noexcept {
+  inline Duration
+  Lap() const noexcept
+  {
     return std::chrono::steady_clock::now() - start;
   }
 
@@ -32,7 +39,8 @@ class Timer final {
    * @return OK - time is up, and ts has been updated
    * 		NO - time is not up, and ts stays the same
    */
-  Ret TimeUp(const Duration &duration) noexcept;
+  Ret
+  TimeUp(const Duration &duration) noexcept;
 
   /**
    * Has time passed duration till now?
@@ -40,24 +48,27 @@ class Timer final {
    * @return OK - time is up, NO - time is not up
    * @note This call will ALWAYS update the value of timer to now
    */
-  Ret TimeUpAlwaysUpdate(const Duration &duration) noexcept;
+  Ret
+  TimeUpAlwaysUpdate(const Duration &duration) noexcept;
 
-  void Inspect() const noexcept;
+  void
+  Inspect() const noexcept;
 
-#define BASE_TIMER_HELPER_CAST(unit) \
-    static inline intmax_t of_##unit(const Duration &du) noexcept {\
-      return std::chrono::duration_cast<std::chrono::unit>(du).count();\
-    }
+#define BASE_TIMER_HELPER_CAST(unit)                                  \
+  static inline intmax_t of_##unit(const Duration &du) noexcept       \
+  {                                                                   \
+    return std::chrono::duration_cast<std::chrono::unit>(du).count(); \
+  }
 
-#define BASE_TIMER_HELPER_STATE(unit) \
-    static inline Duration unit(int64_t val) noexcept{\
-      return std::chrono::unit(val);\
-    }
+#define BASE_TIMER_HELPER_STATE(unit)               \
+  static inline Duration unit(int64_t val) noexcept \
+  {                                                 \
+    return std::chrono::unit(val);                  \
+  }
 
 #define BASE_TIMER_HELPER(unit) \
-  BASE_TIMER_HELPER_STATE(unit)\
-  BASE_TIMER_HELPER_CAST(unit)\
-
+  BASE_TIMER_HELPER_STATE(unit) \
+  BASE_TIMER_HELPER_CAST(unit)
 
   BASE_TIMER_HELPER(nanoseconds)
 
@@ -72,9 +83,8 @@ class Timer final {
   BASE_TIMER_HELPER(hours)
 
  private:
- UTILS_READER(Point, start);
+  UTILS_READER(Point, start);
   Point tmp{};
 };
 
-}
-
+}  // namespace utils

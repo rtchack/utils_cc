@@ -15,58 +15,60 @@
 
 #endif
 
-namespace utils {
-
+namespace utils
+{
 #ifdef UNIX
 
-SingletonGuard::SingletonGuard(const std::string &name) :
-    fd{socket(AF_UNIX, SOCK_STREAM, 0)} {
+SingletonGuard::SingletonGuard(const std::string &name)
+    : fd{socket(AF_UNIX, SOCK_STREAM, 0)}
+{
   UTILS_RAISE_UNLESS(fd)
-  
-  const auto full_path = std::string{"/tmp/"}
-                         + name;
-  
+
+  const auto full_path = std::string{"/tmp/"} + name;
+
   sockaddr_un addr{};
   addr.sun_family = AF_UNIX;
   strncpy(addr.sun_path, full_path.c_str(), sizeof(addr.sun_path));
   auto len = sizeof(addr);
-  
-  unless(connect(fd, (sockaddr *) &addr, len)) {
+
+  unless(connect(fd, (sockaddr *)&addr, len))
+  {
     UTILS_RAISE(full_path << " already running")
   }
-  
+
   if (unlink(addr.sun_path)) {
-    unless(errno == ENOENT) {
+    unless(errno == ENOENT)
+    {
       UTILS_RAISE(full_path << " unlink: " << std::strerror(errno))
     }
   }
-  if (bind(fd, (sockaddr *) &addr, len)) {
+  if (bind(fd, (sockaddr *)&addr, len)) {
     UTILS_RAISE(full_path << " bind: " << std::strerror(errno))
   }
-  
+
   if (listen(fd, 4)) {
     UTILS_RAISE(full_path << " listen: " << std::strerror(errno))
   }
-  
+
   std::cout << "Listening on " << full_path << std::endl;
 }
 
-SingletonGuard::~SingletonGuard() {
-  close(fd);
-}
+SingletonGuard::~SingletonGuard() { close(fd); }
 
 #endif
 
 #ifdef WIN32
 
-SingletonGuard::SingletonGuard(const std::string &name): fd{0} {
+SingletonGuard::SingletonGuard(const std::string &name) : fd{0}
+{
   // TODO(xing) implement
 }
 
-SingletonGuard::~SingletonGuard() {
+SingletonGuard::~SingletonGuard()
+{
   // TODO(xing) implement
 }
 
 #endif
 
-}
+}  // namespace utils

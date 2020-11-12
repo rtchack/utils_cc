@@ -12,9 +12,8 @@
 #include "common.h"
 #include "module.h"
 
-
-namespace utils {
-
+namespace utils
+{
 typedef std::function<void(void *)> PoolResDeleter;
 
 /*
@@ -24,40 +23,38 @@ typedef std::function<void(void *)> PoolResDeleter;
  *    lambda to do these things.
  */
 
-
 /**
  * Pointer wrapper
  * @note Smart pointer in STD is prefered usually,
- * 		This class if for situation when STD smart pointer is not available,
- * 		e.g. in lambda capture
+ * 		This class if for situation when STD smart pointer is not
+ * available, e.g. in lambda capture
  */
-template<typename T>
-class PooledPtr : public StringAble {
+template <typename T>
+class PooledPtr : public StringAble
+{
  public:
   PooledPtr() = default;
 
-  PooledPtr(T *ptr, const PoolResDeleter &del) :
-      ptr{ptr},
-      del{del} {}
+  PooledPtr(T *ptr, const PoolResDeleter &del) : ptr{ptr}, del{del} {}
 
-  PooledPtr(const PooledPtr &other) :
-      PooledPtr(other.ptr, other.del) {
+  PooledPtr(const PooledPtr &other) : PooledPtr(other.ptr, other.del)
+  {
     auto &ot = const_cast<PooledPtr &>(other);
     ot.ptr = nullptr;
     ot.del = nullptr;
   }
 
-  PooledPtr(PooledPtr &&other) noexcept :
-      PooledPtr(other.ptr, other.del) {
+  PooledPtr(PooledPtr &&other) noexcept : PooledPtr(other.ptr, other.del)
+  {
     other.ptr = nullptr;
     other.del = nullptr;
   }
 
-  ~PooledPtr() {
-    Recycle();
-  }
+  ~PooledPtr() { Recycle(); }
 
-  PooledPtr &operator=(const PooledPtr &other) {
+  PooledPtr &
+  operator=(const PooledPtr &other)
+  {
     auto &ot = const_cast<PooledPtr &>(other);
     Recycle();
     ptr = ot.ptr;
@@ -67,7 +64,9 @@ class PooledPtr : public StringAble {
     return *this;
   }
 
-  PooledPtr &operator=(PooledPtr &&other) noexcept {
+  PooledPtr &
+  operator=(PooledPtr &&other) noexcept
+  {
     Recycle();
     ptr = other.ptr;
     del = other.del;
@@ -76,16 +75,24 @@ class PooledPtr : public StringAble {
     return *this;
   }
 
-  T *get() const noexcept { return ptr; }
+  T *
+  get() const noexcept
+  {
+    return ptr;
+  }
 
-  std::string ToString() const noexcept override {
+  std::string
+  ToString() const noexcept override
+  {
     std::stringstream s;
     s << "ptr:" << ptr;
     return s.str();
   }
 
  private:
-  inline void Recycle() noexcept {
+  inline void
+  Recycle() noexcept
+  {
     if (ptr && del) {
       del(ptr);
       ptr = nullptr;
@@ -95,7 +102,6 @@ class PooledPtr : public StringAble {
   T *ptr{};
   PoolResDeleter del{};
 };
-
 
 /**
  * BasePool
@@ -107,10 +113,10 @@ class PooledPtr : public StringAble {
  * 		This pool is not thread safe.
  * 		Try BaseCPool in multi-thread circumstances
  */
-template<typename T>
-class BasePool : public Module {
+template <typename T>
+class BasePool : public Module
+{
  public:
-
   UTILS_DISALLOW_COPY_AND_ASSIGN(BasePool)
 
   typedef std::unique_ptr<T, PoolResDeleter> unique_ptr;
@@ -119,15 +125,15 @@ class BasePool : public Module {
 
   explicit BasePool(size_t size) : BasePool(size, "") {}
 
-  BasePool(size_t size, const std::string &name) :
-      Module{name}, size{size} {
+  BasePool(size_t size, const std::string &name) : Module{name}, size{size}
+  {
     UTILS_RAISE_IF(size <= 0)
 
     size_t sz = UTILS_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
     mem = new uint8_t[size * sz];
     UTILS_RAISE_UNLESS(mem)
 
-    free_mem = (nodeptr) mem;
+    free_mem = (nodeptr)mem;
 
     sz /= sizeof(nodeptr);
     nodeptr tmp = free_mem;
@@ -141,18 +147,19 @@ class BasePool : public Module {
     tmp = free_mem;
     T *t;
     while (tmp) {
-      t = (T *) (tmp + 1);
+      t = (T *)(tmp + 1);
       t->Init();
       tmp = tmp->next;
     }
   }
 
-  ~BasePool() override {
+  ~BasePool() override
+  {
     PutStat();
     nodeptr tmp = free_mem;
     T *t;
     while (tmp) {
-      t = (T *) (tmp + 1);
+      t = (T *)(tmp + 1);
       t->Uninit();
 
       tmp = tmp->next;
@@ -164,19 +171,18 @@ class BasePool : public Module {
   /**
    * get a unique_ptr to a T instance
    */
-  template<typename... Args>
+  template <typename... Args>
   inline std::unique_ptr<T, PoolResDeleter>
-  AllocUnique(Args &&...args) noexcept {
+  AllocUnique(Args &&... args) noexcept
+  {
     return std::unique_ptr<T, std::function<void(void *)>>{
         Alloc(std::forward<Args>(args)...),
         // FIXME(HX) Seems like it's not possible to extract
         // this lambda back into a member, as which may cause
         // a compiler error
         [this](void *b) {
-          unless(b) {
-            return;
-          }
-          auto tmp = ((nodeptr) b) - 1;
+          unless(b) { return; }
+          auto tmp = ((nodeptr)b) - 1;
           tmp->next = free_mem;
           free_mem = tmp;
         }};
@@ -185,47 +191,45 @@ class BasePool : public Module {
   /**
    * get a shared_ptr to a T instance
    */
-  template<typename... Args>
-  inline std::shared_ptr<T> AllocShared(Args &&...args) noexcept {
-    return std::shared_ptr<T>{
-        Alloc(std::forward<Args>(args)...),
-        [this](void *b) {
-          unless(b) {
-            return;
-          }
-          auto tmp = ((nodeptr) b) - 1;
-          tmp->next = free_mem;
-          free_mem = tmp;
-        }};
+  template <typename... Args>
+  inline std::shared_ptr<T>
+  AllocShared(Args &&... args) noexcept
+  {
+    return std::shared_ptr<T>{Alloc(std::forward<Args>(args)...),
+                              [this](void *b) {
+                                unless(b) { return; }
+                                auto tmp = ((nodeptr)b) - 1;
+                                tmp->next = free_mem;
+                                free_mem = tmp;
+                              }};
   }
 
-  template<typename... Args>
-  inline PooledPtr<T> AllocPooled(Args &&...args) noexcept {
-    return PooledPtr<T>{
-        Alloc(std::forward<Args>(args)...),
-        [this](void *b) {
-          unless(b) {
-            return;
-          }
-          auto tmp = ((nodeptr) b) - 1;
-          tmp->next = free_mem;
-          free_mem = tmp;
-        }};
+  template <typename... Args>
+  inline PooledPtr<T>
+  AllocPooled(Args &&... args) noexcept
+  {
+    return PooledPtr<T>{Alloc(std::forward<Args>(args)...), [this](void *b) {
+                          unless(b) { return; }
+                          auto tmp = ((nodeptr)b) - 1;
+                          tmp->next = free_mem;
+                          free_mem = tmp;
+                        }};
   }
 
-  std::string ToString() const noexcept override {
+  std::string
+  ToString() const noexcept override
+  {
     return Get_name() + stat.ToString();
   }
 
  private:
-
   /**
    * Node head for internal memory link
    */
   struct NodeHead {
     NodeHead() = default;
 
-    explicit NodeHead(void *ptr) : next{(NodeHead *) ptr} {}
+    explicit NodeHead(void *ptr) : next{(NodeHead *)ptr} {}
 
     NodeHead *next{};
   };
@@ -235,21 +239,20 @@ class BasePool : public Module {
   /**
    * extracting for type T
    */
-  template<typename... Args>
-  T *Alloc(Args &&... args) noexcept {
+  template <typename... Args>
+  T *
+  Alloc(Args &&... args) noexcept
+  {
     ++stat.total;
 
-    unless(free_mem) {
-      return nullptr;
-    }
+    unless(free_mem) { return nullptr; }
 
-    auto b = (T *) (free_mem + 1);
+    auto b = (T *)(free_mem + 1);
     free_mem = free_mem->next;
 
     auto ret = b->Reinit(std::forward<Args>(args)...);
     if (Ret::OK != ret) {
-      lErr("Reinit: " << to_string(ret))
-      free_mem = ((nodeptr) b) - 1;
+      lErr("Reinit: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
       return nullptr;
     }
 
@@ -257,9 +260,10 @@ class BasePool : public Module {
     return b;
   }
 
-
   struct Stat {
-    inline std::string ToString() const noexcept {
+    inline std::string
+    ToString() const noexcept
+    {
       UTILS_STR_S(32)
       UTILS_STR_ATTR(total)
       UTILS_STR_ATTR(succ)
@@ -270,11 +274,10 @@ class BasePool : public Module {
     uint64_t succ;
   } stat;
 
- UTILS_READER(size_t, size);
+  UTILS_READER(size_t, size);
   uint8_t *mem;
   nodeptr free_mem;
 };
-
 
 /**
  * BaseCPool
@@ -285,10 +288,10 @@ class BasePool : public Module {
  *
  * 		This pool is thread safe.
  */
-template<typename T>
-class BaseCPool : public Module {
+template <typename T>
+class BaseCPool : public Module
+{
  public:
-
   UTILS_DISALLOW_COPY_AND_ASSIGN(BaseCPool)
 
   typedef std::unique_ptr<T, PoolResDeleter> unique_ptr;
@@ -297,15 +300,15 @@ class BaseCPool : public Module {
 
   explicit BaseCPool(size_t size) : BaseCPool(size, "") {}
 
-  BaseCPool(size_t size, const std::string &name) :
-      Module{name}, size{size} {
+  BaseCPool(size_t size, const std::string &name) : Module{name}, size{size}
+  {
     UTILS_RAISE_IF(size <= 0)
 
     size_t sz = UTILS_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
     mem = new uint8_t[size * sz];
     UTILS_RAISE_UNLESS(mem)
 
-    free_mem = (nodeptr) mem;
+    free_mem = (nodeptr)mem;
 
     sz /= sizeof(nodeptr);
     nodeptr tmp = free_mem;
@@ -319,18 +322,19 @@ class BaseCPool : public Module {
     tmp = free_mem;
     T *t;
     while (tmp) {
-      t = (T *) (tmp + 1);
+      t = (T *)(tmp + 1);
       t->Init();
       tmp = tmp->next;
     }
   }
 
-  ~BaseCPool() override {
+  ~BaseCPool() override
+  {
     PutStat();
     nodeptr tmp = free_mem;
     T *t;
     while (tmp) {
-      t = (T *) (tmp + 1);
+      t = (T *)(tmp + 1);
       t->Uninit();
 
       tmp = tmp->next;
@@ -342,16 +346,14 @@ class BaseCPool : public Module {
   /**
    * get a unique_ptr to a T instance
    */
-  template<typename... Args>
+  template <typename... Args>
   inline std::unique_ptr<T, PoolResDeleter>
-  AllocUnique(Args &&...args) noexcept {
+  AllocUnique(Args &&... args) noexcept
+  {
     return std::unique_ptr<T, std::function<void(void *)>>{
-        Alloc(std::forward<Args>(args)...),
-        [this](void *b) {
-          unless(b) {
-            return;
-          }
-          auto tmp = ((nodeptr) b) - 1;
+        Alloc(std::forward<Args>(args)...), [this](void *b) {
+          unless(b) { return; }
+          auto tmp = ((nodeptr)b) - 1;
           {
             std::lock_guard<std::mutex> bar{mut};
             tmp->next = free_mem;
@@ -363,53 +365,51 @@ class BaseCPool : public Module {
   /**
    * get a shared_ptr to a T instance
    */
-  template<typename... Args>
-  inline std::shared_ptr<T> AllocShared(Args &&...args) noexcept {
-    return std::shared_ptr<T>{
-        Alloc(std::forward<Args>(args)...),
-        [this](void *b) {
-          unless(b) {
-            return;
-          }
-          auto tmp = ((nodeptr) b) - 1;
-          {
-            std::lock_guard<std::mutex> bar{mut};
-            tmp->next = free_mem;
-            free_mem = tmp;
-          }
-        }};
+  template <typename... Args>
+  inline std::shared_ptr<T>
+  AllocShared(Args &&... args) noexcept
+  {
+    return std::shared_ptr<T>{Alloc(std::forward<Args>(args)...),
+                              [this](void *b) {
+                                unless(b) { return; }
+                                auto tmp = ((nodeptr)b) - 1;
+                                {
+                                  std::lock_guard<std::mutex> bar{mut};
+                                  tmp->next = free_mem;
+                                  free_mem = tmp;
+                                }
+                              }};
   }
 
-  template<typename... Args>
-  inline PooledPtr<T> AllocPooled(Args &&...args) noexcept {
-    return PooledPtr<T>{
-        Alloc(std::forward<Args>(args)...),
-        [this](void *b) {
-          unless(b) {
-            return;
-          }
-          auto tmp = ((nodeptr) b) - 1;
-          {
-            std::lock_guard<std::mutex> bar{mut};
-            tmp->next = free_mem;
-            free_mem = tmp;
-          }
-        }};
+  template <typename... Args>
+  inline PooledPtr<T>
+  AllocPooled(Args &&... args) noexcept
+  {
+    return PooledPtr<T>{Alloc(std::forward<Args>(args)...), [this](void *b) {
+                          unless(b) { return; }
+                          auto tmp = ((nodeptr)b) - 1;
+                          {
+                            std::lock_guard<std::mutex> bar{mut};
+                            tmp->next = free_mem;
+                            free_mem = tmp;
+                          }
+                        }};
   }
 
-  std::string ToString() const noexcept override {
+  std::string
+  ToString() const noexcept override
+  {
     return Get_name() + stat.ToString();
   }
 
  private:
-
   /**
    * Node head for internal memory link
    */
   struct NodeHead {
     NodeHead() = default;
 
-    explicit NodeHead(void *ptr) : next{(NodeHead *) ptr} {}
+    explicit NodeHead(void *ptr) : next{(NodeHead *)ptr} {}
 
     NodeHead *next{};
   };
@@ -419,24 +419,23 @@ class BaseCPool : public Module {
   /**
    * extracting for type T
    */
-  template<typename... Args>
-  T *Alloc(Args &&... args) noexcept {
+  template <typename... Args>
+  T *
+  Alloc(Args &&... args) noexcept
+  {
     ++stat.total;
 
-    unless(free_mem) {
-      return nullptr;
-    }
+    unless(free_mem) { return nullptr; }
 
     {
       std::lock_guard<std::mutex> bar{mut};
 
-      auto b = (T *) (free_mem + 1);
+      auto b = (T *)(free_mem + 1);
       free_mem = free_mem->next;
 
       auto ret = b->Reinit(std::forward<Args>(args)...);
       if (Ret::OK != ret) {
-        lErr("Reinit: " << to_string(ret))
-        free_mem = ((nodeptr) b) - 1;
+        lErr("Reinit: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
         return nullptr;
       }
 
@@ -445,9 +444,10 @@ class BaseCPool : public Module {
     }
   };
 
-
   struct Stat {
-    inline std::string ToString() const noexcept {
+    inline std::string
+    ToString() const noexcept
+    {
       UTILS_STR_S(32)
       UTILS_STR_ATTR(total)
       UTILS_STR_ATTR(succ)
@@ -458,11 +458,10 @@ class BaseCPool : public Module {
     uint64_t succ{};
   } stat{};
 
- UTILS_READER(size_t, size);
+  UTILS_READER(size_t, size);
   uint8_t *mem;
   nodeptr free_mem;
   std::mutex mut{};
 };
 
-}
-
+}  // namespace utils

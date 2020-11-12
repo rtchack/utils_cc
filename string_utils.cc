@@ -4,10 +4,13 @@
 
 #include "string_utils.h"
 
-namespace utils {
-namespace str_util {
-
-void UperCase(char *str) noexcept {
+namespace utils
+{
+namespace str_util
+{
+void
+UperCase(char *str) noexcept
+{
   while (*str) {
     if (*str <= 122 && *str >= 97) {
       *str -= 32;
@@ -19,13 +22,17 @@ void UperCase(char *str) noexcept {
   }
 }
 
-std::string ToHexStr(uint8_t c) noexcept {
+std::string
+ToHexStr(uint8_t c) noexcept
+{
   char str[4];
   snprintf(str, 4, "%02x", c);
   return str;
 }
 
-std::string ToHexStr(const std::vector<uint8_t> &chars) noexcept {
+std::string
+ToHexStr(const std::vector<uint8_t> &chars) noexcept
+{
   std::string s;
   s.reserve((chars.size() + 1) << 2);
   for (auto c : chars) {
@@ -34,14 +41,18 @@ std::string ToHexStr(const std::vector<uint8_t> &chars) noexcept {
   return s;
 }
 
-std::string ToHexStr(const std::vector<uint8_t> &chars,
-                     const std::string &delimiter) noexcept {
+std::string
+ToHexStr(const std::vector<uint8_t> &chars,
+         const std::string &delimiter) noexcept
+{
   return ToHexStr(chars, delimiter, 1);
 }
 
-std::string ToHexStr(const std::vector<uint8_t> &chars,
-                     const std::string &delimiter,
-                     uint16_t pace) noexcept {
+std::string
+ToHexStr(const std::vector<uint8_t> &chars,
+         const std::string &delimiter,
+         uint16_t pace) noexcept
+{
   std::string s;
   s.reserve((chars.size() + 1) << 2);
 
@@ -58,5 +69,5 @@ std::string ToHexStr(const std::vector<uint8_t> &chars,
   return s;
 }
 
-}
-}
+}  // namespace str_util
+}  // namespace utils

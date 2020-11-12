@@ -9,13 +9,14 @@
 #include <unistd.h>
 #include <stdio.h>
 
-
-namespace utils {
-
+namespace utils
+{
 /**
  * Enable or disable the echo of console
  */
-void SetConsoleEcho(bool enable = true) {
+void
+SetConsoleEcho(bool enable = true)
+{
   termios tm{};
   tcgetattr(STDIN_FILENO, &tm);
   if (enable) {
@@ -29,17 +30,16 @@ void SetConsoleEcho(bool enable = true) {
 /**
  * Disable console echo
  */
-class NoConsoleEcho final {
+class NoConsoleEcho final
+{
  public:
-  NoConsoleEcho() {
-    SetConsoleEcho(false);
-  }
+  NoConsoleEcho() { SetConsoleEcho(false); }
 
-  ~NoConsoleEcho() {
+  ~NoConsoleEcho()
+  {
     SetConsoleEcho();
     puts("");
   }
 };
 
-}
-
+}  // namespace utils

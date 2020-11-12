@@ -1,0 +1,23 @@
+# Run manually to reformat a file:
+# clang-format -i --style=file <file>
+Language: Cpp
+BasedOnStyle: Google
+IncludeBlocks: Regroup
+
+# Do not mess up headers
+SortIncludes: false
+
+UseTab: Never
+
+AlwaysBreakAfterReturnType: All
+AlwaysBreakAfterDefinitionReturnType: All
+BreakBeforeBraces: Linux
+
+BinPackArguments: false
+BinPackParameters: false
+ExperimentalAutoDetectBinPacking: false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+AlignAfterOpenBracket: Align
+# This rule with conflict with PointerAlignment
+#AlignConsecutiveDeclarations: true

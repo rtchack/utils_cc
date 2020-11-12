@@ -12,39 +12,50 @@
 
 #include "macro_utils.h"
 
-namespace utils {
-
-class StringAble {
+namespace utils
+{
+class StringAble
+{
  public:
-  virtual std::string ToString() const = 0;
+  virtual std::string
+  ToString() const = 0;
 
-  friend std::ostream &operator<< (std::ostream &os, const StringAble &s)
+  friend std::ostream &
+  operator<<(std::ostream &os, const StringAble &s)
   {
-    return os << s.ToString ();
+    return os << s.ToString();
   }
 };
 
-inline std::string to_string(const StringAble &sa) {
+inline std::string
+to_string(const StringAble &sa)
+{
   return sa.ToString();
 }
 
-namespace str_util {
+namespace str_util
+{
+void
+UperCase(char *str) noexcept;
 
-void UperCase(char *str) noexcept;
+std::string
+ToHexStr(uint8_t c) noexcept;
 
-std::string ToHexStr(uint8_t c) noexcept;
+std::string
+ToHexStr(const std::vector<uint8_t> &uchars) noexcept;
 
-std::string ToHexStr(const std::vector<uint8_t> &uchars) noexcept;
+std::string
+ToHexStr(const std::vector<uint8_t> &uchars,
+         const std::string &delimiter) noexcept;
 
-std::string ToHexStr(const std::vector<uint8_t> &uchars,
-                     const std::string &delimiter) noexcept;
+std::string
+ToHexStr(const std::vector<uint8_t> &uchars,
+         const std::string &delimiter,
+         uint16_t pace) noexcept;
 
-std::string ToHexStr(const std::vector<uint8_t> &uchars,
-                     const std::string &delimiter,
-                     uint16_t pace) noexcept;
-
-template<size_t N>
-std::string ToHexStr(uint8_t (&chars)[N]) noexcept {
+template <size_t N>
+std::string ToHexStr(uint8_t (&chars)[N]) noexcept
+{
   std::string s;
   s.reserve((N + 1) << 2);
   for (auto c : chars) {
@@ -53,16 +64,19 @@ std::string ToHexStr(uint8_t (&chars)[N]) noexcept {
   return s;
 }
 
-template<size_t N>
-std::string ToHexStr(uint8_t (&chars)[N],
-                     const std::string &delimiter) noexcept {
+template <size_t N>
+std::string
+ToHexStr(uint8_t (&chars)[N], const std::string &delimiter) noexcept
+{
   return ToHexStr(chars, delimiter, 1);
 }
 
-template<size_t N>
-std::string ToHexStr(uint8_t (&chars)[N],
-                     const std::string &delimiter,
-                     uint16_t pace) noexcept {
+template <size_t N>
+std::string
+ToHexStr(uint8_t (&chars)[N],
+         const std::string &delimiter,
+         uint16_t pace) noexcept
+{
   std::string s;
   s.reserve((N + 1) << 2);
 
@@ -79,5 +93,5 @@ std::string ToHexStr(uint8_t (&chars)[N],
   return s;
 }
 
-}
-}
+}  // namespace str_util
+}  // namespace utils

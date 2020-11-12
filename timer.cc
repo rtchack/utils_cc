@@ -5,15 +5,17 @@
 #include "timer.h"
 #include "log.h"
 
-namespace utils {
-
+namespace utils
+{
 /**
  * Has time passed seconds seconds from ts to now?
  * @param[in] sec - time interval in seconds
  * @return OK - time is up, and ts has been updated
  * 		NO - time is not up, and ts stays the same
  */
-Ret Timer::TimeUp(const Duration &duration) noexcept {
+Ret
+Timer::TimeUp(const Duration &duration) noexcept
+{
   tmp = std::chrono::steady_clock::now();
   if (start + duration <= tmp) {
     start = tmp;
@@ -29,7 +31,9 @@ Ret Timer::TimeUp(const Duration &duration) noexcept {
  * @return OK - time is up, NO - time is not up
  * @note This call will ALWAYS update the value of timer to now
  */
-Ret Timer::TimeUpAlwaysUpdate(const Duration &duration) noexcept {
+Ret
+Timer::TimeUpAlwaysUpdate(const Duration &duration) noexcept
+{
   tmp = std::chrono::steady_clock::now();
   if (start + duration <= tmp) {
     start = tmp;
@@ -40,7 +44,9 @@ Ret Timer::TimeUpAlwaysUpdate(const Duration &duration) noexcept {
   return Ret::NO;
 };
 
-void Timer::Inspect() const noexcept {
+void
+Timer::Inspect() const noexcept
+{
   UTILS_STR_S(64)
   s.append("/n/tstart ");
   s.append(std::to_string(of_microseconds(start.time_since_epoch())));
@@ -49,4 +55,4 @@ void Timer::Inspect() const noexcept {
   lInf(s);
 }
 
-}
+}  // namespace utils
