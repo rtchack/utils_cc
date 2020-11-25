@@ -14,10 +14,13 @@ bool
 is_running();
 
 void
-stop_running(int sig);
+stop_running();
 
 void
-until_signal(std::function<void()> f);
+notify_in_running();
+
+void
+until_signal(std::function<void()> &&f);
 
 inline void
 wait_for_signal()

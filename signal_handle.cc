@@ -3,14 +3,14 @@
  */
 
 #include "utils_cpp/signal_handle.h"
+#include "utils_cpp/macro_utils.h"
 
 #include <csignal>
 #include <atomic>
 #include <iostream>
 #include <condition_variable>
 
-namespace utils
-{
+namespace utils {
 static std::atomic_bool g_running{true};
 static std::condition_variable running_cv{};
 
@@ -21,16 +21,29 @@ is_running()
 }
 
 void
-stop_running(int sig)
+stop_running()
 {
   g_running = false;
-  running_cv.notify_all();
+  notify_in_running();
 }
 
 void
-until_signal(std::function<void()> f)
+notify_in_running()
 {
-  signal(SIGINT, stop_running);
+  running_cv.notify_all();
+}
+
+static void
+handle_sig(int sig)
+{
+  UTILS_UNUSED(sig);
+  stop_running();
+}
+
+void
+until_signal(std::function<void()> &&f)
+{
+  signal(SIGINT, handle_sig);
   std::cout << "Press Ctrl + C to stop\n" << std::endl;
 
   std::mutex mut{};

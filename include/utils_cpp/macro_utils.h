@@ -12,6 +12,8 @@
 #define unless(ex) if (!(ex))
 #endif
 
+#define UTILS_UNUSED(a) (void)(a)
+
 #define UTILS_ROUND_UNIT 16
 #define UTILS_ROUND(size, round) (((size) + (round)-1) & (~((round)-1)))
 #define UTILS_ROUNDED(size) (UTILS_ROUND((size), UTILS_ROUND_UNIT))

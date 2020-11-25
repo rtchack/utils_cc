@@ -21,7 +21,7 @@ constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1{
 std::mutex log_mut{};
 
 void
-print_log(LogSeverity severity, const char *fmt, ...)
+print_log(int severity, const char *fmt, ...)
 {
   char msg[UTILS_MAX_LOG_MSG_LENGTH];
   va_list args;
@@ -35,16 +35,16 @@ print_log(LogSeverity severity, const char *fmt, ...)
   va_end(args);
 
   switch (severity) {
-    case LogSeverity::DBG:
+    case UTILS_SEVERITY_DBG:
       UTILS_LOGGER("D " << msg);
       return;
-    case LogSeverity::INF:
+    case UTILS_SEVERITY_INF:
       UTILS_LOGGER("I " << msg);
       return;
-    case LogSeverity::WAR:
+    case UTILS_SEVERITY_WAR:
       UTILS_LOGGER("W " << msg);
       return;
-    case LogSeverity::ERR:
+    case UTILS_SEVERITY_ERR:
       UTILS_LOGGER("E " << msg);
       return;
   }
@@ -79,7 +79,7 @@ print_binary(const char *tag, const void *buf, size_t buf_len)
   }
 
 print_point:
-  print_log(LogSeverity::INF, "%s}", msg);
+  print_log(UTILS_SEVERITY_INF, "%s}", msg);
 }
 
 }  // namespace utils

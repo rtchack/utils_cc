@@ -40,7 +40,7 @@
 #define lDbg(msg) \
   UTILS_LOGGER("D [" << __FUNCTION__ << " " << __LINE__ << "] " << msg);
 #define printDbg(fmt, ...)          \
-  print_log(base::LogSeverity::DBG, \
+  print_log(UTILS_SEVERITY_DBG,     \
             "[%s %d] " fmt,         \
             __FUNCTION__,           \
             __LINE__,               \
@@ -57,7 +57,7 @@
 #define lInf(msg) UTILS_LOGGER("I [" << __FUNCTION__ << "] " << msg);
 
 #define printInf(fmt, ...) \
-  print_log(base::LogSeverity::INF, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
+  print_log(UTILS_SEVERITY_INF, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
 #else
 #define lInf(msg) ;
 #define printInf(fmt, ...) ;
@@ -69,7 +69,7 @@
 #define lWar(msg) UTILS_LOGGER("W [" << __FUNCTION__ << "] " << msg);
 
 #define printWar(fmt, ...) \
-  print_log(base::LogSeverity::WAR, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
+  print_log(UTILS_SEVERITY_WAR, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
 #else
 #define lWar(msg) ;
 #define printWar(fmt, ...) ;
@@ -79,7 +79,7 @@
 #define lErr(msg) UTILS_LOGGER("E [" << __FUNCTION__ << "] " << msg);
 
 #define printErr(fmt, ...) \
-  print_log(base::LogSeverity::ERR, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
+  print_log(UTILS_SEVERITY_ERR, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
 
 #define lFatal(msg)    \
   {                    \
@@ -96,29 +96,24 @@
 #define mErr(msg) lErr("[" << get_name() << "] " << msg)
 #define mFatal(msg) lFatal("[" << get_name() << "] " << msg)
 
-namespace utils
-{
+namespace utils {
 constexpr size_t UTILS_MAX_LOG_MSG_LENGTH{512};
 
 extern std::mutex log_mut;
 
-enum class LogSeverity { DBG, INF, WAR, ERR };
-
 void
-print_log(LogSeverity severity, const char *fmt, ...);
+print_log(int severity, const char *fmt, ...);
 
 void
 print_binary(const char *tag, const void *buf, size_t buf_len);
 
 #define lBinary(buf, buf_len) utils::print_binary(__FUNCTION__, buf, buf_len);
 
-class LazyLogger
-{
+class LazyLogger {
  public:
   LazyLogger()
   {
-    s << "["
-      << "] { ";
+    s << "[" << "] { ";
   }
 
   LazyLogger(const char *init_msg) { s << "[" << init_msg << "] { "; }
