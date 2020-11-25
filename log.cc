@@ -18,7 +18,7 @@ constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH{UTILS_MAX_LOG_MSG_LENGTH -
 constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1{
     REAL_BASE_MAX_LOG_MSG_LENGTH - 1};
 
-std::mutex log_mut = std::mutex{};
+std::mutex log_mut{};
 
 void
 print_log(LogSeverity severity, const char *fmt, ...)

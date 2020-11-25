@@ -17,8 +17,6 @@ namespace utils
 class ThreadWrapper final : public Module
 {
  public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(ThreadWrapper)
-
   ThreadWrapper() = default;
 
   explicit ThreadWrapper(const std::string &name) : Module(name) {}
@@ -67,6 +65,8 @@ class ThreadWrapper final : public Module
   }
 
  private:
+  UTILS_DISALLOW_COPY_AND_ASSIGN(ThreadWrapper)
+
   std::thread routine{};
 };
 

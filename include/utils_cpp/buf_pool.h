@@ -22,10 +22,10 @@ class Buffer
   Buffer() = delete;
 
   inline void
-  init(size_t size, size_t len) noexcept
+  init(size_t initial_size, size_t initial_len) noexcept
   {
-    this->size = size;
-    this->len = len;
+    size = initial_size;
+    len = initial_len;
   }
 
   Ret
@@ -63,8 +63,6 @@ typedef std::shared_ptr<Buffer> shared_buf;
 class BufferPool : public Module
 {
  public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(BufferPool)
-
   BufferPool(size_t buf_count, size_t buf_size)
       : BufferPool(buf_count, buf_size, "")
   {
@@ -97,6 +95,8 @@ class BufferPool : public Module
   }
 
  private:
+  UTILS_DISALLOW_COPY_AND_ASSIGN(BufferPool)
+
   struct NodeHead {
     NodeHead() = default;
 
@@ -145,8 +145,6 @@ class BufferPool : public Module
 class CBufferPool : public Module
 {
  public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(CBufferPool)
-
   CBufferPool(size_t buf_count, size_t buf_size)
       : CBufferPool(buf_count, buf_size, "")
   {
@@ -179,6 +177,8 @@ class CBufferPool : public Module
   }
 
  private:
+  UTILS_DISALLOW_COPY_AND_ASSIGN(CBufferPool)
+
   struct NodeHead {
     NodeHead() = default;
 

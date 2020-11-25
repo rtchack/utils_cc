@@ -24,8 +24,6 @@ namespace utils
 class Looper : public Module
 {
  public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(Looper)
-
   /**
    * @return ture to quit the loop, false to continue
    */
@@ -118,6 +116,8 @@ class Looper : public Module
   }
 
  private:
+  UTILS_DISALLOW_COPY_AND_ASSIGN(Looper)
+
   void
   work_entry() noexcept;
 
