@@ -1,10 +1,8 @@
 /*
- * Created by xing
- *
- * Copyright (c) 2018
+ * Created by xing in 2018
  */
 
-#include "singleton_guard.h"
+#include "utils_cpp/singleton_guard.h"
 
 #ifdef UNIX
 
@@ -17,7 +15,7 @@
 
 namespace utils
 {
-#ifdef UNIX
+#ifdef CONF_UNIX
 
 SingletonGuard::SingletonGuard(const std::string &name)
     : fd{socket(AF_UNIX, SOCK_STREAM, 0)}
@@ -57,16 +55,16 @@ SingletonGuard::~SingletonGuard() { close(fd); }
 
 #endif
 
-#ifdef WIN32
+#ifdef CONF_WIN32
 
 SingletonGuard::SingletonGuard(const std::string &name) : fd{0}
 {
-  // TODO(xing) implement
+  NOT_IMPLEMENTED
 }
 
 SingletonGuard::~SingletonGuard()
 {
-  // TODO(xing) implement
+  NOT_IMPLEMENTED
 }
 
 #endif

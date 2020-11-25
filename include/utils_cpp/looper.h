@@ -13,11 +13,11 @@
 #include <functional>
 #include <condition_variable>
 
-#include "macro_utils.h"
-#include "module.h"
-#include "common.h"
-#include "thread_wrapper.h"
-#include "timer.h"
+#include "utils_cpp/macro_utils.h"
+#include "utils_cpp/module.h"
+#include "utils_cpp/common.h"
+#include "utils_cpp/thread_wrapper.h"
+#include "utils_cpp/timer.h"
 
 namespace utils
 {
@@ -34,46 +34,46 @@ class Looper : public Module
 
   Looper() : Looper{""} {}
 
-  explicit Looper(const std::string &name) : Module{name}, worker{Get_name()} {}
+  explicit Looper(const std::string &name) : Module{name}, worker{get_name()} {}
 
   ~Looper() override
   {
-    Deactivate();
-    PutStat();
+    deactivate();
+    put_stat();
   }
 
   /**
    * Post a method
    */
   void
-  Post(Task &&tsk) noexcept
+  post(Task &&tsk) noexcept
   {
-    Post(std::move(tsk), false);
+    post(std::move(tsk), false);
   }
 
   /**
    * Post a method
    */
   void
-  Post(Task &&task, bool flush) noexcept;
+  post(Task &&task, bool flush) noexcept;
 
   // TODO: implement
-  // void Post(const Task &task, SSTimer::Duration &delay) noexcept;
+  // void post(const Task &task, SSTimer::Duration &delay) noexcept;
 
   /**
    * start loop
    */
   void
-  Activate() noexcept;
+  activate() noexcept;
 
   /**
    * stop loop
    */
   void
-  Deactivate() noexcept;
+  deactivate() noexcept;
 
   bool
-  IsActive() const noexcept
+  is_active() const noexcept
   {
     return running;
   }
@@ -83,47 +83,47 @@ class Looper : public Module
    * before loop gets started
    */
   virtual void
-  PreActivate()
+  pre_activate()
   {
-    cDbg("")
+    mDbg("")
   }
 
   /**
    * after loop gets started
    */
   virtual void
-  PostActivate()
+  post_activate()
   {
-    cDbg("")
+    mDbg("")
   }
 
   /**
    * before the quiting of loop
    */
   virtual void
-  PreDeactivate()
+  pre_deactivate()
   {
-    cDbg("")
+    mDbg("")
   }
 
   /**
    * after loop gets stopped
    */
   virtual void
-  PostDeactivate(){cDbg("")}
+  post_deactivate(){mDbg("")}
 
-  std::string ToString() const noexcept override
+  std::string to_s() const noexcept override
   {
-    return Get_name() + stat.ToString();
+    return get_name() + stat.to_s();
   }
 
  private:
   void
-  Entry() noexcept;
+  work_entry() noexcept;
 
   struct Stat {
     inline std::string
-    ToString() const noexcept
+    to_s() const noexcept
     {
       UTILS_STR_S(16)
       UTILS_STR_ATTR(processed)

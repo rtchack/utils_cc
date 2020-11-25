@@ -9,16 +9,16 @@
 #include <netpacket/packet.h>
 #include <string.h>
 
-#include "log.h"
-#include "common.h"
+#include "utils_cpp/log.h"
+#include "utils_cpp/common.h"
 
 namespace utils
 {
 const std::string
-HardwareAddr()
+hardware_addr()
 {
   ifaddrs *ifaddr{};
-  UTILS_RAISE_VERBOSE_IF(getifaddrs(&ifaddr) == -1, strerror(errno))
+  UTILS_RAISE_VERB_IF(getifaddrs(&ifaddr) == -1, strerror(errno))
 
   char addr_str[256];
   size_t pos = 0;

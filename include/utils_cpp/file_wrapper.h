@@ -9,8 +9,8 @@
 #include <stdarg.h>
 #include <functional>
 
-#include "common.h"
-#include "macro_utils.h"
+#include "utils_cpp/common.h"
+#include "utils_cpp/macro_utils.h"
 
 namespace utils
 {
@@ -55,12 +55,12 @@ class FileWrapper final
   }
 
   inline std::string
-  Read()
+  read()
   {
-    const auto size = (size_t)Size();
+    const auto size = (size_t)size();
     auto mem = new char[size + 1];
     mem[size] = '\0';
-    unless(size == Read(mem, size))
+    unless(size == read(mem, size))
     {
       delete[] mem;
       return std::string{};
@@ -71,77 +71,77 @@ class FileWrapper final
   }
 
   inline size_t
-  Read(void *__restrict ptr, size_t size, size_t n) noexcept
+  read(void *__restrict ptr, size_t size, size_t n) noexcept
   {
     return fread(ptr, size, n, fl);
   }
 
   inline size_t
-  Read(void *__restrict ptr, size_t size) noexcept
+  read(void *__restrict ptr, size_t size) noexcept
   {
     return fread(ptr, 1, size, fl);
   }
 
   inline size_t
-  Write(const std::string &str) noexcept
+  write(const std::string &str) noexcept
   {
-    return Write(str.c_str(), str.size());
+    return write(str.c_str(), str.size());
   }
 
   inline size_t
-  Write(const void *__restrict ptr, size_t size, size_t n) noexcept
+  write(const void *__restrict ptr, size_t size, size_t n) noexcept
   {
     return fwrite(ptr, size, n, fl);
   }
 
   inline size_t
-  Write(const void *__restrict ptr, size_t size) noexcept
+  write(const void *__restrict ptr, size_t size) noexcept
   {
     return fwrite(ptr, 1, size, fl);
   }
 
   inline int
-  Seek(long int off, int whence) noexcept
+  seek(long int off, int whence) noexcept
   {
     return fseek(fl, off, whence);
   }
 
   inline long int
-  Tell() noexcept
+  tell() noexcept
   {
     return ftell(fl);
   }
 
   inline int
-  Flush() noexcept
+  flush() noexcept
   {
     return fflush(fl);
   }
 
   inline int
-  GetC() noexcept
+  get_c() noexcept
   {
     return fgetc(fl);
   }
 
   inline long int
-  Size() noexcept
+  size() noexcept
   {
-    Seek(0, SEEK_END);
-    long int len{Tell()};
-    Seek(0, SEEK_SET);
+    seek(0, SEEK_END);
+    long int len{tell()};
+    seek(0, SEEK_SET);
     return len;
   }
 
   inline int
-  ReadAt(int offset) noexcept
+  read_at(int offset) noexcept
   {
-    Seek(offset, SEEK_SET);
-    return GetC();
+    seek(offset, SEEK_SET);
+    return get_c();
   }
 
   inline int
-  Printf(const char *__restrict fmt, ...) noexcept
+  print(const char *__restrict fmt, ...) noexcept
   {
     va_list vl;
     va_start(vl, fmt);
@@ -154,11 +154,11 @@ class FileWrapper final
    * evaluate each char until f returns false
    */
   inline void
-  EachChar(const std::function<void(int)> &f) noexcept
+  each_char(const std::function<void(int)> &f) noexcept
   {
-    Seek(0, SEEK_SET);
+    seek(0, SEEK_SET);
     int c;
-    while (EOF != (c = GetC())) {
+    while (EOF != (c = get_c())) {
       f(c);
     }
   }

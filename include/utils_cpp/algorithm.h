@@ -7,15 +7,15 @@
 
 #include <array>
 #include <future>
-#include "log.h"
-#include "helpers.h"
-#include "macro_utils.h"
+#include "utils_cpp/log.h"
+#include "utils_cpp/helpers.h"
+#include "utils_cpp/macro_utils.h"
 
 namespace utils
 {
 template <typename T>
 void
-QuickSort(T *v, int32_t left, int32_t right)
+qsort(T *v, int32_t left, int32_t right)
 {
   if (left >= right) {
     return;
@@ -31,23 +31,23 @@ QuickSort(T *v, int32_t left, int32_t right)
 
   if (last - left > 1024) {
     std::async(std::launch::async,
-               [v, left, last] { QuickSort(v, left, last - 1); });
+               [v, left, last] { qsort(v, left, last - 1); });
   } else {
-    QuickSort(v, left, last - 1);
+    qsort(v, left, last - 1);
   }
 
   if (right - last > 1024) {
     std::async(std::launch::async,
-               [v, last, right] { QuickSort(v, last + 1, right); });
+               [v, last, right] { qsort(v, last + 1, right); });
   } else {
-    QuickSort(v, last + 1, right);
+    qsort(v, last + 1, right);
   }
 }
 
 template <typename T, size_t N>
-void QuickSort(T (&v)[N])
+void qsort(T (&v)[N])
 {
-  QuickSort(v, 0, (int32_t)(N - 1));
+  qsort(v, 0, (int32_t)(N - 1));
 };
 
 }  // namespace utils

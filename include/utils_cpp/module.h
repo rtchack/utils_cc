@@ -8,9 +8,9 @@
 #include <string>
 #include <memory>
 
-#include "common.h"
-#include "log.h"
-#include "string_utils.h"
+#include "utils_cpp/common.h"
+#include "utils_cpp/log.h"
+#include "utils_cpp/string_utils.h"
 
 namespace utils
 {
@@ -24,21 +24,21 @@ class Module : public StringAble
   virtual ~Module() = default;
 
   virtual void
-  Inspect() const
+  inspect() const
   {
-    cInf(ToString())
+    mInf(to_s())
   }
 
   virtual void
-  PutStat() const
+  put_stat() const
   {
-    cInf(ToString())
+    mInf(to_s())
   }
 
   virtual std::string
-  ToString() const
+  to_s() const
   {
-    return name + ": ToString has not been implemented.";
+    NOT_IMPLEMENTED
   }
 
  private:

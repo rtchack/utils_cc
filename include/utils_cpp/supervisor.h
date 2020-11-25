@@ -12,10 +12,10 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include "macro_utils.h"
-#include "log.h"
-#include "module.h"
-#include "thread_wrapper.h"
+#include "utils_cpp/macro_utils.h"
+#include "utils_cpp/log.h"
+#include "utils_cpp/module.h"
+#include "utils_cpp/thread_wrapper.h"
 
 namespace utils
 {
@@ -29,10 +29,10 @@ class Supervisor
 
   Supervisor() : Supervisor("") {}
 
-  ~Supervisor() { Stop(); }
+  ~Supervisor() { stop(); }
 
   void
-  Start()
+  start()
   {
     std::lock_guard<std::mutex> lock{mut};
     if (running) {
@@ -40,11 +40,11 @@ class Supervisor
       return;
     }
     running = true;
-    worker.Attach(std::thread(&Supervisor::Entry, this));
+    worker.Attach(std::thread(&Supervisor::work_entry, this));
   }
 
   void
-  Stop()
+  stop()
   {
     std::lock_guard<std::mutex> lock{mut};
     unless(running)
@@ -57,11 +57,11 @@ class Supervisor
   }
 
   virtual void
-  RunInDescendant() = 0;
+  run_in_descendant() = 0;
 
  private:
   void
-  Entry()
+  work_entry()
   {
     auto pid = fork();
 
@@ -88,8 +88,8 @@ class Supervisor
       } else {
         UTILS_INIT_LOG
       }
-      std::cout << getpid() << " Go into RunInDescendant" << std::endl;
-      RunInDescendant();
+      std::cout << getpid() << " Go into run_in_descendant" << std::endl;
+      run_in_descendant();
       return;
     }
 

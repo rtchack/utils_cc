@@ -15,7 +15,7 @@ namespace utils
  * Enable or disable the echo of console
  */
 void
-SetConsoleEcho(bool enable = true)
+enable_console_echo(bool enable = true)
 {
   termios tm{};
   tcgetattr(STDIN_FILENO, &tm);
@@ -33,11 +33,11 @@ SetConsoleEcho(bool enable = true)
 class NoConsoleEcho final
 {
  public:
-  NoConsoleEcho() { SetConsoleEcho(false); }
+  NoConsoleEcho() { enable_console_echo(false); }
 
   ~NoConsoleEcho()
   {
-    SetConsoleEcho();
+    enable_console_echo();
     puts("");
   }
 };

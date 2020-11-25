@@ -3,16 +3,16 @@
  *      Author: xing
  */
 
-#include "common.h"
+#include "utils_cpp/common.h"
 
-#ifdef CONFIG_LINUX
+#ifdef CONF_LINUX
 #include <sys/resource.h>
 #endif
 
 namespace utils
 {
 std::string
-to_string(Ret v) noexcept
+to_s(Ret v) noexcept
 {
 #define CR_DESCRIBE(s) \
   case Ret::s:         \
@@ -39,9 +39,9 @@ to_string(Ret v) noexcept
 }
 
 void
-EnableCoreDump() noexcept
+enable_core_dump() noexcept
 {
-#ifdef CONFIG_LINUX
+#ifdef CONF_LINUX
   rlimit lim;
 
   unless(getrlimit(RLIMIT_CORE, &lim))

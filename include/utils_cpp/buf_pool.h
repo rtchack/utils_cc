@@ -9,7 +9,7 @@
 #include <mutex>
 #include <functional>
 
-#include "module.h"
+#include "utils_cpp/module.h"
 
 namespace utils
 {
@@ -22,20 +22,20 @@ class Buffer
   Buffer() = delete;
 
   inline void
-  Init(size_t size, size_t len) noexcept
+  init(size_t size, size_t len) noexcept
   {
     this->size = size;
     this->len = len;
   }
 
   Ret
-  Write(const uint8_t *src, size_t length) noexcept;
+  write(const uint8_t *src, size_t length) noexcept;
 
   Ret
-  Read(uint8_t *dst, size_t &length) const noexcept;
+  read(uint8_t *dst, size_t &length) const noexcept;
 
   uint8_t *
-  Data() noexcept
+  get_data() noexcept
   {
     return data;
   }
@@ -74,26 +74,26 @@ class BufferPool : public Module
 
   ~BufferPool() override
   {
-    PutStat();
+    put_stat();
     delete[] mem;
   }
 
   inline unique_buf
-  AllocUnique() noexcept
+  alloc_unique() noexcept
   {
-    return unique_buf{Alloc(), del};
+    return unique_buf{alloc(), del};
   }
 
   inline shared_buf
-  AllocShared() noexcept
+  alloc_shared() noexcept
   {
-    return shared_buf{Alloc(), del};
+    return shared_buf{alloc(), del};
   }
 
   std::string
-  ToString() const noexcept override
+  to_s() const noexcept override
   {
-    return Get_name() + stat.ToString();
+    return get_name() + stat.to_s();
   }
 
  private:
@@ -108,7 +108,7 @@ class BufferPool : public Module
   typedef NodeHead *nodeptr;
 
   Buffer *
-  Alloc() noexcept;
+  alloc() noexcept;
 
   buf_callback del{[this](Buffer *b) {
     unless(b) { return; }
@@ -118,7 +118,7 @@ class BufferPool : public Module
 
   struct Stat {
     inline std::string
-    ToString() const noexcept
+    to_s() const noexcept
     {
       UTILS_STR_S(32)
       UTILS_STR_ATTR(total)
@@ -156,26 +156,26 @@ class CBufferPool : public Module
 
   ~CBufferPool() override
   {
-    PutStat();
+    put_stat();
     delete[] mem;
   }
 
   inline unique_buf
-  AllocUnique() noexcept
+  alloc_unique() noexcept
   {
-    return unique_buf{Alloc(), del};
+    return unique_buf{alloc(), del};
   }
 
   inline shared_buf
-  AllocShared() noexcept
+  alloc_shared() noexcept
   {
-    return shared_buf{Alloc(), del};
+    return shared_buf{alloc(), del};
   }
 
   std::string
-  ToString() const noexcept override
+  to_s() const noexcept override
   {
-    return Get_name() + stat.ToString();
+    return get_name() + stat.to_s();
   }
 
  private:
@@ -190,7 +190,7 @@ class CBufferPool : public Module
   typedef NodeHead *nodeptr;
 
   Buffer *
-  Alloc() noexcept;
+  alloc() noexcept;
 
   buf_callback del{[this](Buffer *b) {
     unless(b) { return; }
@@ -203,7 +203,7 @@ class CBufferPool : public Module
 
   struct Stat {
     inline std::string
-    ToString() const noexcept
+    to_s() const noexcept
     {
       UTILS_STR_S(32)
       UTILS_STR_ATTR(total)

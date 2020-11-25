@@ -13,10 +13,10 @@
 #include <unistd.h>
 #endif
 
-#include "macro_utils.h"
+#include "utils_cpp/macro_utils.h"
 
 #ifndef ENABLE_CPP_EXCEPTION
-#include "log.h"
+#include "utils_cpp/log.h"
 #endif
 
 namespace utils
@@ -51,18 +51,18 @@ enum class Ret {
 };
 
 std::string
-to_string(const Ret value) noexcept;
+to_s(const Ret value) noexcept;
 
 constexpr bool
-Failed(const Ret ret) noexcept
+failed(const Ret ret) noexcept
 {
   return ret > Ret::NO;
 }
 
 constexpr bool
-Succeed(const Ret ret) noexcept
+succeed(const Ret ret) noexcept
 {
-  return !Failed(ret);
+  return !failed(ret);
 }
 
 #ifdef ENABLE_CPP_EXCEPTION
@@ -76,11 +76,11 @@ class Excep : public std::exception
   Excep() = delete;
 
   Excep(const std::string &message)
-      : msg{std::to_string(getpid()) + ": " + message}
+      : msg{std::to_s(getpid()) + ": " + message}
   {
   }
 
-  Excep(Ret ret) : msg{to_string(ret)} {}
+  Excep(Ret ret) : msg{to_s(ret)} {}
 
   Excep(Ret ret, const std::string &message) : Excep(ret)
   {
@@ -102,14 +102,14 @@ class Excep : public std::exception
 
 #define UTILS_RAISE(msg)                                         \
   std::stringstream utilscpp_excep_located_s;                    \
-  utilscpp_excep_located_s << "" << __FUNCTION__ << ": " << msg; \
+  utilscpp_excep_located_s << __func__ << ": " << msg; \
   throw utils::Excep(utilscpp_excep_located_s.str());
 
 #else
 #define UTILS_RAISE(msg) lFatal(msg)
 #endif
 
-#define UTILS_RAISE_LOCATED UTILS_RAISE("at " << __LINE__)
+#define UTILS_RAISE_LOCATED UTILS_RAISE("in " << __func__)
 
 #define UTILS_RAISE_IF(v)                 \
   if (v) {                                \
@@ -129,6 +129,6 @@ class Excep : public std::exception
  * ulimit, enable core dump
  */
 void
-EnableCoreDump() noexcept;
+enable_core_dump() noexcept;
 
 }  // namespace utils

@@ -3,12 +3,12 @@
  *     Author: xing
  */
 
-#include "buf_pool.h"
+#include "utils_cpp/buf_pool.h"
 
 namespace utils
 {
 Ret
-Buffer::Write(const uint8_t *src, size_t length) noexcept
+Buffer::write(const uint8_t *src, size_t length) noexcept
 {
   unless(src) return Ret::E_ARG_NULL;
   if (length > size) return Ret::E_ARG;
@@ -20,7 +20,7 @@ Buffer::Write(const uint8_t *src, size_t length) noexcept
 }
 
 Ret
-Buffer::Read(uint8_t *dst, size_t &length) const noexcept
+Buffer::read(uint8_t *dst, size_t &length) const noexcept
 {
   unless(dst) return Ret::E_ARG_NULL;
   unless(len) return Ret::NO;
@@ -56,7 +56,7 @@ BufferPool::BufferPool(size_t buf_count,
 }
 
 Buffer *
-BufferPool::Alloc() noexcept
+BufferPool::alloc() noexcept
 {
   ++stat.total;
 
@@ -66,7 +66,7 @@ BufferPool::Alloc() noexcept
 
   auto b = (Buffer *)free_mem;
   free_mem = free_mem->next;
-  b->Init(buf_size, 0);
+  b->init(buf_size, 0);
 
   return b;
 };
@@ -95,7 +95,7 @@ CBufferPool::CBufferPool(size_t buf_count,
 }
 
 Buffer *
-CBufferPool::Alloc() noexcept
+CBufferPool::alloc() noexcept
 {
   ++stat.total;
 
@@ -105,7 +105,7 @@ CBufferPool::Alloc() noexcept
     std::lock_guard<std::mutex> bar{mut};
     auto b = (Buffer *)free_mem;
     free_mem = free_mem->next;
-    b->Init(buf_size, 0);
+    b->init(buf_size, 0);
     ++stat.succ;
     return b;
   }

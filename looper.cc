@@ -2,14 +2,14 @@
  * Created by xing on 4/12/16.
  */
 
-#include "looper.h"
+#include "utils_cpp/looper.h"
 
 namespace utils
 {
 void
-Looper::Post(Task &&tsk, bool flush) noexcept
+Looper::post(Task &&tsk, bool flush) noexcept
 {
-  unless(running) { cWar("Not running") return; }
+  unless(running) { mWar("Not running") return; }
   {
     std::lock_guard<std::mutex> bar{op_mut};
     if (flush) msg_queue.clear();
@@ -19,36 +19,36 @@ Looper::Post(Task &&tsk, bool flush) noexcept
 }
 
 void
-Looper::Deactivate() noexcept
+Looper::deactivate() noexcept
 {
   {
     std::lock_guard<std::mutex> bar{run_mut};
     unless(running)
     {
-      cInf("is not active");
+      mInf("is not active");
       return;
     }
 
-    PreDeactivate();
+    pre_deactivate();
 
     looping = false;
-    Post([] { ; }, true);
-    worker.Detach();
+    post([] { ; }, true);
+    worker.detach();
     running = false;
   }
 
-  PostDeactivate();
+  post_deactivate();
 }
 
 void
-Looper::Activate() noexcept
+Looper::activate() noexcept
 {
-  PreActivate();
+  pre_activate();
 
   {
     std::lock_guard<std::mutex> bar{run_mut};
     if (running) {
-      cInf("is already active");
+      mInf("is already active");
       return;
     }
 
@@ -58,15 +58,15 @@ Looper::Activate() noexcept
     }
 
     looping = true;
-    worker.Attach(std::thread{&Looper::Entry, this});
+    worker.attach(std::thread{&Looper::work_entry, this});
     running = true;
   }
 
-  PostActivate();
+  pre_activate();
 }
 
 void
-Looper::Entry() noexcept
+Looper::work_entry() noexcept
 {
   Task tsk;
   while (looping) {
@@ -82,7 +82,7 @@ Looper::Entry() noexcept
     tsk();
   }
 
-  cInf("Quiting")
+  mInf("Quiting")
 }
 
 }  // namespace utils

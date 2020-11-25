@@ -71,26 +71,26 @@ to_stringAndroid(T value)
 
 #define UTILS_READER(tp, nm)                                \
  public:                                                    \
-  inline const tp& Get_##nm() const noexcept { return nm; } \
-  inline tp& Get_##nm() noexcept { return nm; }             \
+  inline const tp& get_##nm() const noexcept { return nm; } \
+  inline tp& get_##nm() noexcept { return nm; }             \
   UTILS_ATTR(tp, nm)
 #define UTILS_ACCESSOR(tp, nm)                              \
  public:                                                    \
-  inline const tp& Get_##nm() const noexcept { return nm; } \
-  inline tp& Get_##nm() noexcept { return nm; }             \
-  inline void Set_##nm(const tp& v) noexcept { nm = v; }    \
+  inline const tp& get_##nm() const noexcept { return nm; } \
+  inline tp& get_##nm() noexcept { return nm; }             \
+  inline void set_##nm(const tp& v) noexcept { nm = v; }    \
   UTILS_ATTR(tp, nm)
 
 #define UTILS_DIRECT_READER(tp, nm)                        \
  public:                                                   \
-  inline const tp Get_##nm() const noexcept { return nm; } \
-  inline tp Get_##nm() noexcept { return nm; }             \
+  inline const tp get_##nm() const noexcept { return nm; } \
+  inline tp get_##nm() noexcept { return nm; }             \
   UTILS_ATTR(tp, nm)
 #define UTILS_DIRECT_ACCESSOR(tp, nm)                      \
  public:                                                   \
-  inline const tp Get_##nm() const noexcept { return nm; } \
-  inline tp Get_##nm() noexcept { return nm; }             \
-  inline void Set_##nm(tp v) noexcept { nm = v; }          \
+  inline const tp get_##nm() const noexcept { return nm; } \
+  inline tp get_##nm() noexcept { return nm; }             \
+  inline void set_##nm(tp v) noexcept { nm = v; }          \
   UTILS_ATTR(tp, nm)
 
 #define UTILS_ROUNDED_STRUCTURE(name, ...)                                \
@@ -105,3 +105,6 @@ to_stringAndroid(T value)
   };
 
 #define UTILS_SLEEP(tm) std::this_thread::sleep_for(std::chrono::tm);
+
+#define NOT_IMPLEMENTED UTILS_RAISE_LOCATED("NOT IMPLEMENTED");
+#define UNREACHABLE UTILS_RAISE_LOCATED("UNREACHABLE");

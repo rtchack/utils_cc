@@ -3,14 +3,14 @@
  *      Author: xing
  */
 
-#include "log.h"
-#include "macro_utils.h"
+#include "utils_cpp/log.h"
+#include "utils_cpp/macro_utils.h"
 
 #include <stdarg.h>
 
 namespace utils
 {
-#define LOG_TRUNCATED_NOTIFY_MSG " [truncated!]"
+#define LOG_TRUNCATED_NOTIFY_MSG " TRUNCATED!"
 
 constexpr size_t TRUNCAT_NOTIFY_MSG_LEN{16};
 constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH{UTILS_MAX_LOG_MSG_LENGTH -
@@ -18,8 +18,10 @@ constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH{UTILS_MAX_LOG_MSG_LENGTH -
 constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1{
     REAL_BASE_MAX_LOG_MSG_LENGTH - 1};
 
+std::mutex log_mut = std::mutex{};
+
 void
-CstyleLog(LogSeverity severity, const char *fmt, ...)
+print_log(LogSeverity severity, const char *fmt, ...)
 {
   char msg[UTILS_MAX_LOG_MSG_LENGTH];
   va_list args;
@@ -34,22 +36,22 @@ CstyleLog(LogSeverity severity, const char *fmt, ...)
 
   switch (severity) {
     case LogSeverity::DBG:
-      UTILS_LOGGER("DBG " << msg);
+      UTILS_LOGGER("D " << msg);
       return;
     case LogSeverity::INF:
-      UTILS_LOGGER("INF " << msg);
+      UTILS_LOGGER("I " << msg);
       return;
     case LogSeverity::WAR:
-      UTILS_LOGGER("WAR " << msg);
+      UTILS_LOGGER("W " << msg);
       return;
     case LogSeverity::ERR:
-      UTILS_LOGGER("ERR " << msg);
+      UTILS_LOGGER("E " << msg);
       return;
   }
 }
 
 void
-PrintBinary(const char *tag, const void *buf, size_t buf_len)
+print_binary(const char *tag, const void *buf, size_t buf_len)
 {
   char msg[UTILS_MAX_LOG_MSG_LENGTH];
   auto *tmp_buf = (const unsigned char *)buf;
@@ -77,7 +79,7 @@ PrintBinary(const char *tag, const void *buf, size_t buf_len)
   }
 
 print_point:
-  CstyleLog(LogSeverity::INF, "%s}", msg);
+  print_log(LogSeverity::INF, "%s}", msg);
 }
 
 }  // namespace utils

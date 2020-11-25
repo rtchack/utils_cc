@@ -7,8 +7,8 @@
 
 #include <chrono>
 
-#include "common.h"
-#include "macro_utils.h"
+#include "utils_cpp/common.h"
+#include "utils_cpp/macro_utils.h"
 
 namespace utils
 {
@@ -22,13 +22,13 @@ class Timer final
   Timer() : start{std::chrono::steady_clock::now()} {}
 
   inline void
-  Reset() noexcept
+  reset() noexcept
   {
     start = std::chrono::steady_clock::now();
   }
 
   inline Duration
-  Lap() const noexcept
+  lap() const noexcept
   {
     return std::chrono::steady_clock::now() - start;
   }
@@ -40,7 +40,7 @@ class Timer final
    * 		NO - time is not up, and ts stays the same
    */
   Ret
-  TimeUp(const Duration &duration) noexcept;
+  time_up(const Duration &duration) noexcept;
 
   /**
    * Has time passed duration till now?
@@ -49,10 +49,10 @@ class Timer final
    * @note This call will ALWAYS update the value of timer to now
    */
   Ret
-  TimeUpAlwaysUpdate(const Duration &duration) noexcept;
+  time_up_and_update(const Duration &duration) noexcept;
 
   void
-  Inspect() const noexcept;
+  inspect() const noexcept;
 
 #define BASE_TIMER_HELPER_CAST(unit)                                  \
   static inline intmax_t of_##unit(const Duration &du) noexcept       \

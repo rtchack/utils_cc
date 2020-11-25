@@ -7,10 +7,10 @@
 
 #include <thread>
 
-#include "common.h"
-#include "macro_utils.h"
-#include "log.h"
-#include "module.h"
+#include "utils_cpp/common.h"
+#include "utils_cpp/macro_utils.h"
+#include "utils_cpp/log.h"
+#include "utils_cpp/module.h"
 
 namespace utils
 {
@@ -34,12 +34,12 @@ class ThreadWrapper final : public Module
     std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
   }
 
-  ~ThreadWrapper() override { Detach(); }
+  ~ThreadWrapper() override { detach(); }
 
   inline void
-  Attach(std::thread &&th) noexcept
+  attach(std::thread &&th) noexcept
   {
-    Detach();
+    detach();
     routine = std::forward<std::thread &&>(th);
     std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
   }
@@ -47,12 +47,12 @@ class ThreadWrapper final : public Module
   inline ThreadWrapper &
   operator=(std::thread &&th) noexcept
   {
-    Attach(std::forward<std::thread &&>(th));
+    attach(std::forward<std::thread &&>(th));
     return *this;
   }
 
   inline void
-  Detach() noexcept
+  detach() noexcept
   {
     if (routine.joinable()) {
       routine.join();
@@ -61,7 +61,7 @@ class ThreadWrapper final : public Module
   }
 
   inline std::thread::id
-  GetId()
+  get_id()
   {
     return routine.get_id();
   }

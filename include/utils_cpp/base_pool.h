@@ -9,8 +9,8 @@
 #include <mutex>
 #include <functional>
 
-#include "common.h"
-#include "module.h"
+#include "utils_cpp/common.h"
+#include "utils_cpp/module.h"
 
 namespace utils
 {
@@ -50,13 +50,13 @@ class PooledPtr : public StringAble
     other.del = nullptr;
   }
 
-  ~PooledPtr() { Recycle(); }
+  ~PooledPtr() { recycle(); }
 
   PooledPtr &
   operator=(const PooledPtr &other)
   {
     auto &ot = const_cast<PooledPtr &>(other);
-    Recycle();
+    recycle();
     ptr = ot.ptr;
     del = ot.del;
     ot.ptr = nullptr;
@@ -67,7 +67,7 @@ class PooledPtr : public StringAble
   PooledPtr &
   operator=(PooledPtr &&other) noexcept
   {
-    Recycle();
+    recycle();
     ptr = other.ptr;
     del = other.del;
     other.ptr = nullptr;
@@ -82,7 +82,7 @@ class PooledPtr : public StringAble
   }
 
   std::string
-  ToString() const noexcept override
+  to_s() const noexcept override
   {
     std::stringstream s;
     s << "ptr:" << ptr;
@@ -91,7 +91,7 @@ class PooledPtr : public StringAble
 
  private:
   inline void
-  Recycle() noexcept
+  recycle() noexcept
   {
     if (ptr && del) {
       del(ptr);
@@ -155,7 +155,7 @@ class BasePool : public Module
 
   ~BasePool() override
   {
-    PutStat();
+    put_stat();
     nodeptr tmp = free_mem;
     T *t;
     while (tmp) {
@@ -173,7 +173,7 @@ class BasePool : public Module
    */
   template <typename... Args>
   inline std::unique_ptr<T, PoolResDeleter>
-  AllocUnique(Args &&... args) noexcept
+  alloc_unique(Args &&... args) noexcept
   {
     return std::unique_ptr<T, std::function<void(void *)>>{
         Alloc(std::forward<Args>(args)...),
@@ -193,7 +193,7 @@ class BasePool : public Module
    */
   template <typename... Args>
   inline std::shared_ptr<T>
-  AllocShared(Args &&... args) noexcept
+  alloc_shared(Args &&... args) noexcept
   {
     return std::shared_ptr<T>{Alloc(std::forward<Args>(args)...),
                               [this](void *b) {
@@ -217,9 +217,9 @@ class BasePool : public Module
   }
 
   std::string
-  ToString() const noexcept override
+  to_s() const noexcept override
   {
-    return Get_name() + stat.ToString();
+    return get_name() + stat.to_s();
   }
 
  private:
@@ -262,7 +262,7 @@ class BasePool : public Module
 
   struct Stat {
     inline std::string
-    ToString() const noexcept
+    to_s() const noexcept
     {
       UTILS_STR_S(32)
       UTILS_STR_ATTR(total)
@@ -330,7 +330,7 @@ class BaseCPool : public Module
 
   ~BaseCPool() override
   {
-    PutStat();
+    put_stat();
     nodeptr tmp = free_mem;
     T *t;
     while (tmp) {
@@ -348,7 +348,7 @@ class BaseCPool : public Module
    */
   template <typename... Args>
   inline std::unique_ptr<T, PoolResDeleter>
-  AllocUnique(Args &&... args) noexcept
+  alloc_unique(Args &&... args) noexcept
   {
     return std::unique_ptr<T, std::function<void(void *)>>{
         Alloc(std::forward<Args>(args)...), [this](void *b) {
@@ -367,7 +367,7 @@ class BaseCPool : public Module
    */
   template <typename... Args>
   inline std::shared_ptr<T>
-  AllocShared(Args &&... args) noexcept
+  alloc_shared(Args &&... args) noexcept
   {
     return std::shared_ptr<T>{Alloc(std::forward<Args>(args)...),
                               [this](void *b) {
@@ -397,9 +397,9 @@ class BaseCPool : public Module
   }
 
   std::string
-  ToString() const noexcept override
+  to_s() const noexcept override
   {
-    return Get_name() + stat.ToString();
+    return get_name() + stat.to_s();
   }
 
  private:
@@ -446,7 +446,7 @@ class BaseCPool : public Module
 
   struct Stat {
     inline std::string
-    ToString() const noexcept
+    to_s() const noexcept
     {
       UTILS_STR_S(32)
       UTILS_STR_ATTR(total)
