@@ -38,11 +38,11 @@
     act;                    \
   }
 #define lDbg(msg) \
-  UTILS_LOGGER("D [" << __FUNCTION__ << " " << __LINE__ << "] " << msg);
+  UTILS_LOGGER("D [" << __func__ << " " << __LINE__ << "] " << msg);
 #define printDbg(fmt, ...)          \
   print_log(UTILS_SEVERITY_DBG,     \
             "[%s %d] " fmt,         \
-            __FUNCTION__,           \
+            __func__,               \
             __LINE__,               \
             ##__VA_ARGS__);
 #else
@@ -54,10 +54,10 @@
 // Informative logger
 #if UTILS_CURRENT_SEVERITY >= UTILS_SEVERITY_INF
 
-#define lInf(msg) UTILS_LOGGER("I [" << __FUNCTION__ << "] " << msg);
+#define lInf(msg) UTILS_LOGGER("I [" << __func__ << "] " << msg);
 
 #define printInf(fmt, ...) \
-  print_log(UTILS_SEVERITY_INF, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
+  print_log(UTILS_SEVERITY_INF, "[%s] " fmt, __func__, ##__VA_ARGS__);
 #else
 #define lInf(msg) ;
 #define printInf(fmt, ...) ;
@@ -66,20 +66,20 @@
 // Warning logger
 #if UTILS_CURRENT_SEVERITY >= UTILS_SEVERITY_WAR
 
-#define lWar(msg) UTILS_LOGGER("W [" << __FUNCTION__ << "] " << msg);
+#define lWar(msg) UTILS_LOGGER("W [" << __func__ << "] " << msg);
 
 #define printWar(fmt, ...) \
-  print_log(UTILS_SEVERITY_WAR, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
+  print_log(UTILS_SEVERITY_WAR, "[%s] " fmt, __func__, ##__VA_ARGS__);
 #else
 #define lWar(msg) ;
 #define printWar(fmt, ...) ;
 #endif
 
 // Erroneous logger
-#define lErr(msg) UTILS_LOGGER("E [" << __FUNCTION__ << "] " << msg);
+#define lErr(msg) UTILS_LOGGER("E [" << __func__ << "] " << msg);
 
 #define printErr(fmt, ...) \
-  print_log(UTILS_SEVERITY_ERR, "[%s] " fmt, __FUNCTION__, ##__VA_ARGS__);
+  print_log(UTILS_SEVERITY_ERR, "[%s] " fmt, __func__, ##__VA_ARGS__);
 
 #define lFatal(msg)    \
   {                    \
@@ -97,7 +97,7 @@
 #define mFatal(msg) lFatal("[" << get_name() << "] " << msg)
 
 namespace utils {
-constexpr size_t UTILS_MAX_LOG_MSG_LENGTH{512};
+constexpr size_t N_LOG_BYTES_MAX{512};
 
 extern std::mutex log_mut;
 
@@ -105,9 +105,12 @@ void
 print_log(int severity, const char *fmt, ...);
 
 void
+vprint_log(int severity, const char *fmt, va_list vp);
+
+void
 print_binary(const char *tag, const void *buf, size_t buf_len);
 
-#define lBinary(buf, buf_len) utils::print_binary(__FUNCTION__, buf, buf_len);
+#define lBinary(buf, buf_len) utils::print_binary(__func__, buf, buf_len);
 
 class LazyLogger {
  public:

@@ -7,66 +7,85 @@
 #include "utils_cpp/macro_utils.h"
 
 #include <stdarg.h>
+#include <cstring>
 
-namespace utils
-{
-#define LOG_TRUNCATED_NOTIFY_MSG " TRUNCATED!"
-
-constexpr size_t TRUNCAT_NOTIFY_MSG_LEN{16};
-constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH{UTILS_MAX_LOG_MSG_LENGTH -
-                                              TRUNCAT_NOTIFY_MSG_LEN};
-constexpr size_t REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1{
-    REAL_BASE_MAX_LOG_MSG_LENGTH - 1};
+namespace utils {
+constexpr char MSG_TRUNCATED[] = "TRUNCATED!";
 
 std::mutex log_mut{};
 
 void
 print_log(int severity, const char *fmt, ...)
 {
-  char msg[UTILS_MAX_LOG_MSG_LENGTH];
+  char msg[N_LOG_BYTES_MAX];
+
   va_list args;
   va_start(args, fmt);
-  if (REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 <=
-      (size_t)vsnprintf(msg, REAL_BASE_MAX_LOG_MSG_LENGTH, fmt, args)) {
-    snprintf(msg + REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 - 1,
-             TRUNCAT_NOTIFY_MSG_LEN,
-             LOG_TRUNCATED_NOTIFY_MSG);
+  if (N_LOG_BYTES_MAX <= (size_t)vsnprintf(msg, N_LOG_BYTES_MAX, fmt, args)) {
+    memcpy(msg + (N_LOG_BYTES_MAX - sizeof(MSG_TRUNCATED) - 1),
+           MSG_TRUNCATED,
+           sizeof(MSG_TRUNCATED));
   }
   va_end(args);
 
   switch (severity) {
-    case UTILS_SEVERITY_DBG:
-      UTILS_LOGGER("D " << msg);
+    case UTILS_SEVERITY_DBG: UTILS_LOGGER("D " << msg);
       return;
-    case UTILS_SEVERITY_INF:
-      UTILS_LOGGER("I " << msg);
+    case UTILS_SEVERITY_INF: UTILS_LOGGER("I " << msg);
       return;
-    case UTILS_SEVERITY_WAR:
-      UTILS_LOGGER("W " << msg);
+    case UTILS_SEVERITY_WAR: UTILS_LOGGER("W " << msg);
       return;
-    case UTILS_SEVERITY_ERR:
-      UTILS_LOGGER("E " << msg);
+    case UTILS_SEVERITY_ERR: UTILS_LOGGER("E " << msg);
       return;
+    default:
+      UTILS_LOGGER("U " << msg);
+  }
+}
+
+void
+vprint_log(int severity, const char *fmt, va_list vp)
+{
+  char msg[N_LOG_BYTES_MAX];
+
+  if (N_LOG_BYTES_MAX <= (size_t)vsnprintf(msg, N_LOG_BYTES_MAX, fmt, vp)) {
+    memcpy(msg + (N_LOG_BYTES_MAX - sizeof(MSG_TRUNCATED) - 1),
+           MSG_TRUNCATED,
+           sizeof(MSG_TRUNCATED));
+  }
+
+  switch (severity) {
+    case UTILS_SEVERITY_DBG: UTILS_LOGGER("D " << msg);
+      return;
+    case UTILS_SEVERITY_INF: UTILS_LOGGER("I " << msg);
+      return;
+    case UTILS_SEVERITY_WAR: UTILS_LOGGER("W " << msg);
+      return;
+    case UTILS_SEVERITY_ERR: UTILS_LOGGER("E " << msg);
+      return;
+    default:
+      UTILS_LOGGER("U " << msg);
   }
 }
 
 void
 print_binary(const char *tag, const void *buf, size_t buf_len)
 {
-  char msg[UTILS_MAX_LOG_MSG_LENGTH];
+  char msg[N_LOG_BYTES_MAX];
   auto *tmp_buf = (const unsigned char *)buf;
-  size_t index = 0;
+  size_t offset = 0;
   size_t i = 0;
 
   unless(tmp_buf) return;
 
 #define LOG_BINARY_PUTN(fmt, ...)                                   \
-  index += snprintf(msg + index,                                    \
-                    (REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 - index), \
+  offset += snprintf(msg + offset,                                  \
+                    (N_LOG_BYTES_MAX - offset),                     \
                     fmt,                                            \
                     ##__VA_ARGS__);                                 \
-  if (REAL_BASE_MAX_LOG_MSG_LENGTH_MINUS_1 <= index) {              \
-    snprintf(msg + index, 24, "...");                               \
+  if (N_LOG_BYTES_MAX <= offset) {                                  \
+    memcpy(msg + (offset - sizeof(MSG_TRUNCATED) - 1),              \
+           MSG_TRUNCATED,                                           \
+           sizeof(MSG_TRUNCATED));                                  \
     goto print_point;                                               \
   }
 
@@ -74,8 +93,9 @@ print_binary(const char *tag, const void *buf, size_t buf_len)
 
   while (i < buf_len) {
     LOG_BINARY_PUTN("%02x", tmp_buf[i])
-    unless((++i % 8)) { LOG_BINARY_PUTN("  ") }
-    else {LOG_BINARY_PUTN(" ")} unless((i % 16)) { LOG_BINARY_PUTN("\n") }
+    unless((++i % 8)) { LOG_BINARY_PUTN("  ")}
+    else { LOG_BINARY_PUTN(" ")}
+    unless((i % 16)) { LOG_BINARY_PUTN("\n")}
   }
 
 print_point:
