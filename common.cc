@@ -5,7 +5,7 @@
 
 #include "utils_cpp/common.h"
 
-#ifdef CONF_LINUX
+#ifdef OS_LINUX
 #include <sys/resource.h>
 #endif
 
@@ -41,7 +41,7 @@ to_s(Ret v) noexcept
 void
 enable_core_dump() noexcept
 {
-#ifdef CONF_LINUX
+#ifdef OS_LINUX
   rlimit lim;
 
   unless(getrlimit(RLIMIT_CORE, &lim))

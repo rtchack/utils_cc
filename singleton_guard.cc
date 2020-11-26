@@ -15,7 +15,7 @@
 
 namespace utils
 {
-#ifdef CONF_UNIX
+#ifdef OS_UNIX
 
 SingletonGuard::SingletonGuard(const std::string &name)
     : fd{socket(AF_UNIX, SOCK_STREAM, 0)}
@@ -55,7 +55,7 @@ SingletonGuard::~SingletonGuard() { close(fd); }
 
 #endif
 
-#ifdef CONF_WIN32
+#ifdef OS_WIN32
 
 SingletonGuard::SingletonGuard(const std::string &name) : fd{0}
 {

@@ -14,7 +14,7 @@
 
 #define UTILS_UNUSED(a) (void)(a)
 
-#ifdef CONF_WIN32
+#ifdef OS_WIN32
 #define alloca _alloca
 #endif
 
