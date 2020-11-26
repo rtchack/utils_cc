@@ -12,14 +12,14 @@
 
 namespace utils
 {
-class Timer final
+class Time final
 {
  public:
   typedef std::chrono::steady_clock::time_point Point;
   typedef std::chrono::steady_clock::duration Duration;
   typedef std::chrono::steady_clock::period Period;
 
-  Timer() : start{std::chrono::steady_clock::now()} {}
+  Time() : start{std::chrono::steady_clock::now()} {}
 
   inline void
   reset() noexcept

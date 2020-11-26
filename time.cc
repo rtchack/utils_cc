@@ -2,7 +2,7 @@
  * Created by xing on 4/14/16.
  */
 
-#include "utils_cpp/timer.h"
+#include "utils_cpp/time.h"
 
 namespace utils
 {
@@ -13,7 +13,7 @@ namespace utils
  * 		NO - time is not up, and ts stays the same
  */
 Ret
-Timer::time_up(const Duration &duration) noexcept
+Time::time_up(const Duration &duration) noexcept
 {
   tmp = std::chrono::steady_clock::now();
   if (start + duration <= tmp) {
@@ -31,7 +31,7 @@ Timer::time_up(const Duration &duration) noexcept
  * @note This call will ALWAYS update the value of timer to now
  */
 Ret
-Timer::time_up_and_update(const Duration &duration) noexcept
+Time::time_up_and_update(const Duration &duration) noexcept
 {
   tmp = std::chrono::steady_clock::now();
   if (start + duration <= tmp) {
@@ -44,7 +44,7 @@ Timer::time_up_and_update(const Duration &duration) noexcept
 };
 
 void
-Timer::inspect() const noexcept
+Time::inspect() const noexcept
 {
   UTILS_STR_S(64)
   s.append("/n/tstart ");

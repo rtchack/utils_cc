@@ -17,7 +17,7 @@
 #include "utils_cpp/module.h"
 #include "utils_cpp/common.h"
 #include "utils_cpp/thread_wrapper.h"
-#include "utils_cpp/timer.h"
+#include "utils_cpp/time.h"
 
 namespace utils
 {
