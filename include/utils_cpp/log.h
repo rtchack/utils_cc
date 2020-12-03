@@ -9,6 +9,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <mutex>
+#include <thread>
 
 #define UTILS_SEVERITY_DBG 3
 #define UTILS_SEVERITY_INF 2
@@ -37,8 +38,8 @@
   {                         \
     act;                    \
   }
-#define lDbg(msg) \
-  UTILS_LOGGER("D [" << __func__ << " " << __LINE__ << "] " << msg);
+#define lDbg(msg) UTILS_LOGGER("D " \
+  << std::this_thread::get_id() << " [" << __func__ << " " << __LINE__ << "] " << msg);
 #define printDbg(fmt, ...)          \
   print_log(UTILS_SEVERITY_DBG,     \
             "[%s %d] " fmt,         \
@@ -54,7 +55,8 @@
 // Informative logger
 #if UTILS_CURRENT_SEVERITY >= UTILS_SEVERITY_INF
 
-#define lInf(msg) UTILS_LOGGER("I [" << __func__ << "] " << msg);
+#define lInf(msg) UTILS_LOGGER("I " \
+  << std::this_thread::get_id() << " [" << __func__ << "] " << msg);
 
 #define printInf(fmt, ...) \
   print_log(UTILS_SEVERITY_INF, "[%s] " fmt, __func__, ##__VA_ARGS__);
@@ -66,7 +68,8 @@
 // Warning logger
 #if UTILS_CURRENT_SEVERITY >= UTILS_SEVERITY_WAR
 
-#define lWar(msg) UTILS_LOGGER("W [" << __func__ << "] " << msg);
+#define lWar(msg) UTILS_LOGGER("W " \
+  << std::this_thread::get_id() << " [" << __func__ << "] " << msg);
 
 #define printWar(fmt, ...) \
   print_log(UTILS_SEVERITY_WAR, "[%s] " fmt, __func__, ##__VA_ARGS__);
@@ -76,7 +79,8 @@
 #endif
 
 // Erroneous logger
-#define lErr(msg) UTILS_LOGGER("E [" << __func__ << "] " << msg);
+#define lErr(msg) UTILS_LOGGER("E " \
+  << std::this_thread::get_id() << " [" << __func__ << "] " << msg);
 
 #define printErr(fmt, ...) \
   print_log(UTILS_SEVERITY_ERR, "[%s] " fmt, __func__, ##__VA_ARGS__);

@@ -109,8 +109,6 @@ class Excep : public std::exception
 #define UTILS_RAISE(msg) lFatal(msg)
 #endif
 
-#define UTILS_RAISE_LOCATED UTILS_RAISE("in " << __func__)
-
 #define UTILS_RAISE_IF(v)                 \
   if (v) {                                \
     UTILS_RAISE(#v " should not be ture") \
@@ -124,6 +122,9 @@ class Excep : public std::exception
   }
 
 #define UTILS_RAISE_VERB_UNLESS(v, msg) UTILS_RAISE_VERB_IF(!(v), msg)
+
+#define NOT_IMPLEMENTED UTILS_RAISE("NOT IMPLEMENTED");
+#define UNREACHABLE UTILS_RAISE("UNREACHABLE");
 
 /**
  * ulimit, enable core dump

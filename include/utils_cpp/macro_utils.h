@@ -113,6 +113,3 @@ to_stringAndroid(T value)
   };
 
 #define UTILS_SLEEP(tm) std::this_thread::sleep_for(std::chrono::tm);
-
-#define NOT_IMPLEMENTED UTILS_RAISE_LOCATED("NOT IMPLEMENTED");
-#define UNREACHABLE UTILS_RAISE_LOCATED("UNREACHABLE");

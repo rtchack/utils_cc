@@ -29,16 +29,24 @@ print_log(int severity, const char *fmt, ...)
   va_end(args);
 
   switch (severity) {
-    case UTILS_SEVERITY_DBG: UTILS_LOGGER("D " << msg);
+    case UTILS_SEVERITY_DBG: {
+      UTILS_LOGGER("D " << std::this_thread::get_id() << " " << msg);
       return;
-    case UTILS_SEVERITY_INF: UTILS_LOGGER("I " << msg);
+    }
+    case UTILS_SEVERITY_INF: {
+      UTILS_LOGGER("I " << std::this_thread::get_id() << " " << msg);
       return;
-    case UTILS_SEVERITY_WAR: UTILS_LOGGER("W " << msg);
+    }
+    case UTILS_SEVERITY_WAR: {
+      UTILS_LOGGER("W " << std::this_thread::get_id() << " " << msg);
       return;
-    case UTILS_SEVERITY_ERR: UTILS_LOGGER("E " << msg);
+    }
+    case UTILS_SEVERITY_ERR: {
+      UTILS_LOGGER("E " << std::this_thread::get_id() << " " << msg);
       return;
+    }
     default:
-      UTILS_LOGGER("U " << msg);
+      UTILS_LOGGER("U " << std::this_thread::get_id() << " " << msg);
   }
 }
 
@@ -54,16 +62,24 @@ vprint_log(int severity, const char *fmt, va_list vp)
   }
 
   switch (severity) {
-    case UTILS_SEVERITY_DBG: UTILS_LOGGER("D " << msg);
+    case UTILS_SEVERITY_DBG: {
+      UTILS_LOGGER("D " << std::this_thread::get_id() << " " << msg);
       return;
-    case UTILS_SEVERITY_INF: UTILS_LOGGER("I " << msg);
+    }
+    case UTILS_SEVERITY_INF: {
+      UTILS_LOGGER("I " << std::this_thread::get_id() << " " << msg);
       return;
-    case UTILS_SEVERITY_WAR: UTILS_LOGGER("W " << msg);
+    }
+    case UTILS_SEVERITY_WAR: {
+      UTILS_LOGGER("W " << std::this_thread::get_id() << " " << msg);
       return;
-    case UTILS_SEVERITY_ERR: UTILS_LOGGER("E " << msg);
+    }
+    case UTILS_SEVERITY_ERR: {
+      UTILS_LOGGER("E " << std::this_thread::get_id() << " " << msg);
       return;
+    }
     default:
-      UTILS_LOGGER("U " << msg);
+    UTILS_LOGGER("U " << std::this_thread::get_id() << " " << msg);
   }
 }
 
