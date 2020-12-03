@@ -21,7 +21,7 @@ class SingletonGuard
   ~SingletonGuard();
 
  private:
-  UTILS_DIRECT_READER(int, fd);
+  UTILS_READER(int, fd);
 };
 
 }  // namespace utils

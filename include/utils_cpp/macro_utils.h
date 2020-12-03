@@ -80,6 +80,7 @@ to_stringAndroid(T value)
   inline const tp& get_##nm() const noexcept { return nm; } \
   inline tp& get_##nm() noexcept { return nm; }             \
   UTILS_ATTR(tp, nm)
+
 #define UTILS_ACCESSOR(tp, nm)                              \
  public:                                                    \
   inline const tp& get_##nm() const noexcept { return nm; } \
@@ -92,6 +93,7 @@ to_stringAndroid(T value)
   inline const tp get_##nm() const noexcept { return nm; } \
   inline tp get_##nm() noexcept { return nm; }             \
   UTILS_ATTR(tp, nm)
+
 #define UTILS_DIRECT_ACCESSOR(tp, nm)                      \
  public:                                                   \
   inline const tp get_##nm() const noexcept { return nm; } \

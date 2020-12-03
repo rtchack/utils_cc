@@ -4,7 +4,7 @@
 
 #include "utils_cpp/singleton_guard.h"
 
-#ifdef UNIX
+#ifdef OS_UNIX
 
 #include <sys/socket.h>
 #include <sys/un.h>
