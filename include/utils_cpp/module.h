@@ -19,7 +19,7 @@ class Module : public StringAble
  public:
   Module() = default;
 
-  explicit Module(const std::string &name) : name{name} {}
+  explicit Module(std::string &&name) : name{std::move(name)} {}
 
   virtual ~Module() = default;
 

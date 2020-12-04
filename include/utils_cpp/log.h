@@ -94,11 +94,11 @@
     printErr(fmt, ##__VA_ARGS__) exit(1); \
   }
 
-#define mDbg(msg) lDbg("[" << get_name() << "] " << msg)
-#define mInf(msg) lInf("[" << get_name() << "] " << msg)
-#define mWar(msg) lWar("[" << get_name() << "] " << msg)
-#define mErr(msg) lErr("[" << get_name() << "] " << msg)
-#define mFatal(msg) lFatal("[" << get_name() << "] " << msg)
+#define mDbg(msg) lDbg(get_name() << "| " << msg)
+#define mInf(msg) lInf(get_name() << "| " << msg)
+#define mWar(msg) lWar(get_name() << "| " << msg)
+#define mErr(msg) lErr(get_name() << "| " << msg)
+#define mFatal(msg) lFatal(get_name() << "| " << msg)
 
 namespace utils {
 constexpr size_t N_LOG_BYTES_MAX{512};
