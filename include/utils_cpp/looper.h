@@ -32,7 +32,10 @@ class Looper : public Module
 
   Looper() : Looper{""} {}
 
-  explicit Looper(const std::string &name) : Module{name}, worker{get_name()} {}
+  explicit Looper(std::string &&name)
+      : Module{std::move(name)}, worker{std::string{get_name()}}
+  {
+  }
 
   ~Looper() override
   {

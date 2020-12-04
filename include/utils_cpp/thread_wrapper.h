@@ -19,15 +19,15 @@ class ThreadWrapper final : public Module
  public:
   ThreadWrapper() = default;
 
-  explicit ThreadWrapper(const std::string &name) : Module(name) {}
+  explicit ThreadWrapper(std::string &&name) : Module(std::move(name)) {}
 
   explicit ThreadWrapper(std::thread &&thread)
       : ThreadWrapper{"", std::forward<std::thread &&>(thread)}
   {
   }
 
-  ThreadWrapper(const std::string &name, std::thread &&thread)
-      : Module(name), routine{std::forward<std::thread &&>(thread)}
+  ThreadWrapper(std::string &&name, std::thread &&thread)
+      : Module(std::move(name)), routine{std::forward<std::thread &&>(thread)}
   {
     std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
   }

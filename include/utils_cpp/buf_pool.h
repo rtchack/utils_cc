@@ -101,7 +101,7 @@ class BufferPool : public Module
   {
   }
 
-  BufferPool(size_t n_buf, size_t buf_capacity, const std::string &name);
+  BufferPool(size_t n_buf, size_t buf_capacity, std::string &&name);
 
   ~BufferPool() override { delete[] mem; }
 
@@ -179,7 +179,7 @@ class SafeBufferPool : public Module
   {
   }
 
-  SafeBufferPool(size_t n_buf, size_t buf_capacity, const std::string &name);
+  SafeBufferPool(size_t n_buf, size_t buf_capacity, std::string &&name);
 
   ~SafeBufferPool() override { delete[] mem; }
 

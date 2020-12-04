@@ -125,8 +125,8 @@ class BasePool : public Module
 
   explicit BasePool(size_t capacity) : BasePool(capacity, "") {}
 
-  BasePool(size_t capacity, const std::string &name)
-      : Module{name}, capacity{capacity}
+  BasePool(size_t capacity, std::string &&name)
+      : Module{std::move(name)}, capacity{capacity}
   {
     UTILS_RAISE_IF(capacity <= 0)
 
@@ -300,8 +300,8 @@ class BaseCPool : public Module
 
   explicit BaseCPool(size_t capacity) : BaseCPool(capacity, "") {}
 
-  BaseCPool(size_t capacity, const std::string &name)
-      : Module{name}, capacity{capacity}
+  BaseCPool(size_t capacity, std::string &&name)
+      : Module{std::move(name)}, capacity{capacity}
   {
     UTILS_RAISE_IF(capacity <= 0)
 

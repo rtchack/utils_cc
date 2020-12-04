@@ -56,10 +56,8 @@ Buffer::read_at(uint8_t *dst, size_t &len, size_t offset) noexcept
   return Ret::OK;
 }
 
-BufferPool::BufferPool(size_t n_buf,
-                       size_t buf_capacity,
-                       const std::string &name)
-    : Module{name}, n_buf{n_buf}, buf_capacity{buf_capacity}
+BufferPool::BufferPool(size_t n_buf, size_t buf_capacity, std::string &&name)
+    : Module{std::move(name)}, n_buf{n_buf}, buf_capacity{buf_capacity}
 {
   UTILS_RAISE_IF(n_buf <= 0 || buf_capacity < sizeof(nodeptr))
 
@@ -97,8 +95,8 @@ BufferPool::alloc() noexcept
 
 SafeBufferPool::SafeBufferPool(size_t n_buf,
                                size_t buf_capacity,
-                               const std::string &name)
-    : Module{name}, n_buf{n_buf}, buf_capacity{buf_capacity}
+                               std::string &&name)
+    : Module{std::move(name)}, n_buf{n_buf}, buf_capacity{buf_capacity}
 {
   UTILS_RAISE_IF(n_buf <= 0 || buf_capacity < sizeof(nodeptr))
 
