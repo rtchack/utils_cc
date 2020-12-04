@@ -22,31 +22,64 @@ class Buffer
   Buffer() = delete;
 
   inline void
-  init(size_t initial_size, size_t initial_len) noexcept
+  init(size_t capacity) noexcept
   {
-    size = initial_size;
-    len = initial_len;
+    cap = capacity;
+    reset();
+  }
+
+  void
+  reset() noexcept
+  {
+    w_ptr = data;
+    r_ptr = data;
+    end_ptr = data + cap;
   }
 
   Ret
-  write(const uint8_t *src, size_t length) noexcept;
+  write(const uint8_t *src, size_t len) noexcept;
 
   Ret
-  read(uint8_t *dst, size_t &length) const noexcept;
+  write_at(const uint8_t *src, size_t len, size_t offset) noexcept;
 
-  uint8_t *
-  get_data() noexcept
+  Ret
+  read(uint8_t *dst, size_t &len) noexcept;
+
+  Ret
+  read_at(uint8_t *dst, size_t &len, size_t offset) noexcept;
+
+  void
+  inc_offset(size_t n) noexcept
   {
-    return data;
+    if (!r_ptr) {
+      r_ptr = data + n;
+    } else {
+      r_ptr += n;
+    }
+  }
+
+  size_t
+  get_remain_data_size() const noexcept
+  {
+    return w_ptr - r_ptr;
+  }
+
+  size_t
+  get_total_data_size() const noexcept
+  {
+    return w_ptr - data;
   }
 
  private:
-  UTILS_READER(size_t, size);
-  UTILS_READER(size_t, len);
+  UTILS_READER(size_t, cap){};
+
+  uint8_t *w_ptr;    // write pointer
+  uint8_t *r_ptr;    // read pointer
+  uint8_t *end_ptr;  // end pointer
 
   static constexpr size_t prefix_len{sizeof(size_t) + sizeof(size_t)};
 
-#ifdef UNIX
+#ifdef OS_UNIX
   uint8_t pad[UTILS_ROUND(prefix_len, sizeof(void *)) - prefix_len];
 #endif
   uint8_t data[sizeof(void *)];
@@ -63,18 +96,14 @@ typedef std::shared_ptr<Buffer> shared_buf;
 class BufferPool : public Module
 {
  public:
-  BufferPool(size_t buf_count, size_t buf_size)
-      : BufferPool(buf_count, buf_size, "")
+  BufferPool(size_t n_buf, size_t buf_capacity)
+      : BufferPool(n_buf, buf_capacity, "")
   {
   }
 
-  BufferPool(size_t buf_count, size_t buf_size, const std::string &name);
+  BufferPool(size_t n_buf, size_t buf_capacity, const std::string &name);
 
-  ~BufferPool() override
-  {
-    put_stat();
-    delete[] mem;
-  }
+  ~BufferPool() override { delete[] mem; }
 
   inline unique_buf
   alloc_unique() noexcept
@@ -121,42 +150,38 @@ class BufferPool : public Module
     to_s() const noexcept
     {
       UTILS_STR_S(32)
-      UTILS_STR_ATTR(total)
-      UTILS_STR_ATTR(succ)
+      UTILS_STR_ATTR(n_total)
+      UTILS_STR_ATTR(n_succ)
       return s;
     }
 
-    uint64_t total{};
-    uint64_t succ{};
+    uint64_t n_total{};
+    uint64_t n_succ{};
   } stat{};
 
-  UTILS_READER(size_t, buf_count);
-  UTILS_READER(size_t, buf_size);
+  UTILS_READER(size_t, n_buf);
+  UTILS_READER(size_t, buf_capacity);
   uint8_t *mem;
   nodeptr free_mem;
 };
 
 /**
- * Concurrent Buffer Pool
+ * Multi-thread safe Buffer Pool
  * @note This Pool is thread safe.
  * 	For run-time efficiency, we create this stand alone concurrent buffer
- * pool other than add cocurrent feature into existing Buffer Pool
+ *      pool other than add concurrent feature into existing Buffer Pool
  */
-class CBufferPool : public Module
+class SafeBufferPool : public Module
 {
  public:
-  CBufferPool(size_t buf_count, size_t buf_size)
-      : CBufferPool(buf_count, buf_size, "")
+  SafeBufferPool(size_t n_buf, size_t buf_capacity)
+      : SafeBufferPool(n_buf, buf_capacity, "")
   {
   }
 
-  CBufferPool(size_t buf_count, size_t buf_size, const std::string &name);
+  SafeBufferPool(size_t n_buf, size_t buf_capacity, const std::string &name);
 
-  ~CBufferPool() override
-  {
-    put_stat();
-    delete[] mem;
-  }
+  ~SafeBufferPool() override { delete[] mem; }
 
   inline unique_buf
   alloc_unique() noexcept
@@ -177,7 +202,7 @@ class CBufferPool : public Module
   }
 
  private:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(CBufferPool)
+  UTILS_DISALLOW_COPY_AND_ASSIGN(SafeBufferPool)
 
   struct NodeHead {
     NodeHead() = default;
@@ -206,17 +231,17 @@ class CBufferPool : public Module
     to_s() const noexcept
     {
       UTILS_STR_S(32)
-      UTILS_STR_ATTR(total)
-      UTILS_STR_ATTR(succ)
+      UTILS_STR_ATTR(n_total)
+      UTILS_STR_ATTR(n_succ)
       return s;
     }
 
-    uint64_t total{};
-    uint64_t succ{};
+    uint64_t n_total{};
+    uint64_t n_succ{};
   } stat{};
 
-  UTILS_READER(size_t, buf_count);
-  UTILS_READER(size_t, buf_size);
+  UTILS_READER(size_t, n_buf);
+  UTILS_READER(size_t, buf_capacity);
   uint8_t *mem;
   nodeptr free_mem;
   std::mutex mut{};

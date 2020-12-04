@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <sstream>
 
-#ifdef UNIX
+#ifdef OS_UNIX
 #include <unistd.h>
 #endif
 
@@ -51,16 +51,16 @@ enum class Ret {
 };
 
 std::string
-to_s(const Ret value) noexcept;
+to_s(Ret value) noexcept;
 
 constexpr bool
-failed(const Ret ret) noexcept
+failed(Ret ret) noexcept
 {
   return ret > Ret::NO;
 }
 
 constexpr bool
-succeed(const Ret ret) noexcept
+succeed(Ret ret) noexcept
 {
   return !failed(ret);
 }

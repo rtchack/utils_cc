@@ -19,7 +19,7 @@ typedef std::function<void(void *)> PoolResDeleter;
 /*
  * TODO(HX)
  *    Instead of implicitly force the pooled Class
- *    to implement Init/Reinit/Uninit, we can also ask for
+ *    to implement init/reset/uninit, we can also ask for
  *    lambda to do these things.
  */
 
@@ -106,9 +106,9 @@ class PooledPtr : public StringAble
 /**
  * BasePool
  * @note Class T should have these methods implemented:
- * 		Init(void), which takes no argument, and returns Ret,
- * 		Ret Reinit(...), which returns Ret,
- * 		Uninit(void), which takes no argument, and returns void.
+ * 		init(void), which takes no argument, and returns Ret,
+ * 		Ret reset(...), which returns Ret,
+ * 		uninit(void), which takes no argument, and returns void.
  *
  * 		This pool is not thread safe.
  * 		Try BaseCPool in multi-thread circumstances
@@ -123,21 +123,22 @@ class BasePool : public Module
   typedef std::shared_ptr<T> shared_ptr;
   typedef PooledPtr<T> pooled_ptr;
 
-  explicit BasePool(size_t size) : BasePool(size, "") {}
+  explicit BasePool(size_t capacity) : BasePool(capacity, "") {}
 
-  BasePool(size_t size, const std::string &name) : Module{name}, size{size}
+  BasePool(size_t capacity, const std::string &name)
+      : Module{name}, capacity{capacity}
   {
-    UTILS_RAISE_IF(size <= 0)
+    UTILS_RAISE_IF(capacity <= 0)
 
     size_t sz = UTILS_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
-    mem = new uint8_t[size * sz];
+    mem = new uint8_t[capacity * sz];
     UTILS_RAISE_UNLESS(mem)
 
     free_mem = (nodeptr)mem;
 
     sz /= sizeof(nodeptr);
     nodeptr tmp = free_mem;
-    while (--size) {
+    while (--capacity) {
       tmp->next = tmp + sz;
       tmp = tmp->next;
     }
@@ -148,19 +149,18 @@ class BasePool : public Module
     T *t;
     while (tmp) {
       t = (T *)(tmp + 1);
-      t->Init();
+      t->init();
       tmp = tmp->next;
     }
   }
 
   ~BasePool() override
   {
-    put_stat();
     nodeptr tmp = free_mem;
     T *t;
     while (tmp) {
       t = (T *)(tmp + 1);
-      t->Uninit();
+      t->uninit();
 
       tmp = tmp->next;
     }
@@ -206,7 +206,7 @@ class BasePool : public Module
 
   template <typename... Args>
   inline PooledPtr<T>
-  AllocPooled(Args &&... args) noexcept
+  alloc_pooled(Args &&... args) noexcept
   {
     return PooledPtr<T>{Alloc(std::forward<Args>(args)...), [this](void *b) {
                           unless(b) { return; }
@@ -241,22 +241,22 @@ class BasePool : public Module
    */
   template <typename... Args>
   T *
-  Alloc(Args &&... args) noexcept
+  alloc(Args &&... args) noexcept
   {
-    ++stat.total;
+    ++stat.n_total;
 
     unless(free_mem) { return nullptr; }
 
     auto b = (T *)(free_mem + 1);
     free_mem = free_mem->next;
 
-    auto ret = b->Reinit(std::forward<Args>(args)...);
+    auto ret = b->reset(std::forward<Args>(args)...);
     if (Ret::OK != ret) {
-      lErr("Reinit: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
+      lErr("reset: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
       return nullptr;
     }
 
-    ++stat.succ;
+    ++stat.n_succ;
     return b;
   }
 
@@ -265,16 +265,16 @@ class BasePool : public Module
     to_s() const noexcept
     {
       UTILS_STR_S(32)
-      UTILS_STR_ATTR(total)
-      UTILS_STR_ATTR(succ)
+      UTILS_STR_ATTR(n_total)
+      UTILS_STR_ATTR(n_succ)
       return s;
     }
 
-    uint64_t total;
-    uint64_t succ;
+    uint64_t n_total;
+    uint64_t n_succ;
   } stat;
 
-  UTILS_READER(size_t, size);
+  UTILS_READER(size_t, capacity);
   uint8_t *mem;
   nodeptr free_mem;
 };
@@ -282,9 +282,9 @@ class BasePool : public Module
 /**
  * BaseCPool
  * @note Class T should have these methods implemented:
- * 		Init(void), which takes no argument, and returns Ret,
- * 		Ret Reinit(...), which returns Ret,
- * 		Uninit(void), which takes no argument, and returns void.
+ * 		init(void), which takes no argument, and returns Ret,
+ * 		Ret reset(...), which returns Ret,
+ * 		uninit(void), which takes no argument, and returns void.
  *
  * 		This pool is thread safe.
  */
@@ -298,21 +298,22 @@ class BaseCPool : public Module
   typedef std::shared_ptr<T> shared_ptr;
   typedef PooledPtr<T> pooled_ptr;
 
-  explicit BaseCPool(size_t size) : BaseCPool(size, "") {}
+  explicit BaseCPool(size_t capacity) : BaseCPool(capacity, "") {}
 
-  BaseCPool(size_t size, const std::string &name) : Module{name}, size{size}
+  BaseCPool(size_t capacity, const std::string &name)
+      : Module{name}, capacity{capacity}
   {
-    UTILS_RAISE_IF(size <= 0)
+    UTILS_RAISE_IF(capacity <= 0)
 
     size_t sz = UTILS_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
-    mem = new uint8_t[size * sz];
+    mem = new uint8_t[capacity * sz];
     UTILS_RAISE_UNLESS(mem)
 
     free_mem = (nodeptr)mem;
 
     sz /= sizeof(nodeptr);
     nodeptr tmp = free_mem;
-    while (--size) {
+    while (--capacity) {
       tmp->next = tmp + sz;
       tmp = tmp->next;
     }
@@ -323,19 +324,18 @@ class BaseCPool : public Module
     T *t;
     while (tmp) {
       t = (T *)(tmp + 1);
-      t->Init();
+      t->init();
       tmp = tmp->next;
     }
   }
 
   ~BaseCPool() override
   {
-    put_stat();
     nodeptr tmp = free_mem;
     T *t;
     while (tmp) {
       t = (T *)(tmp + 1);
-      t->Uninit();
+      t->uninit();
 
       tmp = tmp->next;
     }
@@ -383,7 +383,7 @@ class BaseCPool : public Module
 
   template <typename... Args>
   inline PooledPtr<T>
-  AllocPooled(Args &&... args) noexcept
+  alloc_pooled(Args &&... args) noexcept
   {
     return PooledPtr<T>{Alloc(std::forward<Args>(args)...), [this](void *b) {
                           unless(b) { return; }
@@ -417,13 +417,13 @@ class BaseCPool : public Module
   typedef NodeHead *nodeptr;
 
   /**
-   * extracting for type T
+   * Alloc for type T
    */
   template <typename... Args>
   T *
-  Alloc(Args &&... args) noexcept
+  alloc(Args &&... args) noexcept
   {
-    ++stat.total;
+    ++stat.n_total;
 
     unless(free_mem) { return nullptr; }
 
@@ -433,13 +433,13 @@ class BaseCPool : public Module
       auto b = (T *)(free_mem + 1);
       free_mem = free_mem->next;
 
-      auto ret = b->Reinit(std::forward<Args>(args)...);
+      auto ret = b->reset(std::forward<Args>(args)...);
       if (Ret::OK != ret) {
-        lErr("Reinit: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
+        lErr("reset: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
         return nullptr;
       }
 
-      ++stat.succ;
+      ++stat.n_succ;
       return b;
     }
   };
@@ -449,16 +449,16 @@ class BaseCPool : public Module
     to_s() const noexcept
     {
       UTILS_STR_S(32)
-      UTILS_STR_ATTR(total)
-      UTILS_STR_ATTR(succ)
+      UTILS_STR_ATTR(n_total)
+      UTILS_STR_ATTR(n_succ)
       return s;
     }
 
-    uint64_t total{};
-    uint64_t succ{};
+    uint64_t n_total{};
+    uint64_t n_succ{};
   } stat{};
 
-  UTILS_READER(size_t, size);
+  UTILS_READER(size_t, capacity);
   uint8_t *mem;
   nodeptr free_mem;
   std::mutex mut{};
