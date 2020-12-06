@@ -14,15 +14,6 @@
 
 namespace utils
 {
-typedef std::function<void(void *)> PoolResDeleter;
-
-/*
- * TODO(HX)
- *    Instead of implicitly force the pooled Class
- *    to implement init/reset/uninit, we can also ask for
- *    lambda to do these things.
- */
-
 /**
  * Pointer wrapper
  * @note Smart pointer in STD is prefered usually,
@@ -35,19 +26,9 @@ class PooledPtr : public StringAble
  public:
   PooledPtr() = default;
 
-  PooledPtr(T *ptr, const PoolResDeleter &del) : ptr{ptr}, del{del} {}
-
-  PooledPtr(const PooledPtr &other) : PooledPtr(other.ptr, other.del)
+  PooledPtr(T *ptr, std::function<void(T *)> &&del)
+      : ptr{ptr}, del{std::move(del)}
   {
-    auto &ot = const_cast<PooledPtr &>(other);
-    ot.ptr = nullptr;
-    ot.del = nullptr;
-  }
-
-  PooledPtr(PooledPtr &&other) noexcept : PooledPtr(other.ptr, other.del)
-  {
-    other.ptr = nullptr;
-    other.del = nullptr;
   }
 
   ~PooledPtr() { recycle(); }
@@ -100,92 +81,60 @@ class PooledPtr : public StringAble
   }
 
   T *ptr{};
-  PoolResDeleter del{};
+  std::function<void(T *)> del{};
 };
 
 /**
  * BasePool
- * @note Class T should have these methods implemented:
- * 		init(void), which takes no argument, and returns Ret,
- * 		Ret reset(...), which returns Ret,
- * 		uninit(void), which takes no argument, and returns void.
- *
- * 		This pool is not thread safe.
- * 		Try BaseCPool in multi-thread circumstances
  */
 template <typename T>
 class BasePool : public Module
 {
  public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(BasePool)
+  explicit BasePool(size_t capacity) : BasePool(capacity, "", false) {}
 
-  typedef std::unique_ptr<T, PoolResDeleter> unique_ptr;
-  typedef std::shared_ptr<T> shared_ptr;
-  typedef PooledPtr<T> pooled_ptr;
-
-  explicit BasePool(size_t capacity) : BasePool(capacity, "") {}
-
-  BasePool(size_t capacity, std::string &&name)
+  BasePool(size_t capacity, std::string &&name, bool be_thread_safe)
       : Module{std::move(name)}, capacity{capacity}
   {
     UTILS_RAISE_IF(capacity <= 0)
 
-    size_t sz = UTILS_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
-    mem = new uint8_t[capacity * sz];
-    UTILS_RAISE_UNLESS(mem)
+    if (be_thread_safe) {
+      mut = new std::mutex{};
+    }
 
-    free_mem = (nodeptr)mem;
+    mem = new uint8_t[capacity * sizeof(Node)];
+    free_nodes = (Node *)mem;
 
-    sz /= sizeof(nodeptr);
-    nodeptr tmp = free_mem;
+    auto tmp = free_nodes;
     while (--capacity) {
-      tmp->next = tmp + sz;
+      tmp->next = tmp + 1;
       tmp = tmp->next;
     }
 
     tmp->next = nullptr;
-
-    tmp = free_mem;
-    T *t;
-    while (tmp) {
-      t = (T *)(tmp + 1);
-      t->init();
-      tmp = tmp->next;
-    }
   }
 
   ~BasePool() override
   {
-    nodeptr tmp = free_mem;
-    T *t;
-    while (tmp) {
-      t = (T *)(tmp + 1);
-      t->uninit();
-
-      tmp = tmp->next;
+    if (mut) {
+      std::lock_guard<std::mutex> lock{*mut};
+      delete[] mem;
+    } else {
+      delete[] mem;
     }
 
-    delete[] mem;
+    delete mut;
   }
 
   /**
    * get a unique_ptr to a T instance
    */
   template <typename... Args>
-  inline std::unique_ptr<T, PoolResDeleter>
+  inline std::unique_ptr<T, std::function<void(T *)>>
   alloc_unique(Args &&... args) noexcept
   {
-    return std::unique_ptr<T, std::function<void(void *)>>{
-        Alloc(std::forward<Args>(args)...),
-        // FIXME(HX) Seems like it's not possible to extract
-        // this lambda back into a member, as which may cause
-        // a compiler error
-        [this](void *b) {
-          unless(b) { return; }
-          auto tmp = ((nodeptr)b) - 1;
-          tmp->next = free_mem;
-          free_mem = tmp;
-        }};
+    return std::unique_ptr<T, std::function<void(T *)>>{
+        alloc(std::forward<Args>(args)...), [this](T *t) { dealloc(t); }};
   }
 
   /**
@@ -195,25 +144,19 @@ class BasePool : public Module
   inline std::shared_ptr<T>
   alloc_shared(Args &&... args) noexcept
   {
-    return std::shared_ptr<T>{Alloc(std::forward<Args>(args)...),
-                              [this](void *b) {
-                                unless(b) { return; }
-                                auto tmp = ((nodeptr)b) - 1;
-                                tmp->next = free_mem;
-                                free_mem = tmp;
-                              }};
+    unless(mut) { return nullptr; }
+
+    return std::shared_ptr<T>{alloc(std::forward<Args>(args)...),
+                              [this](T *t) { dealloc(t); }};
   }
 
   template <typename... Args>
-  inline PooledPtr<T>
+  PooledPtr<T>
   alloc_pooled(Args &&... args) noexcept
   {
-    return PooledPtr<T>{Alloc(std::forward<Args>(args)...), [this](void *b) {
-                          unless(b) { return; }
-                          auto tmp = ((nodeptr)b) - 1;
-                          tmp->next = free_mem;
-                          free_mem = tmp;
-                        }};
+    return PooledPtr<T>{
+        alloc(std::forward<Args>(args)...),
+        static_cast<std::function<void(T *)>>([this](T *t) { dealloc(t); })};
   }
 
   std::string
@@ -224,197 +167,24 @@ class BasePool : public Module
 
  private:
   /**
-   * Node head for internal memory link
+   * Node for internal memory link
    */
-  struct NodeHead {
-    NodeHead() = default;
-
-    explicit NodeHead(void *ptr) : next{(NodeHead *)ptr} {}
-
-    NodeHead *next{};
+  struct Node {
+    Node *next{};
+    uint8_t mem[sizeof(T)];
   };
 
-  typedef NodeHead *nodeptr;
-
-  /**
-   * extracting for type T
-   */
   template <typename... Args>
   T *
-  alloc(Args &&... args) noexcept
+  borrow_item(Args &&... args)
   {
-    ++stat.n_total;
-
-    unless(free_mem) { return nullptr; }
-
-    auto b = (T *)(free_mem + 1);
-    free_mem = free_mem->next;
-
-    auto ret = b->reset(std::forward<Args>(args)...);
-    if (Ret::OK != ret) {
-      lErr("reset: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
-      return nullptr;
-    }
-
+    unless(free_nodes) { return nullptr; }
+    auto t = new (free_nodes->mem) T{std::forward<Args>(args)...};
+    free_nodes = free_nodes->next;
     ++stat.n_succ;
-    return b;
+    ++stat.n_allocated;
+    return t;
   }
-
-  struct Stat {
-    inline std::string
-    to_s() const noexcept
-    {
-      UTILS_STR_S(32)
-      UTILS_STR_ATTR(n_total)
-      UTILS_STR_ATTR(n_succ)
-      return s;
-    }
-
-    uint64_t n_total;
-    uint64_t n_succ;
-  } stat;
-
-  UTILS_READER(size_t, capacity);
-  uint8_t *mem;
-  nodeptr free_mem;
-};
-
-/**
- * BaseCPool
- * @note Class T should have these methods implemented:
- * 		init(void), which takes no argument, and returns Ret,
- * 		Ret reset(...), which returns Ret,
- * 		uninit(void), which takes no argument, and returns void.
- *
- * 		This pool is thread safe.
- */
-template <typename T>
-class BaseCPool : public Module
-{
- public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(BaseCPool)
-
-  typedef std::unique_ptr<T, PoolResDeleter> unique_ptr;
-  typedef std::shared_ptr<T> shared_ptr;
-  typedef PooledPtr<T> pooled_ptr;
-
-  explicit BaseCPool(size_t capacity) : BaseCPool(capacity, "") {}
-
-  BaseCPool(size_t capacity, std::string &&name)
-      : Module{std::move(name)}, capacity{capacity}
-  {
-    UTILS_RAISE_IF(capacity <= 0)
-
-    size_t sz = UTILS_ROUND(sizeof(T) + sizeof(nodeptr), sizeof(nodeptr));
-    mem = new uint8_t[capacity * sz];
-    UTILS_RAISE_UNLESS(mem)
-
-    free_mem = (nodeptr)mem;
-
-    sz /= sizeof(nodeptr);
-    nodeptr tmp = free_mem;
-    while (--capacity) {
-      tmp->next = tmp + sz;
-      tmp = tmp->next;
-    }
-
-    tmp->next = nullptr;
-
-    tmp = free_mem;
-    T *t;
-    while (tmp) {
-      t = (T *)(tmp + 1);
-      t->init();
-      tmp = tmp->next;
-    }
-  }
-
-  ~BaseCPool() override
-  {
-    nodeptr tmp = free_mem;
-    T *t;
-    while (tmp) {
-      t = (T *)(tmp + 1);
-      t->uninit();
-
-      tmp = tmp->next;
-    }
-
-    delete[] mem;
-  }
-
-  /**
-   * get a unique_ptr to a T instance
-   */
-  template <typename... Args>
-  inline std::unique_ptr<T, PoolResDeleter>
-  alloc_unique(Args &&... args) noexcept
-  {
-    return std::unique_ptr<T, std::function<void(void *)>>{
-        Alloc(std::forward<Args>(args)...), [this](void *b) {
-          unless(b) { return; }
-          auto tmp = ((nodeptr)b) - 1;
-          {
-            std::lock_guard<std::mutex> bar{mut};
-            tmp->next = free_mem;
-            free_mem = tmp;
-          }
-        }};
-  }
-
-  /**
-   * get a shared_ptr to a T instance
-   */
-  template <typename... Args>
-  inline std::shared_ptr<T>
-  alloc_shared(Args &&... args) noexcept
-  {
-    return std::shared_ptr<T>{Alloc(std::forward<Args>(args)...),
-                              [this](void *b) {
-                                unless(b) { return; }
-                                auto tmp = ((nodeptr)b) - 1;
-                                {
-                                  std::lock_guard<std::mutex> bar{mut};
-                                  tmp->next = free_mem;
-                                  free_mem = tmp;
-                                }
-                              }};
-  }
-
-  template <typename... Args>
-  inline PooledPtr<T>
-  alloc_pooled(Args &&... args) noexcept
-  {
-    return PooledPtr<T>{Alloc(std::forward<Args>(args)...), [this](void *b) {
-                          unless(b) { return; }
-                          auto tmp = ((nodeptr)b) - 1;
-                          {
-                            std::lock_guard<std::mutex> bar{mut};
-                            tmp->next = free_mem;
-                            free_mem = tmp;
-                          }
-                        }};
-  }
-
-  std::string
-  to_s() const noexcept override
-  {
-    return get_name() + stat.to_s();
-  }
-
- private:
-  /**
-   * Node head for internal memory link
-   */
-  struct NodeHead {
-    NodeHead() = default;
-
-    explicit NodeHead(void *ptr) : next{(NodeHead *)ptr} {}
-
-    NodeHead *next{};
-  };
-
-  typedef NodeHead *nodeptr;
 
   /**
    * Alloc for type T
@@ -425,43 +195,60 @@ class BaseCPool : public Module
   {
     ++stat.n_total;
 
-    unless(free_mem) { return nullptr; }
-
-    {
-      std::lock_guard<std::mutex> bar{mut};
-
-      auto b = (T *)(free_mem + 1);
-      free_mem = free_mem->next;
-
-      auto ret = b->reset(std::forward<Args>(args)...);
-      if (Ret::OK != ret) {
-        lErr("reset: " << to_string(ret)) free_mem = ((nodeptr)b) - 1;
-        return nullptr;
-      }
-
-      ++stat.n_succ;
-      return b;
+    if (mut) {
+      std::lock_guard<std::mutex> bar{*mut};
+      return borrow_item(std::forward<Args>(args)...);
+    } else {
+      return borrow_item(std::forward<Args>(args)...);
     }
   };
+
+  void
+  return_item(T *t) noexcept
+  {
+    unless(t) { return; }
+    auto node = container_of(t, Node, mem);
+    node->next = free_nodes;
+    free_nodes = node;
+    t->~T();
+    ++stat.n_deallocated;
+  }
+
+  void
+  dealloc(T *t) noexcept
+  {
+    if (mut) {
+      std::lock_guard<std::mutex> bar{*mut};
+      return_item(t);
+    } else {
+      return_item(t);
+    }
+  }
 
   struct Stat {
     inline std::string
     to_s() const noexcept
     {
-      UTILS_STR_S(32)
+      UTILS_STR_S(64)
       UTILS_STR_ATTR(n_total)
       UTILS_STR_ATTR(n_succ)
+      UTILS_STR_ATTR(n_allocated)
+      UTILS_STR_ATTR(n_deallocated)
       return s;
     }
 
     uint64_t n_total{};
     uint64_t n_succ{};
+    uint64_t n_allocated{};
+    uint64_t n_deallocated{};
   } stat{};
 
   UTILS_READER(size_t, capacity);
   uint8_t *mem;
-  nodeptr free_mem;
-  std::mutex mut{};
+  Node *free_nodes;
+  std::mutex *mut{};
+
+  UTILS_DISALLOW_COPY_AND_ASSIGN(BasePool)
 };
 
 }  // namespace utils

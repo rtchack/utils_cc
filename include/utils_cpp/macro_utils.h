@@ -18,7 +18,12 @@
 #define alloca _alloca
 #endif
 
-#define UTILS_ROUND_UNIT 16
+#ifndef container_of
+#define container_of(ptr, type, member) \
+  ((type *) ((char *) (ptr) - offsetof(type, member)))
+#endif
+
+#define UTILS_ROUND_UNIT 16U
 #define UTILS_ROUND(size, round) (((size) + (round)-1) & (~((round)-1)))
 #define UTILS_ROUNDED(size) (UTILS_ROUND((size), UTILS_ROUND_UNIT))
 
