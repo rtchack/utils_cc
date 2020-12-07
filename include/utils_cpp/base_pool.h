@@ -15,76 +15,6 @@
 namespace utils
 {
 /**
- * Pointer wrapper
- * @note Smart pointer in STD is prefered usually,
- * 		This class if for situation when STD smart pointer is not
- * available, e.g. in lambda capture
- */
-template <typename T>
-class PooledPtr : public StringAble
-{
- public:
-  PooledPtr() = default;
-
-  PooledPtr(T *ptr, std::function<void(T *)> &&del)
-      : ptr{ptr}, del{std::move(del)}
-  {
-  }
-
-  ~PooledPtr() { recycle(); }
-
-  PooledPtr &
-  operator=(const PooledPtr &other)
-  {
-    auto &ot = const_cast<PooledPtr &>(other);
-    recycle();
-    ptr = ot.ptr;
-    del = ot.del;
-    ot.ptr = nullptr;
-    ot.del = nullptr;
-    return *this;
-  }
-
-  PooledPtr &
-  operator=(PooledPtr &&other) noexcept
-  {
-    recycle();
-    ptr = other.ptr;
-    del = other.del;
-    other.ptr = nullptr;
-    other.del = nullptr;
-    return *this;
-  }
-
-  T *
-  get() const noexcept
-  {
-    return ptr;
-  }
-
-  std::string
-  to_s() const noexcept override
-  {
-    std::stringstream s;
-    s << "ptr:" << ptr;
-    return s.str();
-  }
-
- private:
-  inline void
-  recycle() noexcept
-  {
-    if (ptr && del) {
-      del(ptr);
-      ptr = nullptr;
-    }
-  }
-
-  T *ptr{};
-  std::function<void(T *)> del{};
-};
-
-/**
  * BasePool
  */
 template <typename T>
@@ -144,25 +74,21 @@ class BasePool : public Module
   inline std::shared_ptr<T>
   alloc_shared(Args &&... args) noexcept
   {
-    unless(mut) { return nullptr; }
-
     return std::shared_ptr<T>{alloc(std::forward<Args>(args)...),
                               [this](T *t) { dealloc(t); }};
-  }
-
-  template <typename... Args>
-  PooledPtr<T>
-  alloc_pooled(Args &&... args) noexcept
-  {
-    return PooledPtr<T>{
-        alloc(std::forward<Args>(args)...),
-        static_cast<std::function<void(T *)>>([this](T *t) { dealloc(t); })};
   }
 
   std::string
   to_s() const noexcept override
   {
-    return get_name() + stat.to_s();
+    return get_name() + "{" + stat.to_s() + "}";
+  }
+
+  size_t
+  get_free_node_num() const
+  {
+    UTILS_RAISE_UNLESS(capacity >= stat.n_allocated);
+    return capacity - stat.n_allocated;
   }
 
  private:
@@ -178,10 +104,14 @@ class BasePool : public Module
   T *
   borrow_item(Args &&... args)
   {
-    unless(free_nodes) { return nullptr; }
+    unless(free_nodes)
+    {
+      ++stat.n_alloc_failure;
+      return nullptr;
+    }
+
     auto t = new (free_nodes->mem) T{std::forward<Args>(args)...};
     free_nodes = free_nodes->next;
-    ++stat.n_succ;
     ++stat.n_allocated;
     return t;
   }
@@ -193,8 +123,6 @@ class BasePool : public Module
   T *
   alloc(Args &&... args) noexcept
   {
-    ++stat.n_total;
-
     if (mut) {
       std::lock_guard<std::mutex> bar{*mut};
       return borrow_item(std::forward<Args>(args)...);
@@ -206,12 +134,17 @@ class BasePool : public Module
   void
   return_item(T *t) noexcept
   {
-    unless(t) { return; }
+    unless(t)
+    {
+      ++stat.n_dealloc_failure;
+      return;
+    }
+
     auto node = container_of(t, Node, mem);
     node->next = free_nodes;
     free_nodes = node;
     t->~T();
-    ++stat.n_deallocated;
+    --stat.n_allocated;
   }
 
   void
@@ -230,18 +163,17 @@ class BasePool : public Module
     to_s() const noexcept
     {
       UTILS_STR_S(64)
-      UTILS_STR_ATTR(n_total)
-      UTILS_STR_ATTR(n_succ)
+      UTILS_STR_ATTR(n_alloc_failure)
+      UTILS_STR_ATTR(n_dealloc_failure)
       UTILS_STR_ATTR(n_allocated)
-      UTILS_STR_ATTR(n_deallocated)
       return s;
     }
 
-    uint64_t n_total{};
-    uint64_t n_succ{};
+    uint64_t n_alloc_failure{};
+    uint64_t n_dealloc_failure{};
     uint64_t n_allocated{};
-    uint64_t n_deallocated{};
-  } stat{};
+  };
+  UTILS_READER(Stat, stat){};
 
   UTILS_READER(size_t, capacity);
   uint8_t *mem;
