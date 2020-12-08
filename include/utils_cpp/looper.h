@@ -41,7 +41,7 @@ class Looper : public Module {
    * Post a method
    */
   void
-  post(Task &&tsk) noexcept
+  post(Task &&tsk)
   {
     post(std::move(tsk), false);
   }
@@ -50,22 +50,22 @@ class Looper : public Module {
    * Post a method
    */
   void
-  post(Task &&task, bool flush) noexcept;
+  post(Task &&task, bool flush);
 
   // TODO: implement
-  // void post(const Task &task, SSTimer::Duration &delay) noexcept;
+  // void post(const Task &task, SSTimer::Duration &delay);
 
   /**
    * start loop
    */
   void
-  activate() noexcept;
+  activate();
 
   /**
    * stop loop
    */
   void
-  deactivate() noexcept;
+  deactivate();
 
   bool
   is_active() const noexcept
@@ -114,10 +114,10 @@ class Looper : public Module {
   }
 
   void
-  pull_all_tasks(bool blocking) noexcept;
+  pull_all_tasks(bool blocking);
 
   virtual void
-  work_entry() noexcept;
+  work_entry();
 
  private:
   ThreadWrapper worker;
