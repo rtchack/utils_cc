@@ -37,11 +37,7 @@ class Looper : public Module
   {
   }
 
-  ~Looper() override
-  {
-    deactivate();
-    put_stat();
-  }
+  ~Looper() override { deactivate(); }
 
   /**
    * Post a method
@@ -118,11 +114,11 @@ class Looper : public Module
     return get_name() + stat.to_s();
   }
 
+  virtual void
+  work_entry() noexcept;
+
  private:
   UTILS_DISALLOW_COPY_AND_ASSIGN(Looper)
-
-  void
-  work_entry() noexcept;
 
   struct Stat {
     inline std::string

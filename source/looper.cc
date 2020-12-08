@@ -11,7 +11,7 @@ Looper::post(Task &&tsk, bool flush) noexcept
 {
   unless(running) { mWar("Not running") return; }
   {
-    std::lock_guard<std::mutex> bar{op_mut};
+    std::lock_guard<std::mutex> lk{op_mut};
     if (flush) msg_queue.clear();
     msg_queue.push_back(tsk);
   }
@@ -22,7 +22,7 @@ void
 Looper::deactivate() noexcept
 {
   {
-    std::lock_guard<std::mutex> bar{run_mut};
+    std::lock_guard<std::mutex> lk{run_mut};
     unless(running)
     {
       mInf("is not active");
@@ -46,14 +46,14 @@ Looper::activate() noexcept
   pre_activate();
 
   {
-    std::lock_guard<std::mutex> bar{run_mut};
+    std::lock_guard<std::mutex> lk{run_mut};
     if (running) {
       mInf("is already active");
       return;
     }
 
     {
-      std::lock_guard<std::mutex> bar{op_mut};
+      std::lock_guard<std::mutex> op_lk{op_mut};
       msg_queue.clear();
     }
 

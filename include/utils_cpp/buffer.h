@@ -66,8 +66,10 @@ class Buffer {
     const auto ret = write(src, len);
     if (ret != Ret::OK) {
       w_ptr = old_w_ptr;
+      return ret;
     }
 
+    r_ptr = data;
     return ret;
   }
 
@@ -92,8 +94,10 @@ class Buffer {
     const auto ret = write(on_buf);
     if (ret != Ret::OK) {
       w_ptr = old_w_ptr;
+      return ret;
     }
 
+    r_ptr = data;
     return ret;
   }
 
