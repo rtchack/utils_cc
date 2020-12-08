@@ -4,12 +4,14 @@
 
 #include "utils_cpp/looper.h"
 
-namespace utils
-{
+namespace utils {
 void
-Looper::post(Task &&tsk, bool flush) noexcept
+Looper::post(Task &&tsk, bool flush)
 {
-  unless(running) { mWar("Not running") return; }
+  unless(running) {
+    mWar("Not running")
+    return;
+  }
   {
     std::lock_guard<std::mutex> lk{op_mut};
     if (flush) msg_queue.clear();
@@ -19,12 +21,11 @@ Looper::post(Task &&tsk, bool flush) noexcept
 }
 
 void
-Looper::deactivate() noexcept
+Looper::deactivate()
 {
   {
     std::lock_guard<std::mutex> lk{run_mut};
-    unless(running)
-    {
+    unless(running) {
       mInf("is not active");
       return;
     }
@@ -32,7 +33,8 @@ Looper::deactivate() noexcept
     pre_deactivate();
 
     looping = false;
-    post([] { ; }, true);
+    cv.notify_one();
+
     worker.detach();
     running = false;
   }
@@ -41,7 +43,7 @@ Looper::deactivate() noexcept
 }
 
 void
-Looper::activate() noexcept
+Looper::activate()
 {
   pre_activate();
 
@@ -66,22 +68,38 @@ Looper::activate() noexcept
 }
 
 void
-Looper::work_entry() noexcept
+Looper::pull_all_tasks(bool blocking)
 {
   Task tsk;
   while (looping) {
     {
       std::unique_lock<std::mutex> lk{op_mut};
-      cv.wait(lk, [this] { return !msg_queue.empty(); });
-      // if(msg_queue.empty()) continue;
+
+      if (blocking) {
+        cv.wait(lk, [this] { return !looping || !msg_queue.empty(); });
+        if (!looping) {
+          return;
+        }
+
+      } else {
+        if (msg_queue.empty()) {
+          return;
+        }
+      }
+
       tsk = msg_queue.front();
       msg_queue.pop_front();
     }
 
-    ++stat.processed;
+    ++n_processed;
     tsk();
   }
+}
 
+void
+Looper::work_entry()
+{
+  pull_all_tasks(true);
   mInf("Quiting")
 }
 
