@@ -41,9 +41,9 @@ class Buffer {
   }
 
   Ret
-  write(std::function<Ret(uint8_t * , size_t & )> on_buf)
+  write(std::function<Ret(uint8_t * , size_t)> on_buf)
   {
-    auto len = (size_t)(end_ptr - w_ptr);
+    const auto len = (size_t)(end_ptr - w_ptr);
     const auto ret = on_buf(w_ptr, len);
     unless(ret == Ret::OK) {
       return ret;
@@ -80,7 +80,7 @@ class Buffer {
   }
 
   Ret
-  write_at(std::function<Ret(uint8_t * , size_t & )> on_buf, size_t offset)
+  write_at(std::function<Ret(uint8_t * , size_t)> on_buf, size_t offset)
   {
     if (offset >= CAP) {
       return Ret::E_ARG;
@@ -123,33 +123,79 @@ class Buffer {
   }
 
   Ret
+  read(std::function<Ret(uint8_t * , size_t)> on_buf)
+  {
+    auto act_len = get_remain_data_size();
+    unless(act_len) { return Ret::E_ARG; }
+
+    const auto ret = on_buf(r_ptr, act_len);
+    if (Ret::OK != ret) {
+      return ret;
+    }
+
+    r_ptr = w_ptr;
+    return Ret::OK;
+  }
+
+  Ret
   read_at(uint8_t *dst, size_t &len, size_t offset) noexcept
   {
     const auto old_r_ptr = r_ptr;
     r_ptr = data + offset;
-
     if (r_ptr >= w_ptr) {
-      return Ret::E_ARG;
+      goto tag_on_err;
     }
 
-    const auto ret = read(dst, len);
-    if (Ret::OK != ret) {
-      r_ptr = old_r_ptr;
+    if (Ret::OK != read(dst, len)) {
+      goto tag_on_err;
     }
-    return ret;
+
+    return Ret::OK;
+
+tag_on_err:
+    r_ptr = old_r_ptr;
+    return Ret::E_GENERAL;
   }
 
   template<typename T>
   Ret
   read_at(T &t, size_t offset) noexcept
   {
-    auto len = sizeof(T);
-    if (get_remain_data_size(offset) < len) {
-      return Ret::E_ARG;
+    const auto old_r_ptr = r_ptr;
+    r_ptr = data + offset;
+    if (r_ptr >= w_ptr) {
+      goto tag_on_err;
     }
 
-    UTILS_RAISE_UNLESS(Ret::OK == read_at((uint8_t *)&t, len, offset));
+    if (Ret::OK != read(t)) {
+      goto tag_on_err;
+    }
+
     return Ret::OK;
+
+tag_on_err:
+    r_ptr = old_r_ptr;
+    return Ret::E_GENERAL;
+  }
+
+  Ret
+  read_at(std::function<Ret(uint8_t * , size_t)> on_buf, size_t offset)
+  {
+    const auto old_r_ptr = r_ptr;
+    r_ptr = data + offset;
+    if (r_ptr >= w_ptr) {
+      goto tag_on_err;
+    }
+
+    if (Ret::OK != read(on_buf)) {
+      goto tag_on_err;
+    }
+
+    return Ret::OK;
+
+tag_on_err:
+    r_ptr = old_r_ptr;
+    return Ret::E_GENERAL;
   }
 
   size_t
