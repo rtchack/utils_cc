@@ -29,7 +29,7 @@ class ThreadWrapper final : public Module
   ThreadWrapper(std::string &&name, std::thread &&thread)
       : Module(std::move(name)), routine{std::forward<std::thread &&>(thread)}
   {
-    std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
+    mInf("thread " << routine.get_id() << " attached")
   }
 
   ~ThreadWrapper() override { detach(); }
@@ -39,7 +39,7 @@ class ThreadWrapper final : public Module
   {
     detach();
     routine = std::forward<std::thread &&>(th);
-    std::cout << "Thread " << routine.get_id() << " attached" << std::endl;
+    mInf("thread " << routine.get_id() << " attached");
   }
 
   inline ThreadWrapper &
@@ -54,7 +54,7 @@ class ThreadWrapper final : public Module
   {
     if (routine.joinable()) {
       routine.join();
-      std::cout << "Thread " << routine.get_id() << " detached" << std::endl;
+      mInf("thread " << routine.get_id() << " detached");
     }
   }
 
