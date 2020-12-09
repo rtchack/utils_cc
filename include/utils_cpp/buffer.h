@@ -23,7 +23,7 @@ class Buffer {
   Ret
   write(const uint8_t *src, size_t len) noexcept
   {
-    if (len > end_ptr - w_ptr) {
+    if (len > (size_t)(end_ptr - w_ptr)) {
       return Ret::E_BUF_OVERFLOW;
     }
 
