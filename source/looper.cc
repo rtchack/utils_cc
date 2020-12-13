@@ -67,7 +67,7 @@ Looper::activate()
   pre_activate();
 }
 
-void
+bool
 Looper::pull_all_tasks(bool blocking)
 {
   Task tsk;
@@ -78,12 +78,12 @@ Looper::pull_all_tasks(bool blocking)
       if (blocking) {
         cv.wait(lk, [this] { return !looping || !msg_queue.empty(); });
         if (!looping) {
-          return;
+          return false;
         }
 
       } else {
         if (msg_queue.empty()) {
-          return;
+          return true;
         }
       }
 
@@ -94,6 +94,8 @@ Looper::pull_all_tasks(bool blocking)
     ++n_processed;
     tsk();
   }
+
+  return false;
 }
 
 void

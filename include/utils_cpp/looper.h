@@ -113,7 +113,12 @@ class Looper : public Module {
     return get_name() + ", n_processed {" + std::to_string(n_processed);
   }
 
-  void
+  /**
+   * PUll and run tasks.
+   * @param blocking Should block or not if there's not tasks.
+   * @return false if looper is stopped, true otherwise.
+   */
+  bool
   pull_all_tasks(bool blocking);
 
   virtual void
