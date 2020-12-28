@@ -118,3 +118,9 @@ to_stringAndroid(T value)
   };
 
 #define UTILS_SLEEP(tm) std::this_thread::sleep_for(std::chrono::tm);
+
+#if NDEBUG
+#define UTILS_DCHECK
+#else
+#define UTILS_DCHECK(v) assert(v);
+#endif
