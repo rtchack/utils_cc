@@ -41,7 +41,7 @@ class Buffer {
   }
 
   Ret
-  write(std::function<Ret(uint8_t * , size_t)> on_buf)
+  write(std::function<Ret(uint8_t * , size_t)> &&on_buf)
   {
     const auto len = (size_t)(end_ptr - w_ptr);
     const auto ret = on_buf(w_ptr, len);
@@ -127,7 +127,7 @@ class Buffer {
   }
 
   Ret
-  read(std::function<Ret(uint8_t * , size_t)> on_buf)
+  read(std::function<Ret(uint8_t * , size_t)> &&on_buf)
   {
     auto act_len = get_remain_data_size();
     unless(act_len) { return Ret::E_ARG; }
