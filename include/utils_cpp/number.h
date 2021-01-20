@@ -277,8 +277,8 @@ class SeqNumUnwrapper
  private:
   UTILS_DISALLOW_COPY_AND_ASSIGN(SeqNumUnwrapper);
 
-  int64_t last_unwrapped_{0};
-  T *last_value_{};
+  UTILS_READER(int64_t, last_unwrapped_){0};
+  UTILS_DIRECT_READER(T *, last_value_){};
 };
 
 }  // namespace utils

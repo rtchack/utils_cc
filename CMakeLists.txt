@@ -38,6 +38,7 @@ endif ()
 
 file(GLOB_RECURSE
         ${PROJECT_NAME}_files
+        ${PROJECT_SOURCE_DIR}/source/*.c
         ${PROJECT_SOURCE_DIR}/source/*.cc)
 
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_files})

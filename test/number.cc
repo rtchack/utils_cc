@@ -1,5 +1,5 @@
 /*
- * Created by galaxyhuang in 2020.
+ * Created by xing in 2020.
  */
 
 #include <gtest/gtest.h>
@@ -49,24 +49,36 @@ TEST(Test_ahead_or_at, should_work)
 TEST(SeqNumUnwrapper, should_work)
 {
   {
-    constexpr uint8_t M{8U};
+    constexpr uint8_t M{14U};
     SeqNumUnwrapper<uint8_t, M> unwrapper{};
+
     for (uint8_t round = 0; round != 3U; ++round) {
       for (uint8_t i = 0; i != M; ++i) {
         const auto seq = unwrapper.unwrap(i);
         EXPECT_EQ(seq, round * M + i);
       }
     }
+
+    const auto last_v = *unwrapper.get_last_value_();
+    const auto last_unwrapped = unwrapper.get_last_unwrapped_();
+    EXPECT_EQ(last_unwrapped - 1, unwrapper.unwrap(last_v - 1));
+    EXPECT_EQ(last_unwrapped - 2, unwrapper.unwrap(last_v - 2));
   }
 
   {
     SeqNumUnwrapper<uint8_t> unwrapper{};
+
     for (uint16_t round = 0; round != 3U; ++round) {
       for (uint16_t i = 0; i <= UINT8_MAX; ++i) {
         const auto seq = unwrapper.unwrap((uint8_t)i);
         EXPECT_EQ(seq, round * (UINT8_MAX + 1U) + i);
       }
     }
+
+    const auto last_v = *unwrapper.get_last_value_();
+    const auto last_unwrapped = unwrapper.get_last_unwrapped_();
+    EXPECT_EQ(last_unwrapped - 1, unwrapper.unwrap(last_v - 1));
+    EXPECT_EQ(last_unwrapped - 2, unwrapper.unwrap(last_v - 2));
   }
 }
 }  // namespace test
