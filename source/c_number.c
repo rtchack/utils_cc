@@ -15,7 +15,7 @@
     } else {                                                                \
       const static type##_t MAX_VALUE_DIST =                                \
           TYPE##_MAX / (type##_t)2 + (type##_t)1;                           \
-      const type##_t last_value = self->last_value;                         \
+      const type##_t last_value = (type##_t)self->last_value;               \
       bool is_ahead_or_at;                                                  \
                                                                             \
       self->last_unwrapped += (type##_t)(value - last_value);               \
@@ -23,7 +23,7 @@
       if (value - last_value == MAX_VALUE_DIST) {                           \
         is_ahead_or_at = last_value < value;                                \
       } else {                                                              \
-        is_ahead_or_at = (type##_t)(value - last_value) < MAX_VALUE_DIST;               \
+        is_ahead_or_at = (type##_t)(value - last_value) < MAX_VALUE_DIST;   \
       }                                                                     \
       if (!is_ahead_or_at) {                                                \
         const static int64_t backward_adjustment = (int64_t)TYPE##_MAX + 1; \
@@ -32,7 +32,7 @@
     }                                                                       \
                                                                             \
     self->last_value = value;                                               \
-    return self->last_unwrapped;                                  \
+    return self->last_unwrapped;                                            \
   }
 
 IMP_NUM_UNWRAPPER(uint8, UINT8)
@@ -51,7 +51,7 @@ seq_num_unwrapper_on_uint12(seq_num_unwrapper_t *self, uint16_t value)
   } else {
     const static uint16_t MAX_VALUE_DIST = 0x1000 / (uint16_t)2;
 
-    const uint16_t last_value = self->last_value;
+    const uint16_t last_value = (uint16_t)self->last_value;
     bool is_ahead_or_at;
 
     self->last_unwrapped += last_value <= value ? value - last_value
