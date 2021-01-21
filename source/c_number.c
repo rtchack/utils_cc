@@ -2,6 +2,7 @@
  * Created by galaxyhuang in 2021.
  */
 
+#include <utils_c/common.h>
 #include <utils_c/number.h>
 #include <stdbool.h>
 #include <assert.h>

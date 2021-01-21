@@ -11,13 +11,6 @@
 extern "C" {
 #endif
 
-#ifndef MIN
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef MAX
-#define MAX(a,b) (((a)>(b))?(a):(b))
-#endif
-
 #ifndef NUM_FORWARD_DIFF
 #define NUM_FORWARD_DIFF(a, b, M) (a <= b ? b - a : M - (a - b))
 #endif
