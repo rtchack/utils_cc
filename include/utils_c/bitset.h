@@ -37,6 +37,18 @@ bitset_clear(bitset_t *bitset, size_t from, size_t to);
 void
 bitset_clear_all(bitset_t *bitset);
 
+void
+inline_bitset_set_at(void *bitset, size_t index_in_bits);
+
+bool
+inline_bitset_get_at(void *bitset, size_t index_in_bits);
+
+void
+inline_bitset_clear(void *bitset, size_t from_in_bits, size_t to_in_bits);
+
+void
+inline_bitset_clear_all(void *bitset, size_t n_bytes);
+
 #ifdef __cplusplus
 }
 #endif

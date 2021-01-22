@@ -7,7 +7,7 @@
 
 namespace test
 {
-TEST(seq_num_unwrapper, should_work)
+TEST(c_seq_num_unwrapper, should_work)
 {
   {
     uint16_t M{0x1000};

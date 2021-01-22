@@ -7,7 +7,7 @@
 
 namespace test
 {
-TEST(Test_buffer, should_work)
+TEST(buffer, should_work)
 {
   utils::Buffer<1024> buf;
   EXPECT_EQ(0, buf.get_total_data_size());

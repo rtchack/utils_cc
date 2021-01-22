@@ -11,7 +11,7 @@ using namespace utils;
 
 namespace test
 {
-TEST(Test_ahead_or_at, should_work)
+TEST(ahead_or_at, should_work)
 {
   for (auto &&p : std::map<uint8_t, uint8_t>{
            {5U, 4U},
