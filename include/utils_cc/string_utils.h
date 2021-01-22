@@ -10,9 +10,9 @@
 #include <vector>
 #include <ostream>
 
-#include "utils_cpp/macro_utils.h"
+#include "utils_cc/macro_utils.h"
 
-namespace utils
+namespace ucc
 {
 class StringAble
 {
@@ -46,12 +46,12 @@ to_hex_str(const std::vector<uint8_t> &uchars) noexcept;
 
 std::string
 to_hex_str(const std::vector<uint8_t> &uchars,
-         const std::string &delimiter) noexcept;
+           const std::string &delimiter) noexcept;
 
 std::string
 to_hex_str(const std::vector<uint8_t> &uchars,
-         const std::string &delimiter,
-         uint16_t pace) noexcept;
+           const std::string &delimiter,
+           uint16_t pace) noexcept;
 
 template <size_t N>
 std::string to_hex_str(uint8_t (&chars)[N]) noexcept
@@ -74,8 +74,8 @@ to_hex_str(uint8_t (&chars)[N], const std::string &delimiter) noexcept
 template <size_t N>
 std::string
 to_hex_str(uint8_t (&chars)[N],
-         const std::string &delimiter,
-         uint16_t pace) noexcept
+           const std::string &delimiter,
+           uint16_t pace) noexcept
 {
   std::string s;
   s.reserve((N + 1) << 2);
@@ -94,4 +94,4 @@ to_hex_str(uint8_t (&chars)[N],
 }
 
 }  // namespace str_util
-}  // namespace utils
+}  // namespace ucc

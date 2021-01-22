@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <utils_cpp/macro_utils.h>
+#include <utils_cc/macro_utils.h>
 
-namespace utils
+namespace ucc
 {
 /** Mod M add */
 template <unsigned long M>  // NOLINT
 inline unsigned long
 add(unsigned long a, unsigned long b)
 {
-  UTILS_DCHECK(a < M)
+  UCC_DCHECK(a < M)
   unsigned long t = M - b % M;  // NOLINT
   unsigned long res = a - t;    // NOLINT
   if (t > a) return res + M;
@@ -28,7 +28,7 @@ template <unsigned long M>  // NOLINT
 inline unsigned long
 subtract(unsigned long a, unsigned long b)
 {
-  UTILS_DCHECK(a < M)
+  UCC_DCHECK(a < M)
   unsigned long sub = b % M;  // NOLINT
   if (a < sub) return M - (sub - a);
   return a - sub;
@@ -66,8 +66,8 @@ forward_diff(T a, T b)
 {
   static_assert(std::is_unsigned<T>::value,
                 "Type must be an unsigned integer.");
-  UTILS_DCHECK(a < M)
-  UTILS_DCHECK(b < M)
+  UCC_DCHECK(a < M)
+  UCC_DCHECK(b < M)
   return a <= b ? b - a : M - (a - b);
 }
 
@@ -119,8 +119,8 @@ reverse_diff(T a, T b)
 {
   static_assert(std::is_unsigned<T>::value,
                 "Type must be an unsigned integer.");
-  UTILS_DCHECK(a < M)
-  UTILS_DCHECK(b < M)
+  UCC_DCHECK(a < M)
+  UCC_DCHECK(b < M)
   return b <= a ? a - b : M - (b - a);
 }
 
@@ -275,10 +275,10 @@ class SeqNumUnwrapper
   }
 
  private:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(SeqNumUnwrapper);
+  UCC_DISALLOW_COPY_AND_ASSIGN(SeqNumUnwrapper);
 
-  UTILS_READER(int64_t, last_unwrapped_){0};
-  UTILS_DIRECT_READER(T *, last_value_){};
+  UCC_READER(int64_t, last_unwrapped_){0};
+  UCC_DIRECT_READER(T *, last_value_){};
 };
 
-}  // namespace utils
+}  // namespace ucc

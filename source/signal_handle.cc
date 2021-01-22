@@ -2,15 +2,16 @@
  * Created by xing in 2020
  */
 
-#include "utils_cpp/signal_handle.h"
-#include "utils_cpp/macro_utils.h"
+#include "utils_cc/signal_handle.h"
+#include "utils_cc/macro_utils.h"
 
 #include <csignal>
 #include <atomic>
 #include <iostream>
 #include <condition_variable>
 
-namespace utils {
+namespace ucc
+{
 static std::atomic_bool g_running{true};
 static std::condition_variable running_cv{};
 
@@ -36,7 +37,7 @@ notify_in_running()
 static void
 handle_sig(int sig)
 {
-  UTILS_UNUSED(sig);
+  UCC_UNUSED(sig);
   stop_running();
 }
 
@@ -54,4 +55,4 @@ until_signal(std::function<void()> &&f)
   }
 }
 
-}  // namespace utils
+}  // namespace ucc

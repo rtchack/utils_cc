@@ -12,7 +12,7 @@
 #define unless(ex) if (!(ex))
 #endif
 
-#define UTILS_UNUSED(a) (void)(a)
+#define UCC_UNUSED(a) (void)(a)
 
 #ifdef OS_WIN32
 #define alloca _alloca
@@ -20,12 +20,12 @@
 
 #ifndef container_of
 #define container_of(ptr, type, member) \
-  ((type *) ((char *) (ptr) - offsetof(type, member)))
+  ((type*)((char*)(ptr)-offsetof(type, member)))
 #endif
 
-#define UTILS_ROUND_UNIT 16U
-#define UTILS_ROUND(size, round) (((size) + (round)-1) & (~((round)-1)))
-#define UTILS_ROUNDED(size) (UTILS_ROUND((size), UTILS_ROUND_UNIT))
+#define UCC_ROUND_UNIT 16U
+#define UCC_ROUND(size, round) (((size) + (round)-1) & (~((round)-1)))
+#define UCC_ROUNDED(size) (UCC_ROUND((size), UCC_ROUND_UNIT))
 
 #ifndef TO_STRING
 #if defined(__ANDROID__)
@@ -43,84 +43,84 @@ to_stringAndroid(T value)
 #endif
 #endif
 
-#define UTILS_STR_S(size) \
+#define UCC_STR_S(size) \
   std::string s;          \
   s.reserve(size);
-#define UTILS_STR_ATTR_STR(a) \
+#define UCC_STR_ATTR_STR(a) \
   s.append(", " #a " ");      \
   s.append(a);
-#define UTILS_STR_ATTR(a) \
+#define UCC_STR_ATTR(a) \
   s.append(", " #a " ");  \
   s.append(TO_STRING(a));
-#define UTILS_STR_ITEA_STR(i, nm) \
+#define UCC_STR_ITEA_STR(i, nm) \
   s.append(", " #i "-");          \
   s.append(*(nm + i));
-#define UTILS_STR_ITEA(i, nm) \
+#define UCC_STR_ITEA(i, nm) \
   s.append(", " #i "-");      \
   s.append(TO_STRING(*(nm + i)));
 
-#define UTILS_DISALLOW_ASSIGN(TypeName)     \
+#define UCC_DISALLOW_ASSIGN(TypeName)     \
   void operator=(const TypeName&) = delete; \
   void operator=(TypeName&) = delete;
 
-#define UTILS_DISALLOW_COPY_AND_ASSIGN(TypeName) \
+#define UCC_DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = delete;            \
   TypeName(TypeName&) = delete;                  \
-  UTILS_DISALLOW_ASSIGN(TypeName);
+  UCC_DISALLOW_ASSIGN(TypeName);
 
-#define UTILS_DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
+#define UCC_DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
   TypeName() = delete;                                 \
-  UTILS_DISALLOW_COPY_AND_ASSIGN(TypeName);
+  UCC_DISALLOW_COPY_AND_ASSIGN(TypeName);
 
-#define UTILS_DISALLOW_INSTANTIATION(TypeName)    \
-  UTILS_DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName); \
+#define UCC_DISALLOW_INSTANTIATION(TypeName)    \
+  UCC_DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName); \
   ~TypeName() = delete;
 
-#define UTILS_ATTR(tp, nm) \
+#define UCC_ATTR(tp, nm) \
  private:                  \
   tp nm
 
-#define UTILS_READER(tp, nm)                                \
+#define UCC_READER(tp, nm)                                \
  public:                                                    \
   inline const tp& get_##nm() const noexcept { return nm; } \
   inline tp& get_##nm() noexcept { return nm; }             \
-  UTILS_ATTR(tp, nm)
+  UCC_ATTR(tp, nm)
 
-#define UTILS_ACCESSOR(tp, nm)                              \
+#define UCC_ACCESSOR(tp, nm)                              \
  public:                                                    \
   inline const tp& get_##nm() const noexcept { return nm; } \
   inline tp& get_##nm() noexcept { return nm; }             \
   inline void set_##nm(const tp& v) noexcept { nm = v; }    \
-  UTILS_ATTR(tp, nm)
+  UCC_ATTR(tp, nm)
 
-#define UTILS_DIRECT_READER(tp, nm)                        \
+#define UCC_DIRECT_READER(tp, nm)                        \
  public:                                                   \
   inline const tp get_##nm() const noexcept { return nm; } \
   inline tp get_##nm() noexcept { return nm; }             \
-  UTILS_ATTR(tp, nm)
+  UCC_ATTR(tp, nm)
 
-#define UTILS_DIRECT_ACCESSOR(tp, nm)                      \
+#define UCC_DIRECT_ACCESSOR(tp, nm)                      \
  public:                                                   \
   inline const tp get_##nm() const noexcept { return nm; } \
   inline tp get_##nm() noexcept { return nm; }             \
   inline void set_##nm(tp v) noexcept { nm = v; }          \
-  UTILS_ATTR(tp, nm)
+  UCC_ATTR(tp, nm)
 
-#define UTILS_ROUNDED_STRUCTURE(name, ...)                                \
+#define UCC_ROUNDED_STRUCTURE(name, ...)                                \
   struct pad_helper_##name {                                              \
     __VA_ARGS__                                                           \
   };                                                                      \
   struct name {                                                           \
     __VA_ARGS__                                                           \
-    unsigned char reserved_padding[UTILS_ROUND(sizeof(pad_helper_##name), \
-                                               UTILS_ROUND_UNIT) -        \
+    unsigned char reserved_padding[UCC_ROUND(sizeof(pad_helper_##name), \
+                                               UCC_ROUND_UNIT) -        \
                                    sizeof(pad_helper_##name)];            \
   };
 
-#define UTILS_SLEEP(tm) std::this_thread::sleep_for(std::chrono::tm);
+#define UCC_SLEEP(tm) std::this_thread::sleep_for(std::chrono::tm);
 
 #if NDEBUG
-#define UTILS_DCHECK
+#define UCC_DCHECK
 #else
-#define UTILS_DCHECK(v) assert(v);
+#define UCC_DCHECK(v) assert(v);
 #endif

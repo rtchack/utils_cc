@@ -9,27 +9,27 @@
 #include <stdarg.h>
 #include <functional>
 
-#include "utils_cpp/common.h"
-#include "utils_cpp/macro_utils.h"
+#include "utils_cc/common.h"
+#include "utils_cc/macro_utils.h"
 
 namespace utils
 {
 class FileWrapper final
 {
  public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(FileWrapper);
+  UCC_DISALLOW_COPY_AND_ASSIGN(FileWrapper);
 
   FileWrapper(FileWrapper &&other) : fl{other.fl}
   {
-    UTILS_RAISE_UNLESS(fl)
+    UCC_RAISE_UNLESS(fl)
     other.fl = NULL;
   }
 
   explicit FileWrapper(FILE *file)
-      : fl{file} {UTILS_RAISE_UNLESS(fl)}
+      : fl{file} {UCC_RAISE_UNLESS(fl)}
 
         FileWrapper(const char *name, const char *mode)
-      : fl(fopen(name, mode)){UTILS_RAISE_VERB_UNLESS(fl, name << ":" << mode)}
+      : fl(fopen(name, mode)){UCC_RAISE_VERB_UNLESS(fl, name << ":" << mode)}
 
         FileWrapper(const std::string &name, const char *mode)
       : FileWrapper(name.c_str(), mode)
@@ -164,7 +164,7 @@ class FileWrapper final
   }
 
  private:
-  UTILS_DIRECT_READER(FILE *, fl);
+  UCC_DIRECT_READER(FILE *, fl);
 };
 
 }  // namespace utils

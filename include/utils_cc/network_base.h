@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 
-#define UTILS_NET_ATTR_S(nm)                             \
+#define UCC_NET_ATTR_S(nm)                             \
  private:                                                \
   uint16_t nm;                                           \
                                                          \
@@ -16,7 +16,7 @@
   inline uint16_t get_##nm() const { return ntohs(nm); } \
   inline void set_##nm(uint16_t _nm) { nm = htons(_nm); }
 
-#define UTILS_NET_ATTR_L(nm)                             \
+#define UCC_NET_ATTR_L(nm)                             \
  private:                                                \
   uint32_t nm;                                           \
                                                          \

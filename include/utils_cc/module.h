@@ -8,11 +8,11 @@
 #include <string>
 #include <memory>
 
-#include "utils_cpp/common.h"
-#include "utils_cpp/log.h"
-#include "utils_cpp/string_utils.h"
+#include "utils_cc/common.h"
+#include "utils_cc/log.h"
+#include "utils_cc/string_utils.h"
 
-namespace utils
+namespace ucc
 {
 class Module : public StringAble
 {
@@ -42,7 +42,7 @@ class Module : public StringAble
   }
 
  private:
-  UTILS_ACCESSOR(std::string, name){""};
+  UCC_ACCESSOR(std::string, name){""};
 };
 
-}  // namespace utils
+}  // namespace ucc

@@ -5,14 +5,14 @@
 
 #pragma once
 
-#include "utils_cpp/common.h"
+#include "utils_cc/common.h"
 
-namespace utils
+namespace ucc
 {
 class SingletonGuard
 {
  public:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(SingletonGuard)
+  UCC_DISALLOW_COPY_AND_ASSIGN(SingletonGuard)
 
   SingletonGuard() = delete;
 
@@ -21,7 +21,7 @@ class SingletonGuard
   ~SingletonGuard();
 
  private:
-  UTILS_READER(int, fd);
+  UCC_READER(int, fd);
 };
 
-}  // namespace utils
+}  // namespace ucc

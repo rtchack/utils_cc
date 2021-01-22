@@ -3,15 +3,15 @@
  */
 
 #include <gtest/gtest.h>
-#include <utils_cpp/common.h>
+#include <utils_cc/common.h>
 
 int
 main(int argc, char *argv[])
 {
   testing::InitGoogleTest(&argc, argv);
 
-  utils::enable_core_dump();
-  UTILS_INIT_LOG;
+  ucc::enable_core_dump();
+  UCC_INIT_LOG;
 
   return RUN_ALL_TESTS();
 }

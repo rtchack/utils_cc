@@ -2,8 +2,8 @@
  * Created by galaxyhuang in 2021.
  */
 
-#ifndef UTILS_CPP_BITSET_H
-#define UTILS_CPP_BITSET_H
+#ifndef UTILS_CC_C_BITSET_H
+#define UTILS_CC_C_BITSET_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -53,4 +53,4 @@ inline_bitset_clear_all(void *bitset, size_t n_bytes);
 }
 #endif
 
-#endif  // UTILS_CPP_BITSET_H
+#endif  // UTILS_CC_C_BITSET_H

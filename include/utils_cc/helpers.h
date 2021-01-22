@@ -15,14 +15,14 @@ using unique_mem = std::unique_ptr<uint8_t[]>;
 
 template <typename T, typename... Args>
 std::unique_ptr<T>
-make_uni_helper(std::false_type, Args &&... args) noexcept
+make_uni_helper(std::false_type, Args &&...args) noexcept
 {
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
 template <typename T, typename... Args>
 std::unique_ptr<T>
-make_uni_helper(std::true_type, Args &&... args) noexcept
+make_uni_helper(std::true_type, Args &&...args) noexcept
 {
   static_assert(std::extent<T>::value == 0,
                 "make_uni<T[N]>() is forbidden, please use make_uni<T[]>().");
@@ -34,7 +34,7 @@ make_uni_helper(std::true_type, Args &&... args) noexcept
 
 template <typename T, typename... Args>
 std::unique_ptr<T>
-make_uni(Args &&... args) noexcept
+make_uni(Args &&...args) noexcept
 {
   return make_uni_helper<T>(std::is_array<T>(), std::forward<Args>(args)...);
 }

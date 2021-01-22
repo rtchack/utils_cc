@@ -2,8 +2,8 @@
  * Created by xing in 2021.
  */
 
-#ifndef UTILS_CPP_C_NUMBER_H
-#define UTILS_CPP_C_NUMBER_H
+#ifndef UTILS_CC_C_NUMBER_H
+#define UTILS_CC_C_NUMBER_H
 
 #include <stdint.h>
 
@@ -20,7 +20,8 @@ extern "C" {
 #endif
 
 #ifndef NUM_MIN_DIFF
-#define NUM_MIN_DIFF(a, b, M) MIN(NUM_FORWARD_DIFF(a,b,M), NUM_REVERSE_DIFF(a,b,M))
+#define NUM_MIN_DIFF(a, b, M) \
+  MIN(NUM_FORWARD_DIFF(a, b, M), NUM_REVERSE_DIFF(a, b, M))
 #endif
 
 typedef struct {
@@ -46,4 +47,4 @@ seq_num_unwrapper_on_uint32(seq_num_unwrapper_t *self, uint32_t value);
 };
 #endif
 
-#endif  // UTILS_CPP_C_NUMBER_H
+#endif  // UTILS_CC_C_NUMBER_H

@@ -3,13 +3,14 @@
  *      Author: xing
  */
 
-#include "utils_cpp/log.h"
-#include "utils_cpp/macro_utils.h"
+#include "utils_cc/log.h"
+#include "utils_cc/macro_utils.h"
 
 #include <stdarg.h>
 #include <cstring>
 
-namespace utils {
+namespace ucc
+{
 constexpr char MSG_TRUNCATED[] = "TRUNCATED!";
 
 std::mutex log_mut{};
@@ -29,24 +30,24 @@ print_log(int severity, const char *fmt, ...)
   va_end(args);
 
   switch (severity) {
-    case UTILS_SEVERITY_DBG: {
-      UTILS_LOGGER("D " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_DBG: {
+      UCC_LOGGER("D " << std::this_thread::get_id() << " " << msg);
       return;
     }
-    case UTILS_SEVERITY_INF: {
-      UTILS_LOGGER("I " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_INF: {
+      UCC_LOGGER("I " << std::this_thread::get_id() << " " << msg);
       return;
     }
-    case UTILS_SEVERITY_WAR: {
-      UTILS_LOGGER("W " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_WAR: {
+      UCC_LOGGER("W " << std::this_thread::get_id() << " " << msg);
       return;
     }
-    case UTILS_SEVERITY_ERR: {
-      UTILS_LOGGER("E " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_ERR: {
+      UCC_LOGGER("E " << std::this_thread::get_id() << " " << msg);
       return;
     }
     default:
-      UTILS_LOGGER("U " << std::this_thread::get_id() << " " << msg);
+      UCC_LOGGER("U " << std::this_thread::get_id() << " " << msg);
   }
 }
 
@@ -62,24 +63,24 @@ vprint_log(int severity, const char *fmt, va_list vp)
   }
 
   switch (severity) {
-    case UTILS_SEVERITY_DBG: {
-      UTILS_LOGGER("D " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_DBG: {
+      UCC_LOGGER("D " << std::this_thread::get_id() << " " << msg);
       return;
     }
-    case UTILS_SEVERITY_INF: {
-      UTILS_LOGGER("I " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_INF: {
+      UCC_LOGGER("I " << std::this_thread::get_id() << " " << msg);
       return;
     }
-    case UTILS_SEVERITY_WAR: {
-      UTILS_LOGGER("W " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_WAR: {
+      UCC_LOGGER("W " << std::this_thread::get_id() << " " << msg);
       return;
     }
-    case UTILS_SEVERITY_ERR: {
-      UTILS_LOGGER("E " << std::this_thread::get_id() << " " << msg);
+    case UCC_SEVERITY_ERR: {
+      UCC_LOGGER("E " << std::this_thread::get_id() << " " << msg);
       return;
     }
     default:
-    UTILS_LOGGER("U " << std::this_thread::get_id() << " " << msg);
+      UCC_LOGGER("U " << std::this_thread::get_id() << " " << msg);
   }
 }
 
@@ -93,29 +94,26 @@ print_binary(const char *tag, const void *buf, size_t buf_len)
 
   unless(tmp_buf) return;
 
-#define LOG_BINARY_PUTN(fmt, ...)                                   \
-  offset += snprintf(msg + offset,                                  \
-                    (N_LOG_BYTES_MAX - offset),                     \
-                    fmt,                                            \
-                    ##__VA_ARGS__);                                 \
-  if (N_LOG_BYTES_MAX <= offset) {                                  \
-    memcpy(msg + (offset - sizeof(MSG_TRUNCATED) - 1),              \
-           MSG_TRUNCATED,                                           \
-           sizeof(MSG_TRUNCATED));                                  \
-    goto print_point;                                               \
+#define LOG_BINARY_PUTN(fmt, ...)                                             \
+  offset +=                                                                   \
+      snprintf(msg + offset, (N_LOG_BYTES_MAX - offset), fmt, ##__VA_ARGS__); \
+  if (N_LOG_BYTES_MAX <= offset) {                                            \
+    memcpy(msg + (offset - sizeof(MSG_TRUNCATED) - 1),                        \
+           MSG_TRUNCATED,                                                     \
+           sizeof(MSG_TRUNCATED));                                            \
+    goto print_point;                                                         \
   }
 
   LOG_BINARY_PUTN("[%s] {\n", tag)
 
   while (i < buf_len) {
     LOG_BINARY_PUTN("%02x", tmp_buf[i])
-    unless((++i % 8)) { LOG_BINARY_PUTN("  ")}
-    else { LOG_BINARY_PUTN(" ")}
-    unless((i % 16)) { LOG_BINARY_PUTN("\n")}
+    unless((++i % 8)) { LOG_BINARY_PUTN("  ") }
+    else {LOG_BINARY_PUTN(" ")} unless((i % 16)) { LOG_BINARY_PUTN("\n") }
   }
 
 print_point:
-  print_log(UTILS_SEVERITY_INF, "%s}", msg);
+  print_log(UCC_SEVERITY_INF, "%s}", msg);
 }
 
-}  // namespace utils
+}  // namespace ucc

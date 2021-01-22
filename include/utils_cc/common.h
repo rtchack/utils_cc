@@ -13,19 +13,19 @@
 #include <unistd.h>
 #endif
 
-#include "utils_cpp/macro_utils.h"
+#include "utils_cc/macro_utils.h"
 
 #ifndef ENABLE_CPP_EXCEPTION
-#include "utils_cpp/log.h"
+#include "utils_cc/log.h"
 #endif
 
-namespace utils
+namespace ucc
 {
 /**
  * return value
  */
 enum class Ret {
-#define UTILS_RET_ERROR 0x8000;
+#define UCC_RET_ERROR 0x8000;
 
   OK = 0,  // OK
   NO,      // no
@@ -75,8 +75,7 @@ class Excep : public std::exception
  public:
   Excep() = delete;
 
-  Excep(const std::string &message)
-      : msg{std::to_s(getpid()) + ": " + message}
+  Excep(const std::string &message) : msg{std::to_s(getpid()) + ": " + message}
   {
   }
 
@@ -100,31 +99,31 @@ class Excep : public std::exception
   std::string msg;
 };
 
-#define UTILS_RAISE(msg)                                         \
-  std::stringstream utilscpp_excep_located_s;                    \
-  utilscpp_excep_located_s << __func__ << ": " << msg; \
-  throw utils::Excep(utilscpp_excep_located_s.str());
+#define UCC_RAISE(msg)                               \
+  std::stringstream utils_cc_excep_located_s;          \
+  utils_cc_excep_located_s << __func__ << ": " << msg; \
+  throw utils::Excep(utils_cc_excep_located_s.str());
 
 #else
-#define UTILS_RAISE(msg) lFatal(msg)
+#define UCC_RAISE(msg) lFatal(msg)
 #endif
 
-#define UTILS_RAISE_IF(v)                 \
+#define UCC_RAISE_IF(v)                 \
   if (v) {                                \
-    UTILS_RAISE(#v " should not be ture") \
+    UCC_RAISE(#v " should not be ture") \
   }
 
-#define UTILS_RAISE_UNLESS(v) UTILS_RAISE_IF(!(v))
+#define UCC_RAISE_UNLESS(v) UCC_RAISE_IF(!(v))
 
-#define UTILS_RAISE_VERB_IF(v, msg)                \
+#define UCC_RAISE_VERB_IF(v, msg)                \
   if (v) {                                         \
-    UTILS_RAISE(#v " should not be ture: " << msg) \
+    UCC_RAISE(#v " should not be ture: " << msg) \
   }
 
-#define UTILS_RAISE_VERB_UNLESS(v, msg) UTILS_RAISE_VERB_IF(!(v), msg)
+#define UCC_RAISE_VERB_UNLESS(v, msg) UCC_RAISE_VERB_IF(!(v), msg)
 
-#define NOT_IMPLEMENTED UTILS_RAISE("NOT IMPLEMENTED");
-#define UNREACHABLE UTILS_RAISE("UNREACHABLE");
+#define NOT_IMPLEMENTED UCC_RAISE("NOT IMPLEMENTED");
+#define UNREACHABLE UCC_RAISE("UNREACHABLE");
 
 /**
  * ulimit, enable core dump
@@ -132,4 +131,4 @@ class Excep : public std::exception
 void
 enable_core_dump() noexcept;
 
-}  // namespace utils
+}  // namespace ucc

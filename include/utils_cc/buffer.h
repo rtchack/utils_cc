@@ -9,14 +9,16 @@
 #include <mutex>
 #include <functional>
 
-#include "utils_cpp/module.h"
+#include "utils_cc/module.h"
 
-namespace utils {
+namespace ucc
+{
 /**
  * Buffer
  */
-template<size_t CAP>
-class Buffer {
+template <size_t CAP>
+class Buffer
+{
  public:
   Buffer() : w_ptr{data}, r_ptr{data}, end_ptr{data + CAP} {}
 
@@ -32,7 +34,7 @@ class Buffer {
     return Ret::OK;
   }
 
-  template<typename T>
+  template <typename T>
   Ret
   write(T &&t) noexcept
   {
@@ -41,13 +43,11 @@ class Buffer {
   }
 
   Ret
-  write(std::function<Ret(uint8_t * , size_t)> &&on_buf)
+  write(std::function<Ret(uint8_t *, size_t)> &&on_buf)
   {
     const auto len = (size_t)(end_ptr - w_ptr);
     const auto ret = on_buf(w_ptr, len);
-    unless(ret == Ret::OK) {
-      return ret;
-    }
+    unless(ret == Ret::OK) { return ret; }
 
     w_ptr += len;
     return Ret::OK;
@@ -73,7 +73,7 @@ class Buffer {
     return ret;
   }
 
-  template<typename T>
+  template <typename T>
   Ret
   write_at(T &&t, size_t offset) noexcept
   {
@@ -82,7 +82,7 @@ class Buffer {
   }
 
   Ret
-  write_at(std::function<Ret(uint8_t * , size_t)> on_buf, size_t offset)
+  write_at(std::function<Ret(uint8_t *, size_t)> on_buf, size_t offset)
   {
     if (offset >= CAP) {
       return Ret::E_ARG;
@@ -113,7 +113,7 @@ class Buffer {
     return Ret::OK;
   }
 
-  template<typename T>
+  template <typename T>
   Ret
   read(T &t) noexcept
   {
@@ -122,12 +122,12 @@ class Buffer {
       return Ret::E_ARG;
     }
 
-    UTILS_RAISE_UNLESS(Ret::OK == read((uint8_t *)&t, len));
+    UCC_RAISE_UNLESS(Ret::OK == read((uint8_t *)&t, len));
     return Ret::OK;
   }
 
   Ret
-  read(std::function<Ret(uint8_t * , size_t)> &&on_buf)
+  read(std::function<Ret(uint8_t *, size_t)> &&on_buf)
   {
     auto act_len = get_remain_data_size();
     unless(act_len) { return Ret::E_ARG; }
@@ -156,12 +156,12 @@ class Buffer {
 
     return Ret::OK;
 
-tag_on_err:
+  tag_on_err:
     r_ptr = old_r_ptr;
     return Ret::E_GENERAL;
   }
 
-  template<typename T>
+  template <typename T>
   Ret
   read_at(T &t, size_t offset) noexcept
   {
@@ -177,13 +177,13 @@ tag_on_err:
 
     return Ret::OK;
 
-tag_on_err:
+  tag_on_err:
     r_ptr = old_r_ptr;
     return Ret::E_GENERAL;
   }
 
   Ret
-  read_at(std::function<Ret(uint8_t * , size_t)> on_buf, size_t offset)
+  read_at(std::function<Ret(uint8_t *, size_t)> on_buf, size_t offset)
   {
     const auto old_r_ptr = r_ptr;
     r_ptr = data + offset;
@@ -197,7 +197,7 @@ tag_on_err:
 
     return Ret::OK;
 
-tag_on_err:
+  tag_on_err:
     r_ptr = old_r_ptr;
     return Ret::E_GENERAL;
   }
@@ -228,13 +228,13 @@ tag_on_err:
   }
 
  private:
-  uint8_t *w_ptr;    // write pointer
-  uint8_t *r_ptr;    // read pointer
+  uint8_t *w_ptr;          // write pointer
+  uint8_t *r_ptr;          // read pointer
   uint8_t const *end_ptr;  // end pointer
 
   static constexpr size_t prefix_len{sizeof(size_t) + sizeof(size_t)};
 
-  uint8_t data[UTILS_ROUNDED(CAP)];
+  uint8_t data[UCC_ROUNDED(CAP)];
 };
 
-}  // namespace utils
+}  // namespace ucc

@@ -8,8 +8,8 @@
 #include <assert.h>
 
 #define IMP_NUM_UNWRAPPER(type, TYPE)                                       \
-  int64_t seq_num_unwrapper_on_##type(seq_num_unwrapper_t *self,           \
-                                       type##_t value)                      \
+  int64_t seq_num_unwrapper_on_##type(seq_num_unwrapper_t *self,            \
+                                      type##_t value)                       \
   {                                                                         \
     if (INT64_MIN == self->last_value) {                                    \
       self->last_unwrapped = value;                                         \

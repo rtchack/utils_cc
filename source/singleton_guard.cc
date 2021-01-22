@@ -2,7 +2,7 @@
  * Created by xing in 2018
  */
 
-#include "utils_cpp/singleton_guard.h"
+#include "utils_cc/singleton_guard.h"
 
 #ifdef OS_UNIX
 
@@ -13,14 +13,14 @@
 
 #endif
 
-namespace utils
+namespace ucc
 {
 #ifdef OS_UNIX
 
 SingletonGuard::SingletonGuard(const std::string &name)
     : fd{socket(AF_UNIX, SOCK_STREAM, 0)}
 {
-  UTILS_RAISE_UNLESS(fd)
+  UCC_RAISE_UNLESS(fd)
 
   const auto full_path = std::string{"/tmp/"} + name;
 
@@ -31,21 +31,21 @@ SingletonGuard::SingletonGuard(const std::string &name)
 
   unless(connect(fd, (sockaddr *)&addr, len))
   {
-    UTILS_RAISE(full_path << " already running")
+    UCC_RAISE(full_path << " already running")
   }
 
   if (unlink(addr.sun_path)) {
     unless(errno == ENOENT)
     {
-      UTILS_RAISE(full_path << " unlink: " << std::strerror(errno))
+      UCC_RAISE(full_path << " unlink: " << std::strerror(errno))
     }
   }
   if (bind(fd, (sockaddr *)&addr, len)) {
-    UTILS_RAISE(full_path << " bind: " << std::strerror(errno))
+    UCC_RAISE(full_path << " bind: " << std::strerror(errno))
   }
 
   if (listen(fd, 4)) {
-    UTILS_RAISE(full_path << " listen: " << std::strerror(errno))
+    UCC_RAISE(full_path << " listen: " << std::strerror(errno))
   }
 
   std::cout << "Listening on " << full_path << std::endl;
@@ -57,16 +57,14 @@ SingletonGuard::~SingletonGuard() { close(fd); }
 
 #ifdef OS_WIN32
 
-SingletonGuard::SingletonGuard(const std::string &name) : fd{0}
-{
-  NOT_IMPLEMENTED
-}
+SingletonGuard::SingletonGuard(const std::string &name)
+    : fd{0} {NOT_IMPLEMENTED}
 
-SingletonGuard::~SingletonGuard()
+      SingletonGuard::~SingletonGuard()
 {
   NOT_IMPLEMENTED
 }
 
 #endif
 
-}  // namespace utils
+}  // namespace ucc

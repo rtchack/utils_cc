@@ -3,11 +3,11 @@
  */
 
 #include <gtest/gtest.h>
-#include <utils_cpp/number.h>
+#include <utils_cc/number.h>
 
 #include <map>
 
-using namespace utils;
+using namespace ucc;
 
 namespace test
 {

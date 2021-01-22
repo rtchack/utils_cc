@@ -7,12 +7,12 @@
 
 #include <thread>
 
-#include "utils_cpp/common.h"
-#include "utils_cpp/macro_utils.h"
-#include "utils_cpp/log.h"
-#include "utils_cpp/module.h"
+#include "utils_cc/common.h"
+#include "utils_cc/macro_utils.h"
+#include "utils_cc/log.h"
+#include "utils_cc/module.h"
 
-namespace utils
+namespace ucc
 {
 class ThreadWrapper final : public Module
 {
@@ -65,9 +65,9 @@ class ThreadWrapper final : public Module
   }
 
  private:
-  UTILS_DISALLOW_COPY_AND_ASSIGN(ThreadWrapper)
+  UCC_DISALLOW_COPY_AND_ASSIGN(ThreadWrapper)
 
   std::thread routine{};
 };
 
-}  // namespace utils
+}  // namespace ucc

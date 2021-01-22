@@ -7,10 +7,10 @@
 
 #include <chrono>
 
-#include "utils_cpp/common.h"
-#include "utils_cpp/macro_utils.h"
+#include "utils_cc/common.h"
+#include "utils_cc/macro_utils.h"
 
-namespace utils
+namespace ucc
 {
 class Time final
 {
@@ -83,8 +83,8 @@ class Time final
   BASE_TIMER_HELPER(hours)
 
  private:
-  UTILS_READER(Point, start);
+  UCC_READER(Point, start);
   Point tmp{};
 };
 
-}  // namespace utils
+}  // namespace ucc

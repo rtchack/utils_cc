@@ -13,14 +13,16 @@
 #include <functional>
 #include <condition_variable>
 
-#include "utils_cpp/macro_utils.h"
-#include "utils_cpp/module.h"
-#include "utils_cpp/common.h"
-#include "utils_cpp/thread_wrapper.h"
-#include "utils_cpp/time.h"
+#include "utils_cc/macro_utils.h"
+#include "utils_cc/module.h"
+#include "utils_cc/common.h"
+#include "utils_cc/thread_wrapper.h"
+#include "utils_cc/time.h"
 
-namespace utils {
-class Looper : public Module {
+namespace ucc
+{
+class Looper : public Module
+{
  public:
   /**
    * @return ture to quit the loop, false to continue
@@ -105,10 +107,9 @@ class Looper : public Module {
    * after loop gets stopped
    */
   virtual void
-  post_deactivate() {mDbg("") }
+  post_deactivate(){mDbg("")}
 
-  std::string
-  to_s() const noexcept override
+  std::string to_s() const noexcept override
   {
     return get_name() + ", n_processed {" + std::to_string(n_processed);
   }
@@ -134,7 +135,7 @@ class Looper : public Module {
   volatile bool looping{false};
   volatile bool running{false};
 
-  UTILS_DISALLOW_COPY_AND_ASSIGN(Looper)
+  UCC_DISALLOW_COPY_AND_ASSIGN(Looper)
 };
 
-}  // namespace utils
+}  // namespace ucc

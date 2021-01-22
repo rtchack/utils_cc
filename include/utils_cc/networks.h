@@ -9,8 +9,8 @@
 #include <netpacket/packet.h>
 #include <string.h>
 
-#include "utils_cpp/log.h"
-#include "utils_cpp/common.h"
+#include "utils_cc/log.h"
+#include "utils_cc/common.h"
 
 namespace utils
 {
@@ -18,7 +18,7 @@ const std::string
 hardware_addr()
 {
   ifaddrs *ifaddr{};
-  UTILS_RAISE_VERB_IF(getifaddrs(&ifaddr) == -1, strerror(errno))
+  UCC_RAISE_VERB_IF(getifaddrs(&ifaddr) == -1, strerror(errno))
 
   char addr_str[256];
   size_t pos = 0;

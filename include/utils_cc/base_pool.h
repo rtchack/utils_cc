@@ -9,10 +9,10 @@
 #include <mutex>
 #include <functional>
 
-#include "utils_cpp/common.h"
-#include "utils_cpp/module.h"
+#include "utils_cc/common.h"
+#include "utils_cc/module.h"
 
-namespace utils
+namespace ucc
 {
 /**
  * BasePool
@@ -26,7 +26,7 @@ class BasePool : public Module
   BasePool(size_t capacity, std::string &&name, bool be_thread_safe)
       : Module{std::move(name)}, capacity{capacity}
   {
-    UTILS_RAISE_IF(capacity <= 0)
+    UCC_RAISE_IF(capacity <= 0)
 
     if (be_thread_safe) {
       mut = new std::mutex{};
@@ -61,7 +61,7 @@ class BasePool : public Module
    */
   template <typename... Args>
   inline std::unique_ptr<T, std::function<void(T *)>>
-  alloc_unique(Args &&... args) noexcept
+  alloc_unique(Args &&...args) noexcept
   {
     return std::unique_ptr<T, std::function<void(T *)>>{
         alloc(std::forward<Args>(args)...), [this](T *t) { dealloc(t); }};
@@ -72,7 +72,7 @@ class BasePool : public Module
    */
   template <typename... Args>
   inline std::shared_ptr<T>
-  alloc_shared(Args &&... args) noexcept
+  alloc_shared(Args &&...args) noexcept
   {
     return std::shared_ptr<T>{alloc(std::forward<Args>(args)...),
                               [this](T *t) { dealloc(t); }};
@@ -87,7 +87,7 @@ class BasePool : public Module
   size_t
   get_free_node_num() const
   {
-    UTILS_RAISE_UNLESS(capacity >= stat.n_allocated);
+    UCC_RAISE_UNLESS(capacity >= stat.n_allocated);
     return capacity - stat.n_allocated;
   }
 
@@ -102,7 +102,7 @@ class BasePool : public Module
 
   template <typename... Args>
   T *
-  borrow_item(Args &&... args)
+  borrow_item(Args &&...args)
   {
     unless(free_nodes)
     {
@@ -121,7 +121,7 @@ class BasePool : public Module
    */
   template <typename... Args>
   T *
-  alloc(Args &&... args) noexcept
+  alloc(Args &&...args) noexcept
   {
     if (mut) {
       std::lock_guard<std::mutex> bar{*mut};
@@ -162,10 +162,10 @@ class BasePool : public Module
     inline std::string
     to_s() const noexcept
     {
-      UTILS_STR_S(64)
-      UTILS_STR_ATTR(n_alloc_failure)
-      UTILS_STR_ATTR(n_dealloc_failure)
-      UTILS_STR_ATTR(n_allocated)
+      UCC_STR_S(64)
+      UCC_STR_ATTR(n_alloc_failure)
+      UCC_STR_ATTR(n_dealloc_failure)
+      UCC_STR_ATTR(n_allocated)
       return s;
     }
 
@@ -173,14 +173,14 @@ class BasePool : public Module
     uint64_t n_dealloc_failure{};
     uint64_t n_allocated{};
   };
-  UTILS_READER(Stat, stat){};
+  UCC_READER(Stat, stat){};
 
-  UTILS_READER(size_t, capacity);
+  UCC_READER(size_t, capacity);
   uint8_t *mem;
   Node *free_nodes;
   std::mutex *mut{};
 
-  UTILS_DISALLOW_COPY_AND_ASSIGN(BasePool)
+  UCC_DISALLOW_COPY_AND_ASSIGN(BasePool)
 };
 
-}  // namespace utils
+}  // namespace ucc

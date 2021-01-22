@@ -2,8 +2,8 @@
  * Created by galaxyhuang in 2021.
  */
 
-#ifndef UTILS_CPP_COMMON_H
-#define UTILS_CPP_COMMON_H
+#ifndef UTILS_CC_C_COMMON_H
+#define UTILS_CC_C_COMMON_H
 
 #include <assert.h>
 #include <stdlib.h>
@@ -21,16 +21,16 @@ extern "C" {
 #endif
 
 #ifndef MIN
-#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 #ifndef MAX
-#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
 #define UC_UNUSED(v) (void)v;
 #ifndef container_of
 #define container_of(ptr, type, member) \
-  ((type *) ((char *) (ptr) - offsetof(type, member)))
+  ((type *)((char *)(ptr)-offsetof(type, member)))
 #endif
 
 #define UC_ROUND_UNIT 16U
@@ -43,4 +43,4 @@ extern "C" {
 };
 #endif
 
-#endif  // UTILS_CPP_COMMON_H
+#endif  // UTILS_CC_COMMON_H

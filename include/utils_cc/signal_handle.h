@@ -6,9 +6,9 @@
 
 #include <functional>
 
-#include "utils_cpp/macro_utils.h"
+#include "utils_cc/macro_utils.h"
 
-namespace utils
+namespace ucc
 {
 bool
 is_running();
@@ -28,4 +28,4 @@ wait_for_signal()
   until_signal([] {});
 }
 
-}  // namespace utils
+}  // namespace ucc

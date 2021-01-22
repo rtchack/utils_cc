@@ -3,13 +3,13 @@
  *      Author: xing
  */
 
-#include "utils_cpp/common.h"
+#include "utils_cc/common.h"
 
 #ifdef OS_LINUX
 #include <sys/resource.h>
 #endif
 
-namespace utils
+namespace ucc
 {
 std::string
 to_s(Ret v) noexcept
@@ -53,4 +53,4 @@ enable_core_dump() noexcept
 #endif
 }
 
-}  // namespace utils
+}  // namespace ucc

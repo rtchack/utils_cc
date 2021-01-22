@@ -2,9 +2,9 @@
  * Created by xing on 4/14/16.
  */
 
-#include "utils_cpp/time.h"
+#include "utils_cc/time.h"
 
-namespace utils
+namespace ucc
 {
 /**
  * Has time passed seconds seconds from ts to now?
@@ -46,7 +46,7 @@ Time::time_up_and_update(const Duration &duration) noexcept
 void
 Time::inspect() const noexcept
 {
-  UTILS_STR_S(64)
+  UCC_STR_S(64)
   s.append("/n/tstart ");
   s.append(std::to_string(of_microseconds(start.time_since_epoch())));
   s.append("/n/ttmp ");
@@ -54,4 +54,4 @@ Time::inspect() const noexcept
   lInf(s);
 }
 
-}  // namespace utils
+}  // namespace ucc

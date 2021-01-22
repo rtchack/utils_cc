@@ -2,9 +2,9 @@
  * Created by xing on 4/7/16.
  */
 
-#include "utils_cpp/string_utils.h"
+#include "utils_cc/string_utils.h"
 
-namespace utils
+namespace ucc
 {
 namespace str_util
 {
@@ -43,15 +43,15 @@ to_hex_str(const std::vector<uint8_t> &chars) noexcept
 
 std::string
 to_hex_str(const std::vector<uint8_t> &chars,
-         const std::string &delimiter) noexcept
+           const std::string &delimiter) noexcept
 {
   return to_hex_str(chars, delimiter, 1);
 }
 
 std::string
 to_hex_str(const std::vector<uint8_t> &chars,
-         const std::string &delimiter,
-         uint16_t pace) noexcept
+           const std::string &delimiter,
+           uint16_t pace) noexcept
 {
   std::string s;
   s.reserve((chars.size() + 1) << 2);
@@ -70,4 +70,4 @@ to_hex_str(const std::vector<uint8_t> &chars,
 }
 
 }  // namespace str_util
-}  // namespace utils
+}  // namespace ucc

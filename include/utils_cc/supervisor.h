@@ -12,10 +12,10 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#include "utils_cpp/macro_utils.h"
-#include "utils_cpp/log.h"
-#include "utils_cpp/module.h"
-#include "utils_cpp/thread_wrapper.h"
+#include "utils_cc/macro_utils.h"
+#include "utils_cc/log.h"
+#include "utils_cc/module.h"
+#include "utils_cc/thread_wrapper.h"
 
 namespace utils
 {
@@ -71,22 +71,22 @@ class Supervisor
 
         wait(NULL);
         if (running) {
-          UTILS_SLEEP(seconds(4))
+          UCC_SLEEP(seconds(4))
         }
         if (running) {
-          UTILS_SHUTDOWN_LOG
+          UCC_SHUTDOWN_LOG
           pid = fork();
         }
       }
     }
 
     if (pid < 0) {
-      UTILS_RAISE("Invalid pid")
+      UCC_RAISE("Invalid pid")
     } else if (!pid) {
       if (log_file.size() > 0) {
-        UTILS_INIT_LOG_WITH(log_file)
+        UCC_INIT_LOG_WITH(log_file)
       } else {
-        UTILS_INIT_LOG
+        UCC_INIT_LOG
       }
       std::cout << getpid() << " Go into run_in_descendant" << std::endl;
       run_in_descendant();
