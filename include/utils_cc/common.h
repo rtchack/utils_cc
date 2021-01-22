@@ -99,7 +99,7 @@ class Excep : public std::exception
   std::string msg;
 };
 
-#define UCC_RAISE(msg)                               \
+#define UCC_RAISE(msg)                                 \
   std::stringstream utils_cc_excep_located_s;          \
   utils_cc_excep_located_s << __func__ << ": " << msg; \
   throw utils::Excep(utils_cc_excep_located_s.str());
@@ -109,14 +109,14 @@ class Excep : public std::exception
 #endif
 
 #define UCC_RAISE_IF(v)                 \
-  if (v) {                                \
+  if (v) {                              \
     UCC_RAISE(#v " should not be ture") \
   }
 
 #define UCC_RAISE_UNLESS(v) UCC_RAISE_IF(!(v))
 
 #define UCC_RAISE_VERB_IF(v, msg)                \
-  if (v) {                                         \
+  if (v) {                                       \
     UCC_RAISE(#v " should not be ture: " << msg) \
   }
 

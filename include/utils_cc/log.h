@@ -22,7 +22,7 @@
 #define UCC_CURRENT_SEVERITY UCC_SEVERITY_DBG
 #endif
 
-#define UCC_LOGGER(msg)                                 \
+#define UCC_LOGGER(msg)                                   \
   {                                                       \
     std::lock_guard<std::mutex> no_overlap{ucc::log_mut}; \
     std::cout << msg << std::endl;                        \
@@ -35,12 +35,12 @@
 // Debugging logger
 #if UCC_CURRENT_SEVERITY >= UCC_SEVERITY_DBG
 #define UCC_DBG_ONLY(act) \
-  {                         \
-    act;                    \
+  {                       \
+    act;                  \
   }
-#define lDbg(msg)                                                            \
+#define lDbg(msg)                                                          \
   UCC_LOGGER("D " << std::this_thread::get_id() << " [" << __func__ << " " \
-                    << __LINE__ << "] " << msg);
+                  << __LINE__ << "] " << msg);
 #define printDbg(fmt, ...) \
   print_log(               \
       UCC_SEVERITY_DBG, "[%s %d] " fmt, __func__, __LINE__, ##__VA_ARGS__);
@@ -53,9 +53,9 @@
 // Informative logger
 #if UCC_CURRENT_SEVERITY >= UCC_SEVERITY_INF
 
-#define lInf(msg)                                                             \
+#define lInf(msg)                                                           \
   UCC_LOGGER("I " << std::this_thread::get_id() << " [" << __func__ << "] " \
-                    << msg);
+                  << msg);
 
 #define printInf(fmt, ...) \
   print_log(UCC_SEVERITY_INF, "[%s] " fmt, __func__, ##__VA_ARGS__);
@@ -67,9 +67,9 @@
 // Warning logger
 #if UCC_CURRENT_SEVERITY >= UCC_SEVERITY_WAR
 
-#define lWar(msg)                                                             \
+#define lWar(msg)                                                           \
   UCC_LOGGER("W " << std::this_thread::get_id() << " [" << __func__ << "] " \
-                    << msg);
+                  << msg);
 
 #define printWar(fmt, ...) \
   print_log(UCC_SEVERITY_WAR, "[%s] " fmt, __func__, ##__VA_ARGS__);
@@ -79,9 +79,9 @@
 #endif
 
 // Erroneous logger
-#define lErr(msg)                                                             \
+#define lErr(msg)                                                           \
   UCC_LOGGER("E " << std::this_thread::get_id() << " [" << __func__ << "] " \
-                    << msg);
+                  << msg);
 
 #define printErr(fmt, ...) \
   print_log(UCC_SEVERITY_ERR, "[%s] " fmt, __func__, ##__VA_ARGS__);

@@ -1,5 +1,5 @@
 /*
- * Created by galaxyhuang in 2021.
+ * Created by xing in 2021.
  */
 
 #ifndef UTILS_CC_C_COMMON_H
