@@ -1,4 +1,4 @@
-# utils_cpp
+# utils_cc
 
 Utilities for C++ (utils_cc) and C (utils_c).
 
