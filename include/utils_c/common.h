@@ -37,6 +37,8 @@ extern "C" {
 #define UC_ROUND(size, round) (((size) + (round)-1) & (~((round)-1)))
 #define UC_ROUNDED(size) (UC_ROUND((size), UC_ROUND_UNIT))
 
+#define UC_ARRAYSZ(array) (sizeof(array) / sizeof(array[0]))
+
 #ifdef __cplusplus
 };
 #endif
