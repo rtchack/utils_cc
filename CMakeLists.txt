@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(utils_cc)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (WIN32)
     add_definitions(-DOS_WIN32=1)
