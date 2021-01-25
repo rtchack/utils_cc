@@ -13,11 +13,10 @@
 extern "C" {
 #endif
 
-typedef struct {
-  uint8_t *value;
-  size_t len;
-  size_t n_bytes;
-} bitset_t;
+/**
+ * A C version of C++ bitset.
+ */
+typedef struct bitset_s bitset_t;
 
 bitset_t *
 bitset_new(size_t len);
@@ -37,17 +36,25 @@ bitset_clear(bitset_t *bitset, size_t from, size_t to);
 void
 bitset_clear_all(bitset_t *bitset);
 
-void
-inline_bitset_set_at(void *bitset, size_t index_in_bits);
+#define BITSET_DECLARE_FOR(type)                                     \
+  void type##_bitset_set_at(type##_t *bitset, size_t index_in_bits); \
+                                                                     \
+  bool type##_bitset_get_at(type##_t *bitset, size_t index_in_bits); \
+                                                                     \
+  void type##_bitset_clear(                                          \
+      type##_t *bitset, size_t from_in_bits, size_t to_in_bits);     \
+                                                                     \
+  void type##_bitset_clear_all(type##_t *bitset);                    \
+                                                                     \
+  static inline void type##_bitset_init(type##_t *bitset)            \
+  {                                                                  \
+    type##_bitset_clear_all(bitset);                                 \
+  }
 
-bool
-inline_bitset_get_at(void *bitset, size_t index_in_bits);
-
-void
-inline_bitset_clear(void *bitset, size_t from_in_bits, size_t to_in_bits);
-
-void
-inline_bitset_clear_all(void *bitset, size_t n_bytes);
+BITSET_DECLARE_FOR(uint8)
+BITSET_DECLARE_FOR(uint16)
+BITSET_DECLARE_FOR(uint32)
+BITSET_DECLARE_FOR(uint64)
 
 #ifdef __cplusplus
 }
