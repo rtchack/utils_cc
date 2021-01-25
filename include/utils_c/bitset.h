@@ -16,10 +16,19 @@ extern "C" {
 /**
  * A C version of C++ bitset.
  */
-typedef struct bitset_s bitset_t;
+typedef struct {
+  uint8_t *value;
+  size_t len;
+  size_t n_bytes;
+  size_t count;
+  size_t is_count_valid : 1;
+} bitset_t;
 
 bitset_t *
 bitset_new(size_t len);
+
+void
+bitset_attach(bitset_t *bitset, uint8_t *value, size_t n_bytes);
 
 void
 bitset_del(bitset_t *bitset);
@@ -29,6 +38,15 @@ bitset_set_at(bitset_t *bitset, size_t index);
 
 bool
 bitset_get_at(bitset_t *bitset, size_t index);
+
+bool
+bitset_any(bitset_t *bitset);
+
+bool
+bitset_all(bitset_t *bitset);
+
+size_t
+bitset_num(bitset_t *bitset);
 
 void
 bitset_clear(bitset_t *bitset, size_t from, size_t to);
