@@ -131,7 +131,7 @@ bitset_clear_all(bitset_t *self)
 #define BITSET_IMP_FOR(type)                                      \
   void type##_bitset_set_at(type##_t *self, size_t index_in_bits) \
   {                                                               \
-    UC_DCHECK(index_in_bites < sizeof(type##_t) << 3);            \
+    UC_DCHECK(index_in_bits < sizeof(type##_t) << 3);             \
     if (index_in_bits >= sizeof(type##_t) << 3) {                 \
       return;                                                     \
     }                                                             \
@@ -140,7 +140,7 @@ bitset_clear_all(bitset_t *self)
                                                                   \
   bool type##_bitset_get_at(type##_t *self, size_t index_in_bits) \
   {                                                               \
-    UC_DCHECK(index_in_bites < sizeof(type##_t) << 3);            \
+    UC_DCHECK(index_in_bits < sizeof(type##_t) << 3);             \
     if (index_in_bits >= sizeof(type##_t) << 3) {                 \
       return false;                                               \
     }                                                             \
@@ -150,7 +150,7 @@ bitset_clear_all(bitset_t *self)
   void type##_bitset_clear(                                       \
       type##_t *self, size_t from_in_bits, size_t to_in_bits)     \
   {                                                               \
-    UC_DCHECK(to_in_bites < sizeof(type##_t) << 3);               \
+    UC_DCHECK(to_in_bits < sizeof(type##_t) << 3);                \
     if (to_in_bits >= sizeof(type##_t) << 3) {                    \
       return;                                                     \
     }                                                             \
@@ -164,3 +164,4 @@ BITSET_IMP_FOR(uint16)
 BITSET_IMP_FOR(uint32)
 BITSET_IMP_FOR(uint64)
 
+#undef BITSET_IMP_FOR

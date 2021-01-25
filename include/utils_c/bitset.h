@@ -56,6 +56,8 @@ BITSET_DECLARE_FOR(uint16)
 BITSET_DECLARE_FOR(uint32)
 BITSET_DECLARE_FOR(uint64)
 
+#undef BITSET_DECLARE_FOR
+
 #ifdef __cplusplus
 }
 #endif
