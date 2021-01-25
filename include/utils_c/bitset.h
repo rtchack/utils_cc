@@ -36,6 +36,18 @@ bitset_clear(bitset_t *bitset, size_t from, size_t to);
 void
 bitset_clear_all(bitset_t *bitset);
 
+void
+inline_bitset_set_at(void *self, size_t index_in_bits);
+
+bool
+inline_bitset_get_at(void *self, size_t index_in_bits);
+
+void
+inline_bitset_clear(void *self, size_t from_in_bits, size_t to_in_bits);
+
+void
+inline_bitset_clear_all(void *self, size_t n_bytes);
+
 #define BITSET_DECLARE_FOR(type)                                     \
   void type##_bitset_set_at(type##_t *bitset, size_t index_in_bits); \
                                                                      \

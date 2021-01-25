@@ -15,30 +15,30 @@ struct bitset_s {
   size_t n_bytes;
 };
 
-static void
-inline_bitset_set_at(void *bitset, size_t index_in_bits)
+void
+inline_bitset_set_at(void *self, size_t index_in_bits)
 {
   const size_t i = index_in_bits >> 3;
   const uint8_t m = (uint8_t)(index_in_bits % 8);
-  ((uint8_t *)bitset)[i] |= (1 << m);
+  ((uint8_t *)self)[i] |= (1 << m);
 }
 
-static bool
-inline_bitset_get_at(void *bitset, size_t index_in_bits)
+bool
+inline_bitset_get_at(void *self, size_t index_in_bits)
 {
   const size_t i = index_in_bits >> 3;
   const uint8_t m = (uint8_t)(index_in_bits % 8);
-  return ((uint8_t *)bitset)[i] & (1 << m);
+  return ((uint8_t *)self)[i] & (1 << m);
 }
 
-static void
-inline_bitset_clear(void *bitset, size_t from_in_bits, size_t to_in_bits)
+void
+inline_bitset_clear(void *self, size_t from_in_bits, size_t to_in_bits)
 {
   if (from_in_bits == to_in_bits) {
     const size_t i = from_in_bits >> 3;
     const uint8_t m = (uint8_t)(to_in_bits % 8);
 
-    ((uint8_t *)bitset)[i] ^= (1 << m);
+    ((uint8_t *)self)[i] ^= (1 << m);
   } else if (from_in_bits < to_in_bits) {
     const size_t i_from = from_in_bits >> 3;
     uint8_t m_from = (uint8_t)(from_in_bits % 8);
@@ -48,25 +48,31 @@ inline_bitset_clear(void *bitset, size_t from_in_bits, size_t to_in_bits)
 
     if (i_to == i_from) {
       while (m_from <= m_to) {
-        ((uint8_t *)bitset)[i_from] ^= 1 << m_from;
+        ((uint8_t *)self)[i_from] ^= 1 << m_from;
         ++m_from;
       }
     } else {
       if (i_to > 1 && i_from < i_to - 1) {
-        memset(((uint8_t *)bitset) + i_from + 1, 0, i_to - i_from - 1);
+        memset(((uint8_t *)self) + i_from + 1, 0, i_to - i_from - 1);
       }
       while (m_from != 8) {
-        ((uint8_t *)bitset)[i_from] ^= 1 << m_from;
+        ((uint8_t *)self)[i_from] ^= 1 << m_from;
         ++m_from;
       }
       while (m_to != UINT8_MAX) {
-        ((uint8_t *)bitset)[i_to] ^= 1 << m_to;
+        ((uint8_t *)self)[i_to] ^= 1 << m_to;
         --m_to;
       }
     }
   } else {
     UC_DCHECK(false);
   }
+}
+
+void
+inline_bitset_clear_all(void *self, size_t n_bytes)
+{
+  memset(self, 0, n_bytes);
 }
 
 bitset_t *
