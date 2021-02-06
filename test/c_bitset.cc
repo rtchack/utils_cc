@@ -36,6 +36,10 @@ TEST(c_bitset, bitset_all_should_work)
 {
   const int lens[]{1, 7, 8, 13, 15, 16, 23, 24, 25};
   for (auto n : lens) {
+    lInf("n " << n);
+    if(n == 8){
+      lInf("Break");
+    }
     auto bs = std::unique_ptr<bitset_t, std::function<void(bitset_t *)>>(
         bitset_new(n), [](bitset_t *b) { bitset_del(b); });
     EXPECT_FALSE(bitset_any(&*bs));

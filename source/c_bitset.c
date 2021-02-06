@@ -69,11 +69,13 @@ inline_bitset_clear_all(void *self, size_t n_bytes)
 bitset_t *
 bitset_new(size_t len)
 {
-  const size_t n_bytes = (len + sizeof(uint8_t) - 1) / sizeof(uint8_t);
+  const size_t n_bytes = (len + (1 << 3) - 1) >> 3;
   bitset_t *self = malloc(sizeof(bitset_t) + n_bytes);
   if (!self) {
     return self;
   }
+
+  UC_DCHECK(len);
 
   self->count = 0;
   self->is_count_valid = true;
@@ -164,20 +166,23 @@ bitset_all(bitset_t *self)
 
   {
     size_t n = 0;
-    while (n != self->n_bytes - 1) {
+    const size_t n_to = self->len % 8 ? self->n_bytes - 1 : self->n_bytes;
+
+    while (n != n_to) {
       if (self->value[n] != 0xff) {
         return false;
       }
       ++n;
     }
-  }
 
-  {
-    const uint8_t v = self->value[self->n_bytes - 1];
-    int m = (int)(self->len % 8);
-    while (m-- > 0) {
-      if (!(v & (1 << m))) {
-        return false;
+    if (n != self->n_bytes) {
+      UC_DCHECK(n == self->n_bytes - 1);
+      const uint8_t v = self->value[n];
+      int m = (int)(self->len % 8);
+      while (m-- > 0) {
+        if (!(v & (1 << m))) {
+          return false;
+        }
       }
     }
   }
