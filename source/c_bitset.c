@@ -7,18 +7,18 @@
 #include <string.h>
 
 void
-inline_bitset_set_at(void *self, size_t index)
+inline_bitset_set(void *self, size_t index_in_bits)
 {
-  const size_t i = index >> 3;
-  const int m = (int)(index % 8);
+  const size_t i = index_in_bits >> 3;
+  const int m = (int)(index_in_bits % 8);
   ((uint8_t *)self)[i] |= (1 << m);
 }
 
 bool
-inline_bitset_get_at(void *self, size_t index)
+inline_bitset_get(const void *self, size_t index_in_bits)
 {
-  const size_t i = index >> 3;
-  const int m = (int)(index % 8);
+  const size_t i = index_in_bits >> 3;
+  const int m = (int)(index_in_bits % 8);
   return ((uint8_t *)self)[i] & (1 << m);
 }
 
@@ -108,33 +108,33 @@ bitset_del(bitset_t *self)
 }
 
 void
-bitset_set_at(bitset_t *self, size_t index)
+bitset_set(bitset_t *bitset, size_t index)
 {
   const size_t i = index >> 3;
   const int m = (int)(index % 8);
 
-  UC_DCHECK(index < self->len);
-  if (index >= self->len) {
+  UC_DCHECK(index < bitset->len);
+  if (index >= bitset->len) {
     return;
   }
 
-  if (self->is_count_valid) {
-    if (!(self->value[i] & (1 << m))) {
-      ++self->count;
+  if (bitset->is_count_valid) {
+    if (!(bitset->value[i] & (1 << m))) {
+      ++bitset->count;
     }
   }
 
-  self->value[i] |= (1 << m);
+  bitset->value[i] |= (1 << m);
 }
 
 bool
-bitset_get_at(bitset_t *self, size_t index)
+bitset_get(const bitset_t *bitset, size_t index)
 {
-  UC_DCHECK(index < self->len);
-  if (index >= self->len) {
+  UC_DCHECK(index < bitset->len);
+  if (index >= bitset->len) {
     return false;
   }
-  return inline_bitset_get_at(self->value, index);
+  return inline_bitset_get(bitset->value, index);
 }
 
 bool
@@ -254,22 +254,22 @@ bitset_clear_all(bitset_t *self)
 }
 
 #define BITSET_IMP_FOR(type)                                  \
-  void type##_bitset_set_at(type##_t *self, size_t index)     \
+  void type##_bitset_set(type##_t *self, size_t index)        \
   {                                                           \
     UC_DCHECK(index < sizeof(type##_t) << 3);                 \
     if (index >= sizeof(type##_t) << 3) {                     \
       return;                                                 \
     }                                                         \
-    inline_bitset_set_at(self, index);                        \
+    inline_bitset_set(self, index);                           \
   }                                                           \
                                                               \
-  bool type##_bitset_get_at(type##_t *self, size_t index)     \
+  bool type##_bitset_get(const type##_t *self, size_t index)  \
   {                                                           \
     UC_DCHECK(index < sizeof(type##_t) << 3);                 \
     if (index >= sizeof(type##_t) << 3) {                     \
       return false;                                           \
     }                                                         \
-    return inline_bitset_get_at(self, index);                 \
+    return inline_bitset_get(self, index);                    \
   }                                                           \
                                                               \
   void type##_bitset_clear(                                   \

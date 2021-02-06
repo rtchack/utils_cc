@@ -34,10 +34,10 @@ void
 bitset_del(bitset_t *bitset);
 
 void
-bitset_set_at(bitset_t *bitset, size_t index);
+bitset_set(bitset_t *bitset, size_t index);
 
 bool
-bitset_get_at(bitset_t *bitset, size_t index);
+bitset_get(const bitset_t *bitset, size_t index);
 
 bool
 bitset_any(bitset_t *bitset);
@@ -55,10 +55,10 @@ void
 bitset_clear_all(bitset_t *bitset);
 
 void
-inline_bitset_set_at(void *self, size_t index_in_bits);
+inline_bitset_set(void *self, size_t index_in_bits);
 
 bool
-inline_bitset_get_at(void *self, size_t index_in_bits);
+inline_bitset_get(const void *self, size_t index_in_bits);
 
 void
 inline_bitset_clear(void *self, size_t from_in_bits, size_t to_in_bits);
@@ -66,19 +66,19 @@ inline_bitset_clear(void *self, size_t from_in_bits, size_t to_in_bits);
 void
 inline_bitset_clear_all(void *self, size_t n_bytes);
 
-#define BITSET_DECLARE_FOR(type)                                     \
-  void type##_bitset_set_at(type##_t *bitset, size_t index_in_bits); \
-                                                                     \
-  bool type##_bitset_get_at(type##_t *bitset, size_t index_in_bits); \
-                                                                     \
-  void type##_bitset_clear(                                          \
-      type##_t *bitset, size_t from_in_bits, size_t to_in_bits);     \
-                                                                     \
-  void type##_bitset_clear_all(type##_t *bitset);                    \
-                                                                     \
-  static inline void type##_bitset_init(type##_t *bitset)            \
-  {                                                                  \
-    type##_bitset_clear_all(bitset);                                 \
+#define BITSET_DECLARE_FOR(type)                                        \
+  void type##_bitset_set(type##_t *bitset, size_t index_in_bits);       \
+                                                                        \
+  bool type##_bitset_get(const type##_t *bitset, size_t index_in_bits); \
+                                                                        \
+  void type##_bitset_clear(                                             \
+      type##_t *bitset, size_t from_in_bits, size_t to_in_bits);        \
+                                                                        \
+  void type##_bitset_clear_all(type##_t *bitset);                       \
+                                                                        \
+  static inline void type##_bitset_init(type##_t *bitset)               \
+  {                                                                     \
+    type##_bitset_clear_all(bitset);                                    \
   }
 
 BITSET_DECLARE_FOR(uint8)
