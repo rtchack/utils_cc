@@ -44,7 +44,7 @@ TEST(c_bitset, bitset_all_should_work)
         bitset_new(n), [](bitset_t *b) { bitset_del(b); });
     EXPECT_FALSE(bitset_any(&*bs));
     EXPECT_FALSE(bitset_all(&*bs));
-    for (size_t i = 0; i != n; ++i) {
+    for (int i = 0; i != n; ++i) {
       bitset_set(&*bs, i);
     }
     EXPECT_TRUE(bitset_any(&*bs));
