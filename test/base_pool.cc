@@ -39,7 +39,7 @@ TEST(base_pool, should_work_in_single_thread)
       EXPECT_TRUE(shared_1);
 
       EXPECT_FALSE(pool.alloc_shared(std::string{"shared"}));
-      EXPECT_FALSE(pool.alloc_unique(std::string{"shared"}));
+      EXPECT_FALSE(pool.alloc_unique(std::string{"unique"}));
       EXPECT_EQ(stat.n_alloc_failure, 2);
       EXPECT_EQ(stat.n_allocated, 3);
     }
