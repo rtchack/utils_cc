@@ -27,7 +27,7 @@ extern "C" {
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-#define UC_UNUSED(v) (void)v;
+#define UC_UNUSED(v) (void)(v);
 #ifndef container_of
 #define container_of(ptr, type, member) \
   ((type *)((char *)(ptr)-offsetof(type, member)))
