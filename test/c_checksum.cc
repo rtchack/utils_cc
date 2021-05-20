@@ -3,7 +3,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <utils_c/c_checksum.h>
+#include <utils_c/checksum.h>
 #include <utils_cc/common.h>
 #include <utils_cc/helpers.h>
 
