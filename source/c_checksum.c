@@ -6,11 +6,11 @@
 #include <utils_c/common.h>
 
 uint16_t
-gen_oc_checksum(uint16_t checksum, const uint8_t *data, size_t len)
+gen_oc_checksum(uint32_t checksum, const uint8_t *data, size_t len)
 {
   UC_DCHECK(data && len);
   if (!len) {
-    return checksum;
+    return (uint16_t)checksum;
   }
 
   size_t i = len % 2 ? 1 : 2;
@@ -28,5 +28,5 @@ gen_oc_checksum(uint16_t checksum, const uint8_t *data, size_t len)
   }
 
   UC_DCHECK(i == len);
-  return checksum;
+  return (uint16_t)checksum;
 }
