@@ -38,7 +38,7 @@ class Module : public StringAble
   virtual std::string
   to_s() const
   {
-    NOT_IMPLEMENTED
+    UNIMPLEMENTED
   }
 
  private:

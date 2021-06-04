@@ -122,7 +122,7 @@ class Excep : public std::exception
 
 #define UCC_RAISE_VERB_UNLESS(v, msg) UCC_RAISE_VERB_IF(!(v), msg)
 
-#define NOT_IMPLEMENTED UCC_RAISE("NOT IMPLEMENTED");
+#define UNIMPLEMENTED UCC_RAISE("UNIMPLEMENTED");
 #define UNREACHABLE UCC_RAISE("UNREACHABLE");
 
 /**
