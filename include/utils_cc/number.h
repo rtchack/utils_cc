@@ -156,7 +156,7 @@ min_diff(T a, T b)
 }
 
 /**
- *Test if the sequence number |a| is ahead or at sequence number |b|.
+ * Test if the sequence number |a| is ahead or at sequence number |b|.
  *
  * If |M| is an even number and the two sequence numbers are at max distance
  * from each other, then the sequence number with the highest value is
@@ -192,7 +192,7 @@ ahead_or_at(T a, T b)
 }
 
 /**
- *Test if the sequence number |a| is ahead of sequence number |b|.
+ * Test if the sequence number |a| is ahead of sequence number |b|.
  *
  * If |M| is an even number and the two sequence numbers are at max distance
  * from each other, then the sequence number with the highest value is
