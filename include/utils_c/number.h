@@ -27,15 +27,15 @@ extern "C" {
 #endif
 
 #ifndef NUM_FORWARD_DIFF_U8
-#define NUM_FORWARD_DIFF_U8(a, b) NUM_FORWARD_DIFF((a), (b), UINT8_MAX + 1)
+#define NUM_FORWARD_DIFF_U8(a, b) (uint8_t)(NUM_FORWARD_DIFF((a), (b), UINT8_MAX + (int16_t)1))
 #endif
 
 #ifndef NUM_FORWARD_DIFF_U16
-#define NUM_FORWARD_DIFF_U16(a, b) NUM_FORWARD_DIFF((a), (b), UINT16_MAX + 1)
+#define NUM_FORWARD_DIFF_U16(a, b) (uint16_t)(NUM_FORWARD_DIFF((a), (b), UINT16_MAX + (int32_t)1))
 #endif
 
 #ifndef NUM_FORWARD_DIFF_U32
-#define NUM_FORWARD_DIFF_U32(a, b) NUM_FORWARD_DIFF((a), (b), UINT32_MAX + 1)
+#define NUM_FORWARD_DIFF_U32(a, b) (uint32_t)(NUM_FORWARD_DIFF((a), (b), UINT32_MAX + (int64_t)1))
 #endif
 
 #ifndef NUM_REVERSE_DIFF
@@ -43,15 +43,15 @@ extern "C" {
 #endif
 
 #ifndef NUM_REVERSE_DIFF_U8
-#define NUM_REVERSE_DIFF_U8(a, b) NUM_REVERSE_DIFF(a, b, UINT8_MAX + 1)
+#define NUM_REVERSE_DIFF_U8(a, b) (uint8_t)(NUM_REVERSE_DIFF(a, b, UINT8_MAX + (int16_t)1))
 #endif
 
 #ifndef NUM_REVERSE_DIFF_U16
-#define NUM_REVERSE_DIFF_U16(a, b) NUM_REVERSE_DIFF(a, b, UINT16_MAX + 1)
+#define NUM_REVERSE_DIFF_U16(a, b) (uint16_t)(NUM_REVERSE_DIFF(a, b, UINT16_MAX + (int32_t)1))
 #endif
 
 #ifndef NUM_REVERSE_DIFF_U32
-#define NUM_REVERSE_DIFF_U32(a, b) NUM_REVERSE_DIFF(a, b, UINT32_MAX + 1)
+#define NUM_REVERSE_DIFF_U32(a, b) (uint32_t)(NUM_REVERSE_DIFF(a, b, UINT32_MAX + (int64_t)1))
 #endif
 
 #ifndef NUM_MIN_DIFF
@@ -59,15 +59,15 @@ extern "C" {
 #endif
 
 #ifndef NUM_MIN_DIFF_U8
-#define NUM_MIN_DIFF_U8(a, b) NUM_MIN_DIFF((a), (b), UINT8_MAX + 1)
+#define NUM_MIN_DIFF_U8(a, b) (uint8_t)(NUM_MIN_DIFF((a), (b), UINT8_MAX + (int16_t)1))
 #endif
 
 #ifndef NUM_MIN_DIFF_U16
-#define NUM_MIN_DIFF_U16(a, b) NUM_MIN_DIFF((a), (b), UINT16_MAX + 1)
+#define NUM_MIN_DIFF_U16(a, b) (uint16_t)(NUM_MIN_DIFF((a), (b), UINT16_MAX + (int32_t)1))
 #endif
 
 #ifndef NUM_MIN_DIFF_U32
-#define NUM_MIN_DIFF_U32(a, b) NUM_MIN_DIFF((a), (b), UINT32_MAX + 1)
+#define NUM_MIN_DIFF_U32(a, b) (uint32_t)(NUM_MIN_DIFF((a), (b), UINT32_MAX + (int64_t)1))
 #endif
 
 #ifndef CEIL
