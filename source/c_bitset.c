@@ -241,6 +241,10 @@ bitset_clear(bitset_t *self, size_t from, size_t to)
   if (to >= self->len) {
     return;
   }
+  if (to < from) {
+    inline_bitset_clear(self->value, 0, to);
+    to = self->len - 1;
+  }
   inline_bitset_clear(self->value, from, to);
   self->is_count_valid = false;
 }
@@ -278,6 +282,10 @@ bitset_clear_all(bitset_t *self)
     UC_DCHECK(to_in_bits < sizeof(type##_t) << 3);            \
     if (to_in_bits >= sizeof(type##_t) << 3) {                \
       return;                                                 \
+    }                                                         \
+    if (to_in_bits < from_in_bits) {                          \
+      inline_bitset_clear(self, 0, to_in_bits);               \
+      to_in_bits = (sizeof(type##_t) << 3) - 1;               \
     }                                                         \
     inline_bitset_clear(self, from_in_bits, to_in_bits);      \
   }                                                           \
