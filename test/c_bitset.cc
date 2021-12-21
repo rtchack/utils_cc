@@ -136,15 +136,15 @@ TEST(c_bitset, should_work)
   EXPECT_FALSE(bitset_any(&*bs));
   EXPECT_FALSE(bitset_all(&*bs));
 
-  bitset_set(&*bs, 0);
   bitset_set(&*bs, 1);
+  bitset_set(&*bs, bs->len - 3);
   bitset_set(&*bs, bs->len - 2);
-  bitset_set(&*bs, bs->len - 1);
-  bitset_clear(&*bs, bs->len - 1, 1);
+  bitset_clear(&*bs, bs->len - 2, 1);
   EXPECT_FALSE(bitset_get(&*bs, 0));
   EXPECT_FALSE(bitset_get(&*bs, 1));
+  EXPECT_FALSE(bitset_get(&*bs, bs->len - 2));
   EXPECT_FALSE(bitset_get(&*bs, bs->len - 1));
-  EXPECT_TRUE(bitset_get(&*bs, bs->len - 2));
+  EXPECT_TRUE(bitset_get(&*bs, bs->len - 3));
 }
 
 TEST(c_inline_bitset, should_work_on_u8)
@@ -199,15 +199,15 @@ TEST(c_inline_bitset, should_work_on_u8)
   EXPECT_FALSE(uint8_bitset_get(&bsu8, 4));
   EXPECT_FALSE(uint8_bitset_get(&bsu8, sizeof(uint8_t) - 1));
 
-  uint8_bitset_set(&bsu8, 0);
   uint8_bitset_set(&bsu8, 1);
+  uint8_bitset_set(&bsu8, 5);
   uint8_bitset_set(&bsu8, 6);
-  uint8_bitset_set(&bsu8, 7);
-  uint8_bitset_clear(&bsu8, 7, 1);
+  uint8_bitset_clear(&bsu8, 6, 1);
   EXPECT_FALSE(uint8_bitset_get(&bsu8, 0));
   EXPECT_FALSE(uint8_bitset_get(&bsu8, 1));
+  EXPECT_FALSE(uint8_bitset_get(&bsu8, 6));
   EXPECT_FALSE(uint8_bitset_get(&bsu8, 7));
-  EXPECT_TRUE(uint8_bitset_get(&bsu8, 6));
+  EXPECT_TRUE(uint8_bitset_get(&bsu8, 5));
 }
 
 }  // namespace test

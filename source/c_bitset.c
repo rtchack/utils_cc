@@ -29,7 +29,7 @@ inline_bitset_clear(void *self, size_t from_in_bits, size_t to_in_bits)
     const size_t i = from_in_bits >> 3;
     const int m = (int)(to_in_bits % 8);
 
-    ((uint8_t *)self)[i] ^= (1 << m);
+    ((uint8_t *)self)[i] &= ~(1 << m);
   } else if (from_in_bits < to_in_bits) {
     const size_t i_from = from_in_bits >> 3;
     int m_from = (int)(from_in_bits % 8);
@@ -39,7 +39,7 @@ inline_bitset_clear(void *self, size_t from_in_bits, size_t to_in_bits)
 
     if (i_to == i_from) {
       while (m_from <= m_to) {
-        ((uint8_t *)self)[i_from] ^= 1 << m_from;
+        ((uint8_t *)self)[i_from] &= ~(1 << m_from);
         ++m_from;
       }
     } else {
@@ -47,11 +47,11 @@ inline_bitset_clear(void *self, size_t from_in_bits, size_t to_in_bits)
         memset(((uint8_t *)self) + i_from + 1, 0, i_to - i_from - 1);
       }
       while (m_from < 8) {
-        ((uint8_t *)self)[i_from] ^= 1 << m_from;
+        ((uint8_t *)self)[i_from] &= ~(1 << m_from);
         ++m_from;
       }
       while (m_to >= 0) {
-        ((uint8_t *)self)[i_to] ^= 1 << m_to;
+        ((uint8_t *)self)[i_to] &= ~(1 << m_to);
         --m_to;
       }
     }
