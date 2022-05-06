@@ -58,11 +58,11 @@ SingletonGuard::~SingletonGuard() { close(fd); }
 #ifdef OS_WIN32
 
 SingletonGuard::SingletonGuard(const std::string &name)
-    : fd{0} {NOT_IMPLEMENTED}
+    : fd{0} {UNIMPLEMENTED}
 
       SingletonGuard::~SingletonGuard()
 {
-  NOT_IMPLEMENTED
+  UNIMPLEMENTED
 }
 
 #endif

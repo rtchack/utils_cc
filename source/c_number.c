@@ -14,7 +14,8 @@ int64_t seq_num_unwrapper_u##bits(seq_num_unwrapper_t *self, uint##bits##_t valu
     self->last_unwrapped = value;                                                  \
   } else {                                                                         \
     const static int64_t num_of_values = (int64_t)1 + UINT##bits##_MAX;            \
-    const static int64_t max_value_dist = num_of_values / (int64_t)2;              \
+    const static int64_t max_value_dist = ((int64_t)1 + UINT##bits##_MAX) /        \
+                                          (int64_t)2;                              \
     const int64_t last_value = (int64_t)self->last_value;                          \
     const int64_t forward_diff = NUM_FORWARD_DIFF_U##bits(last_value, value);      \
     const int64_t reverse_diff = NUM_REVERSE_DIFF_U##bits(last_value, value);      \
