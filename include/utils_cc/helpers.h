@@ -54,9 +54,9 @@ char (&ArraySizeHelper(T (&array)[N]))[N];
 #define arraysize(array) (sizeof(utils::ArraySizeHelper(array)))
 
 template <typename T, size_t N>
-T *last(T (&array)[N])
+T &last(T (&array)[N])
 {
-  return array + N;
+  return array[N - 1];
 }
 
 }  // namespace utils
