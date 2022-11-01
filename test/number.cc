@@ -13,35 +13,35 @@ namespace test
 {
 TEST(ahead_or_at, should_work)
 {
-  for (auto &&p : std::map<uint8_t, uint8_t>{
-           {5U, 4U},
-           {5U, 5U},
-           {0U, 5U},
-       }) {
+  for (auto &&p: std::map<uint8_t, uint8_t>{
+      {5U, 4U},
+      {5U, 5U},
+      {0U, 5U},
+  }) {
     const auto ret = ahead_or_at<uint8_t, 8U>(p.first, p.second);
     EXPECT_TRUE(ret);
   }
 
-  for (auto &&p : std::map<uint8_t, uint8_t>{
-           {2U, 4U},
-       }) {
+  for (auto &&p: std::map<uint8_t, uint8_t>{
+      {2U, 4U},
+  }) {
     const auto ret = ahead_or_at<uint8_t, 8U>(p.first, p.second);
     EXPECT_FALSE(ret);
   }
 
-  for (auto &&p : std::map<uint32_t, uint32_t>{
-           {UINT32_MAX, UINT32_MAX - 1U},
-           {0U, 0U},
-           {0U, UINT32_MAX},
-           {0U, UINT32_MAX - 1},
-       }) {
+  for (auto &&p: std::map<uint32_t, uint32_t>{
+      {UINT32_MAX, UINT32_MAX - 1U},
+      {0U, 0U},
+      {0U, UINT32_MAX},
+      {0U, UINT32_MAX - 1},
+  }) {
     EXPECT_TRUE(ahead_or_at(p.first, p.second));
   }
 
-  for (auto &&p : std::map<uint32_t, uint32_t>{
-           {UINT32_MAX, 0U},
-           {UINT32_MAX, UINT32_MAX},
-       }) {
+  for (auto &&p: std::map<uint32_t, uint32_t>{
+      {UINT32_MAX, 0U},
+      {UINT32_MAX, UINT32_MAX},
+  }) {
     EXPECT_FALSE(ahead_or_at(p.first, p.second));
   }
 }

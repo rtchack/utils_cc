@@ -9,7 +9,7 @@
 
 namespace test
 {
-template <size_t N>
+template<size_t N>
 void gen_rand_buf_data(uint8_t (&data)[N])
 {
   size_t i = N % 4 ? N % 4 : 4;
@@ -24,7 +24,7 @@ void gen_rand_buf_data(uint8_t (&data)[N])
   UCC_DCHECK(i == N);
 }
 
-template <size_t N>
+template<size_t N>
 void
 gen_array_checksum(uint16_t &checksum, uint8_t (&data)[N])
 {
@@ -81,7 +81,7 @@ TEST(checksum, should_work)
     gen_array_checksum(tmp, buf1);
     EXPECT_FALSE(verify_oc_checksum(tmp));
 
-    checksum = gen_oc_checksum(checksum, buf2, sizeof(buf2) -1);
+    checksum = gen_oc_checksum(checksum, buf2, sizeof(buf2) - 1);
     EXPECT_FALSE(verify_oc_checksum(tmp));
 
     gen_array_checksum(tmp, buf3);

@@ -22,8 +22,7 @@ namespace utils
 /**
  * Will also init loggers
  */
-class Supervisor
-{
+class Supervisor {
  public:
   explicit Supervisor(const std::string &log_file) : log_file{log_file} {}
 
@@ -47,8 +46,7 @@ class Supervisor
   stop()
   {
     std::lock_guard<std::mutex> lock{mut};
-    unless(running)
-    {
+    unless(running) {
       std::cout << "Not running" << std::endl;
       return;
     }

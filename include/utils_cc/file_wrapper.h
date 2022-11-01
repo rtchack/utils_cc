@@ -14,8 +14,7 @@
 
 namespace utils
 {
-class FileWrapper final
-{
+class FileWrapper final {
  public:
   UCC_DISALLOW_COPY_AND_ASSIGN(FileWrapper);
 
@@ -26,12 +25,12 @@ class FileWrapper final
   }
 
   explicit FileWrapper(FILE *file)
-      : fl{file} {UCC_RAISE_UNLESS(fl)}
+      : fl{file} { UCC_RAISE_UNLESS(fl)}
 
-        FileWrapper(const char *name, const char *mode)
-      : fl(fopen(name, mode)){UCC_RAISE_VERB_UNLESS(fl, name << ":" << mode)}
+  FileWrapper(const char *name, const char *mode)
+      : fl(fopen(name, mode)) { UCC_RAISE_VERB_UNLESS(fl, name << ":" << mode)}
 
-        FileWrapper(const std::string &name, const char *mode)
+  FileWrapper(const std::string &name, const char *mode)
       : FileWrapper(name.c_str(), mode)
   {
   }
@@ -60,8 +59,7 @@ class FileWrapper final
     const auto size = (size_t)size();
     auto mem = new char[size + 1];
     mem[size] = '\0';
-    unless(size == read(mem, size))
-    {
+    unless(size == read(mem, size)) {
       delete[] mem;
       return std::string{};
     }
@@ -164,7 +162,7 @@ class FileWrapper final
   }
 
  private:
-  UCC_DIRECT_READER(FILE *, fl);
+ UCC_DIRECT_READER(FILE *, fl);
 };
 
 }  // namespace utils

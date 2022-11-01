@@ -12,8 +12,7 @@
 
 namespace ucc
 {
-class Time final
-{
+class Time final {
  public:
   typedef std::chrono::steady_clock::time_point Point;
   typedef std::chrono::steady_clock::duration Duration;
@@ -83,7 +82,7 @@ class Time final
   BASE_TIMER_HELPER(hours)
 
  private:
-  UCC_READER(Point, start);
+ UCC_READER(Point, start);
   Point tmp{};
 };
 

@@ -22,7 +22,7 @@ TEST(c_bitset, bitset_attach_should_work)
   std::bitset<sizeof(buf) << 3> sbs{};
 
   const size_t indexes[]{0, 1, 3, 4, 5, 7, 71, 99, 101, (sizeof(buf) << 3) - 1};
-  for (const auto i : indexes) {
+  for (const auto i: indexes) {
     bitset_set(&bs, i);
     sbs[i] = true;
   }
@@ -35,7 +35,7 @@ TEST(c_bitset, bitset_attach_should_work)
 TEST(c_bitset, bitset_all_should_work)
 {
   const int lens[]{1, 7, 8, 13, 15, 16, 23, 24, 25};
-  for (auto n : lens) {
+  for (auto n: lens) {
     auto bs = std::unique_ptr<bitset_t, std::function<void(bitset_t *)>>(
         bitset_new(n), [](bitset_t *b) { bitset_del(b); });
     EXPECT_FALSE(bitset_any(&*bs));
@@ -53,12 +53,14 @@ TEST(c_bitset, bitset_all_should_work)
 TEST(c_bitset, should_work)
 {
   static constexpr size_t BITSET_SIZE{133};
-  auto bs = std::unique_ptr<bitset_t, std::function<void(bitset_t *)>>(
-      bitset_new(BITSET_SIZE), [](bitset_t *b) { bitset_del(b); });
+  auto bs =
+      std::unique_ptr<bitset_t, std::function<void(bitset_t *)>>(
+          bitset_new(BITSET_SIZE),
+          [](bitset_t *b) { bitset_del(b); });
   std::bitset<BITSET_SIZE> sbs{};
 
   const size_t indexes[]{0, 1, 3, 4, 5, 7, 71, 99, 101, BITSET_SIZE - 1};
-  for (const auto i : indexes) {
+  for (const auto i: indexes) {
     bitset_set(&*bs, i);
     sbs[i] = true;
   }
@@ -154,7 +156,7 @@ TEST(c_inline_bitset, should_work_on_u8)
   uint8_t bsu8;
 
   const size_t indexes[]{1, 3, 4, 5, sizeof(uint8_t) - 1};
-  for (const auto i : indexes) {
+  for (const auto i: indexes) {
     uint8_bitset_set(&bsu8, i);
     sbs[i] = true;
   }

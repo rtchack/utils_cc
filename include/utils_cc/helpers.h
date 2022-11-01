@@ -13,14 +13,14 @@ namespace utils
 {
 using unique_mem = std::unique_ptr<uint8_t[]>;
 
-template <typename T, typename... Args>
+template<typename T, typename... Args>
 std::unique_ptr<T>
 make_uni_helper(std::false_type, Args &&...args) noexcept
 {
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-template <typename T, typename... Args>
+template<typename T, typename... Args>
 std::unique_ptr<T>
 make_uni_helper(std::true_type, Args &&...args) noexcept
 {
@@ -32,7 +32,7 @@ make_uni_helper(std::true_type, Args &&...args) noexcept
       new U[sizeof...(Args)]{std::forward<Args>(args)...});
 }
 
-template <typename T, typename... Args>
+template<typename T, typename... Args>
 std::unique_ptr<T>
 make_uni(Args &&...args) noexcept
 {
@@ -48,12 +48,12 @@ make_uni(Args &&...args) noexcept
 // This template function declaration is used in defining arraysize.
 // Note that the function doesn't need an implementation, as we only
 // use its type.
-template <typename T, size_t N>
+template<typename T, size_t N>
 char (&ArraySizeHelper(T (&array)[N]))[N];
 
 #define arraysize(array) (sizeof(utils::ArraySizeHelper(array)))
 
-template <typename T, size_t N>
+template<typename T, size_t N>
 T &last(T (&array)[N])
 {
   return array[N - 1];

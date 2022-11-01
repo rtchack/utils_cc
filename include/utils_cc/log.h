@@ -118,8 +118,7 @@ print_binary(const char *tag, const void *buf, size_t buf_len);
 
 #define lBinary(buf, buf_len) utils::print_binary(__func__, buf, buf_len);
 
-class LazyLogger
-{
+class LazyLogger {
  public:
   LazyLogger()
   {

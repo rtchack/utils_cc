@@ -12,7 +12,8 @@
 namespace ucc
 {
 /** Mod M add */
-template <unsigned long M>  // NOLINT
+template<unsigned long M>
+// NOLINT
 inline unsigned long
 add(unsigned long a, unsigned long b)
 {
@@ -24,7 +25,8 @@ add(unsigned long a, unsigned long b)
 }
 
 /** Mod M subtract */
-template <unsigned long M>  // NOLINT
+template<unsigned long M>
+// NOLINT
 inline unsigned long
 subtract(unsigned long a, unsigned long b)
 {
@@ -60,7 +62,7 @@ subtract(unsigned long a, unsigned long b)
  * If M > 0 then wrapping occurs at M, if M == 0 then wrapping occurs at the
  * largest value representable by T.
  */
-template <typename T, T M>
+template<typename T, T M>
 inline typename std::enable_if<(M > 0), T>::type
 forward_diff(T a, T b)
 {
@@ -71,7 +73,7 @@ forward_diff(T a, T b)
   return a <= b ? b - a : M - (a - b);
 }
 
-template <typename T, T M>
+template<typename T, T M>
 inline typename std::enable_if<(M == 0), T>::type
 forward_diff(T a, T b)
 {
@@ -80,7 +82,7 @@ forward_diff(T a, T b)
   return b - a;
 }
 
-template <typename T>
+template<typename T>
 inline T
 forward_diff(T a, T b)
 {
@@ -113,7 +115,7 @@ forward_diff(T a, T b)
  * If M > 0 then wrapping occurs at M, if M == 0 then wrapping occurs at the
  * largest value representable by T.
  */
-template <typename T, T M>
+template<typename T, T M>
 inline typename std::enable_if<(M > 0), T>::type
 reverse_diff(T a, T b)
 {
@@ -124,7 +126,7 @@ reverse_diff(T a, T b)
   return b <= a ? a - b : M - (b - a);
 }
 
-template <typename T, T M>
+template<typename T, T M>
 inline typename std::enable_if<(M == 0), T>::type
 reverse_diff(T a, T b)
 {
@@ -133,7 +135,7 @@ reverse_diff(T a, T b)
   return a - b;
 }
 
-template <typename T>
+template<typename T>
 inline T
 reverse_diff(T a, T b)
 {
@@ -146,7 +148,7 @@ reverse_diff(T a, T b)
  * The minimum distance is defined as min(forward_diff(a, b), reverse_diff(a,
  * b))
  */
-template <typename T, T M = 0>
+template<typename T, T M = 0>
 inline T
 min_diff(T a, T b)
 {
@@ -162,7 +164,7 @@ min_diff(T a, T b)
  * from each other, then the sequence number with the highest value is
  * considered to be ahead.
  */
-template <typename T, T M>
+template<typename T, T M>
 inline typename std::enable_if<(M > 0), bool>::type
 ahead_or_at(T a, T b)
 {
@@ -173,7 +175,7 @@ ahead_or_at(T a, T b)
   return forward_diff<T, M>(b, a) <= maxDist;
 }
 
-template <typename T, T M>
+template<typename T, T M>
 inline typename std::enable_if<(M == 0), bool>::type
 ahead_or_at(T a, T b)
 {
@@ -184,7 +186,7 @@ ahead_or_at(T a, T b)
   return forward_diff(b, a) < maxDist;
 }
 
-template <typename T>
+template<typename T>
 inline bool
 ahead_or_at(T a, T b)
 {
@@ -198,7 +200,7 @@ ahead_or_at(T a, T b)
  * from each other, then the sequence number with the highest value is
  * considered to be ahead.
  */
-template <typename T, T M = 0>
+template<typename T, T M = 0>
 inline bool
 ahead_of(T a, T b)
 {
@@ -213,7 +215,7 @@ ahead_of(T a, T b)
  * WARNING! If used to sort sequence numbers of length M then the interval
  *          covered by the sequence numbers may not be larger than floor(M/2).
  */
-template <typename T, T M = 0>
+template<typename T, T M = 0>
 struct AscendingSeqNumComp {
   bool
   operator()(T a, T b) const
@@ -228,7 +230,7 @@ struct AscendingSeqNumComp {
  * WARNING! If used to sort sequence numbers of length M then the interval
  *          covered by the sequence numbers may not be larger than floor(M/2).
  */
-template <typename T, T M = 0>
+template<typename T, T M = 0>
 struct DescendingSeqNumComp {
   bool
   operator()(T a, T b) const
@@ -241,9 +243,8 @@ struct DescendingSeqNumComp {
  * A sequence number unwrapper where the first unwrapped value equals the
  * first value being unwrapped.
  */
-template <typename T, T M = 0>
-class SeqNumUnwrapper
-{
+template<typename T, T M = 0>
+class SeqNumUnwrapper {
   static_assert(
       std::is_unsigned<T>::value &&
           std::numeric_limits<T>::max() < std::numeric_limits<int64_t>::max(),
@@ -277,8 +278,8 @@ class SeqNumUnwrapper
  private:
   UCC_DISALLOW_COPY_AND_ASSIGN(SeqNumUnwrapper);
 
-  UCC_READER(int64_t, last_unwrapped_){0};
-  UCC_DIRECT_READER(T *, last_value_){};
+ UCC_READER(int64_t, last_unwrapped_){0};
+ UCC_DIRECT_READER(T *, last_value_){};
 };
 
 }  // namespace ucc

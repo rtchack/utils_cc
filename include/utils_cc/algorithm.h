@@ -13,7 +13,7 @@
 
 namespace utils
 {
-template <typename T>
+template<typename T>
 void
 qsort(T *v, int32_t left, int32_t right)
 {
@@ -44,7 +44,7 @@ qsort(T *v, int32_t left, int32_t right)
   }
 }
 
-template <typename T, size_t N>
+template<typename T, size_t N>
 void qsort(T (&v)[N])
 {
   qsort(v, 0, (int32_t)(N - 1));

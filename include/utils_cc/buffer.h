@@ -16,9 +16,8 @@ namespace ucc
 /**
  * Buffer
  */
-template <size_t CAP>
-class Buffer
-{
+template<size_t CAP>
+class Buffer {
  public:
   Buffer() : w_ptr{data}, r_ptr{data}, end_ptr{data + CAP} {}
 
@@ -34,7 +33,7 @@ class Buffer
     return Ret::OK;
   }
 
-  template <typename T>
+  template<typename T>
   Ret
   write(T &&t) noexcept
   {
@@ -73,7 +72,7 @@ class Buffer
     return ret;
   }
 
-  template <typename T>
+  template<typename T>
   Ret
   write_at(T &&t, size_t offset) noexcept
   {
@@ -113,7 +112,7 @@ class Buffer
     return Ret::OK;
   }
 
-  template <typename T>
+  template<typename T>
   Ret
   read(T &t) noexcept
   {
@@ -156,12 +155,12 @@ class Buffer
 
     return Ret::OK;
 
-  tag_on_err:
+tag_on_err:
     r_ptr = old_r_ptr;
     return Ret::E_GENERAL;
   }
 
-  template <typename T>
+  template<typename T>
   Ret
   read_at(T &t, size_t offset) noexcept
   {
@@ -177,7 +176,7 @@ class Buffer
 
     return Ret::OK;
 
-  tag_on_err:
+tag_on_err:
     r_ptr = old_r_ptr;
     return Ret::E_GENERAL;
   }
@@ -197,7 +196,7 @@ class Buffer
 
     return Ret::OK;
 
-  tag_on_err:
+tag_on_err:
     r_ptr = old_r_ptr;
     return Ret::E_GENERAL;
   }

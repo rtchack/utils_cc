@@ -30,24 +30,23 @@ print_log(int severity, const char *fmt, ...)
   va_end(args);
 
   switch (severity) {
-    case UCC_SEVERITY_DBG: {
-      UCC_LOGGER("D " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    case UCC_SEVERITY_INF: {
-      UCC_LOGGER("I " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    case UCC_SEVERITY_WAR: {
-      UCC_LOGGER("W " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    case UCC_SEVERITY_ERR: {
-      UCC_LOGGER("E " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    default:
-      UCC_LOGGER("U " << std::this_thread::get_id() << " " << msg);
+  case UCC_SEVERITY_DBG: {
+    UCC_LOGGER("D " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  case UCC_SEVERITY_INF: {
+    UCC_LOGGER("I " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  case UCC_SEVERITY_WAR: {
+    UCC_LOGGER("W " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  case UCC_SEVERITY_ERR: {
+    UCC_LOGGER("E " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  default: UCC_LOGGER("U " << std::this_thread::get_id() << " " << msg);
   }
 }
 
@@ -63,24 +62,23 @@ vprint_log(int severity, const char *fmt, va_list vp)
   }
 
   switch (severity) {
-    case UCC_SEVERITY_DBG: {
-      UCC_LOGGER("D " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    case UCC_SEVERITY_INF: {
-      UCC_LOGGER("I " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    case UCC_SEVERITY_WAR: {
-      UCC_LOGGER("W " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    case UCC_SEVERITY_ERR: {
-      UCC_LOGGER("E " << std::this_thread::get_id() << " " << msg);
-      return;
-    }
-    default:
-      UCC_LOGGER("U " << std::this_thread::get_id() << " " << msg);
+  case UCC_SEVERITY_DBG: {
+    UCC_LOGGER("D " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  case UCC_SEVERITY_INF: {
+    UCC_LOGGER("I " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  case UCC_SEVERITY_WAR: {
+    UCC_LOGGER("W " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  case UCC_SEVERITY_ERR: {
+    UCC_LOGGER("E " << std::this_thread::get_id() << " " << msg);
+    return;
+  }
+  default: UCC_LOGGER("U " << std::this_thread::get_id() << " " << msg);
   }
 }
 
@@ -108,8 +106,9 @@ print_binary(const char *tag, const void *buf, size_t buf_len)
 
   while (i < buf_len) {
     LOG_BINARY_PUTN("%02x", tmp_buf[i])
-    unless((++i % 8)) { LOG_BINARY_PUTN("  ") }
-    else {LOG_BINARY_PUTN(" ")} unless((i % 16)) { LOG_BINARY_PUTN("\n") }
+    unless((++i % 8)) { LOG_BINARY_PUTN("  ")}
+    else { LOG_BINARY_PUTN(" ")}
+    unless((i % 16)) { LOG_BINARY_PUTN("\n")}
   }
 
 print_point:

@@ -29,14 +29,12 @@ SingletonGuard::SingletonGuard(const std::string &name)
   strncpy(addr.sun_path, full_path.c_str(), sizeof(addr.sun_path));
   auto len = sizeof(addr);
 
-  unless(connect(fd, (sockaddr *)&addr, len))
-  {
+  unless(connect(fd, (sockaddr *)&addr, len)) {
     UCC_RAISE(full_path << " already running")
   }
 
   if (unlink(addr.sun_path)) {
-    unless(errno == ENOENT)
-    {
+    unless(errno == ENOENT) {
       UCC_RAISE(full_path << " unlink: " << std::strerror(errno))
     }
   }

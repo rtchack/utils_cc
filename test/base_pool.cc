@@ -9,18 +9,17 @@
 
 namespace test
 {
-class TmpKlass
-{
+class TmpKlass {
  public:
   explicit TmpKlass(std::string &&name) : name{std::move(name)} {}
 
  private:
-  UCC_READER(std::string, name);
+ UCC_READER(std::string, name);
 };
 
 TEST(base_pool, should_work_in_single_thread)
 {
-  for (auto be_safe : std::array<bool, 2>{/*true,*/ false}) {
+  for (auto be_safe: std::array<bool, 2>{/*true,*/ false}) {
     ucc::BasePool<TmpKlass> pool{3, "", be_safe};
 
     auto &stat = pool.get_stat();

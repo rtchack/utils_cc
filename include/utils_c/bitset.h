@@ -21,7 +21,7 @@ typedef struct {
   size_t len;
   size_t n_bytes;
   size_t count;
-  size_t is_count_valid : 1;
+  size_t is_count_valid: 1;
 } bitset_t;
 
 bitset_t *

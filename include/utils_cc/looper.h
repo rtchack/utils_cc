@@ -21,8 +21,7 @@
 
 namespace ucc
 {
-class Looper : public Module
-{
+class Looper : public Module {
  public:
   /**
    * @return ture to quit the loop, false to continue
@@ -107,7 +106,7 @@ class Looper : public Module
    * after loop gets stopped
    */
   virtual void
-  post_deactivate(){mDbg("")}
+  post_deactivate() {mDbg("") }
 
   std::string to_s() const noexcept override
   {

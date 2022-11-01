@@ -35,7 +35,7 @@ to_hex_str(const std::vector<uint8_t> &chars) noexcept
 {
   std::string s;
   s.reserve((chars.size() + 1) << 2);
-  for (auto c : chars) {
+  for (auto c: chars) {
     s.append(to_hex_str(c));
   }
   return s;

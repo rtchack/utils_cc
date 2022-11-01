@@ -17,9 +17,8 @@ namespace ucc
 /**
  * BasePool
  */
-template <typename T>
-class BasePool : public Module
-{
+template<typename T>
+class BasePool : public Module {
  public:
   explicit BasePool(size_t capacity) : BasePool(capacity, "", false) {}
 
@@ -59,7 +58,7 @@ class BasePool : public Module
   /**
    * get a unique_ptr to a T instance
    */
-  template <typename... Args>
+  template<typename... Args>
   inline std::unique_ptr<T, std::function<void(T *)>>
   alloc_unique(Args &&...args) noexcept
   {
@@ -70,7 +69,7 @@ class BasePool : public Module
   /**
    * get a shared_ptr to a T instance
    */
-  template <typename... Args>
+  template<typename... Args>
   inline std::shared_ptr<T>
   alloc_shared(Args &&...args) noexcept
   {
@@ -100,17 +99,16 @@ class BasePool : public Module
     uint8_t mem[sizeof(T)];
   };
 
-  template <typename... Args>
+  template<typename... Args>
   T *
   borrow_item(Args &&...args)
   {
-    unless(free_nodes)
-    {
+    unless(free_nodes) {
       ++stat.n_alloc_failure;
       return nullptr;
     }
 
-    auto t = new (free_nodes->mem) T{std::forward<Args>(args)...};
+    auto t = new(free_nodes->mem) T{std::forward<Args>(args)...};
     free_nodes = free_nodes->next;
     ++stat.n_allocated;
     return t;
@@ -119,7 +117,7 @@ class BasePool : public Module
   /**
    * Alloc for type T
    */
-  template <typename... Args>
+  template<typename... Args>
   T *
   alloc(Args &&...args) noexcept
   {
@@ -134,8 +132,7 @@ class BasePool : public Module
   void
   return_item(T *t) noexcept
   {
-    unless(t)
-    {
+    unless(t) {
       ++stat.n_dealloc_failure;
       return;
     }
@@ -173,9 +170,9 @@ class BasePool : public Module
     uint64_t n_dealloc_failure{};
     uint64_t n_allocated{};
   };
-  UCC_READER(Stat, stat){};
+ UCC_READER(Stat, stat){};
 
-  UCC_READER(size_t, capacity);
+ UCC_READER(size_t, capacity);
   uint8_t *mem;
   Node *free_nodes;
   std::mutex *mut{};

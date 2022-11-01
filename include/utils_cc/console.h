@@ -30,8 +30,7 @@ enable_console_echo(bool enable = true)
 /**
  * Disable console echo
  */
-class NoConsoleEcho final
-{
+class NoConsoleEcho final {
  public:
   NoConsoleEcho() { enable_console_echo(false); }
 

@@ -14,8 +14,7 @@
 
 namespace ucc
 {
-class StringAble
-{
+class StringAble {
  public:
   virtual std::string
   to_s() const = 0;
@@ -53,25 +52,25 @@ to_hex_str(const std::vector<uint8_t> &uchars,
            const std::string &delimiter,
            uint16_t pace) noexcept;
 
-template <size_t N>
+template<size_t N>
 std::string to_hex_str(uint8_t (&chars)[N]) noexcept
 {
   std::string s;
   s.reserve((N + 1) << 2);
-  for (auto c : chars) {
+  for (auto c: chars) {
     s.append(to_hex_str(c));
   }
   return s;
 }
 
-template <size_t N>
+template<size_t N>
 std::string
 to_hex_str(uint8_t (&chars)[N], const std::string &delimiter) noexcept
 {
   return to_hex_str(chars, delimiter, 1);
 }
 
-template <size_t N>
+template<size_t N>
 std::string
 to_hex_str(uint8_t (&chars)[N],
            const std::string &delimiter,

@@ -9,8 +9,7 @@
 
 namespace ucc
 {
-class SingletonGuard
-{
+class SingletonGuard {
  public:
   UCC_DISALLOW_COPY_AND_ASSIGN(SingletonGuard)
 
@@ -21,7 +20,7 @@ class SingletonGuard
   ~SingletonGuard();
 
  private:
-  UCC_READER(int, fd);
+ UCC_READER(int, fd);
 };
 
 }  // namespace ucc

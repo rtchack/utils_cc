@@ -9,7 +9,10 @@ namespace ucc
 void
 Looper::post(Task &&tsk, bool flush)
 {
-  unless(running) { mWar("Not running") return; }
+  unless(running) {
+    mWar("Not running")
+    return;
+  }
   {
     std::lock_guard<std::mutex> lk{op_mut};
     if (flush) msg_queue.clear();
@@ -23,8 +26,7 @@ Looper::deactivate()
 {
   {
     std::lock_guard<std::mutex> lk{run_mut};
-    unless(running)
-    {
+    unless(running) {
       mInf("is not active");
       return;
     }

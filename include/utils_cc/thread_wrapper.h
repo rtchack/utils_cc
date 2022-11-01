@@ -14,8 +14,7 @@
 
 namespace ucc
 {
-class ThreadWrapper final : public Module
-{
+class ThreadWrapper final : public Module {
  public:
   ThreadWrapper() = default;
 

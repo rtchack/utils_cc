@@ -19,22 +19,22 @@ to_s(Ret v) noexcept
     return #s
 
   switch (v) {
-    CR_DESCRIBE(OK);
-    CR_DESCRIBE(NO);
-    CR_DESCRIBE(E_INIT);
-    CR_DESCRIBE(E_ARG);
-    CR_DESCRIBE(E_ARG_NULL);
-    CR_DESCRIBE(E_FILE_OP);
-    CR_DESCRIBE(E_FILE_CON);
-    CR_DESCRIBE(E_MEM);
-    CR_DESCRIBE(E_UNSUP);
-    CR_DESCRIBE(E_ALG);
-    CR_DESCRIBE(E_BUF_OVERFLOW);
-    CR_DESCRIBE(E_IO_PENDING);
-    CR_DESCRIBE(E_SOCKET_NOT_CONNECTED);
-    CR_DESCRIBE(E_GENERAL);
-    default:
-      return "UNEXPECTED_RETURN";
+  CR_DESCRIBE(OK);
+  CR_DESCRIBE(NO);
+  CR_DESCRIBE(E_INIT);
+  CR_DESCRIBE(E_ARG);
+  CR_DESCRIBE(E_ARG_NULL);
+  CR_DESCRIBE(E_FILE_OP);
+  CR_DESCRIBE(E_FILE_CON);
+  CR_DESCRIBE(E_MEM);
+  CR_DESCRIBE(E_UNSUP);
+  CR_DESCRIBE(E_ALG);
+  CR_DESCRIBE(E_BUF_OVERFLOW);
+  CR_DESCRIBE(E_IO_PENDING);
+  CR_DESCRIBE(E_SOCKET_NOT_CONNECTED);
+  CR_DESCRIBE(E_GENERAL);
+  default:
+    return "UNEXPECTED_RETURN";
   }
 }
 
@@ -44,8 +44,7 @@ enable_core_dump() noexcept
 #ifdef OS_LINUX
   rlimit lim;
 
-  unless(getrlimit(RLIMIT_CORE, &lim))
-  {
+  unless(getrlimit(RLIMIT_CORE, &lim)) {
     lim.rlim_cur = RLIM_INFINITY;
     lim.rlim_max = RLIM_INFINITY;
     setrlimit(RLIMIT_CORE, &lim);

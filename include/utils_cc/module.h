@@ -14,8 +14,7 @@
 
 namespace ucc
 {
-class Module : public StringAble
-{
+class Module : public StringAble {
  public:
   Module() = default;
 
@@ -42,7 +41,7 @@ class Module : public StringAble
   }
 
  private:
-  UCC_ACCESSOR(std::string, name){""};
+ UCC_ACCESSOR(std::string, name){""};
 };
 
 }  // namespace ucc
