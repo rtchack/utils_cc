@@ -56,7 +56,7 @@ to_s(Ret value) noexcept;
 constexpr bool
 failed(Ret ret) noexcept
 {
-  return ret > Ret::NO;
+  return ret >= Ret::NO;
 }
 
 constexpr bool
