@@ -6,6 +6,12 @@ include(CMakePrintHelpers)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(IS_TOPMOST_PROJECT TRUE)
+else ()
+    set(IS_TOPMOST_PROJECT FALSE)
+endif ()
+
 if (WIN32)
     add_definitions(-DOS_WIN32=1)
 else ()
@@ -50,9 +56,13 @@ set_target_properties(${PROJECT_NAME}
         INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include
         INTERFACE_INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include)
 
-find_package(GTest QUIET)
-if (GTEST_FOUND)
-    add_subdirectory(test)
-endif ()
+if (IS_TOPMOST_PROJECT)
+    if (NOT TARGET GTest::gtest)
+        find_package(GTest QUIET)
+        if (GTEST_FOUND)
+            add_subdirectory(test)
+        endif ()
+    endif ()
 
-cmake_print_variables(GTEST_FOUND)
+    cmake_print_variables(GTEST_FOUND)
+endif ()
