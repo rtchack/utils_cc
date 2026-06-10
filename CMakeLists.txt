@@ -48,6 +48,7 @@ set_target_properties(${PROJECT_NAME}
         INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include
         INTERFACE_INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/include)
 
-if (TARGET gtest)
+find_package(GTest QUIET)
+if (GTEST_FOUND)
     add_subdirectory(test)
 endif ()
