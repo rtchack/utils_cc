@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(utils_cc)
 
+include(CMakePrintHelpers)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -52,3 +54,5 @@ find_package(GTest QUIET)
 if (GTEST_FOUND)
     add_subdirectory(test)
 endif ()
+
+cmake_print_variables(GTEST_FOUND)
